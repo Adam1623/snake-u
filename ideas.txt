@@ -9,6 +9,14 @@ daily item shop
 save score somewhere (to buy things)??
 snake account
 
+FUNNY:
+EXTREME MODE
+- FLASHING COLOURS (Change board colour / bg colour each frame)
+- SKRT NOISE WHEN TURNING SNAKE
+- APPLES ON EDGES ONLY
+- LOUD NOISE ON LOSS
+
+
 menu for selecting which kind of snake you want to play?
 - regular
 - extreme

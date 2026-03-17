@@ -1,0 +1,28 @@
+.container {
+    display: flex; /* Makes the children flex items, putting them on the same line */
+    flex-wrap: wrap;
+    gap: 10px; /* Optional: adds space between the divs */
+    /* Optional: other properties for alignment */
+    justify-content: center; /* Centers divs within the container */
+    font-family: 'Open Sans', 'Montserrat', 'Helvetica';
+}
+
+.scoreboard {
+    font-family: 'Open Sans', 'Montserrat', 'Helvetica';
+    display: flex;
+    justify-content: center;
+    font-size: 40px;
+    /* text-align: center; */
+    color: rgb(0, 0, 0);
+    padding-top: 1vh;
+    padding-bottom: 0vh;
+    margin: 0px;
+}
+
+.mainMenu{
+    display: block;
+    font-size: 50px;
+    color: rgb(16, 20, 17);
+    padding: 10px 20px;
+    justify-content: center;
+}

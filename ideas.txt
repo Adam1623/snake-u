@@ -1,0 +1,25 @@
+bug: have it possible to make a loop (move tail before checking the head space)
+bug: the turn bad no good
+restart button?
+score system (scale with difficulty)
+sp snake points
+shop?????
+upgrades?????????
+daily item shop
+save score somewhere (to buy things)??
+snake account
+
+menu for selecting which kind of snake you want to play?
+- regular
+- extreme
+- snake 2 - epic battle
+
+
+pattern start 2 snake epic battle 
+
+- bigger arena
+- two players (online???)
+- paint like splatoon
+- collect apples to try and kill your opponent
+- move faster the longer the match progresses
+- power ups??????

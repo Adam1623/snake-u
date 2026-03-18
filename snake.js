@@ -3,7 +3,8 @@ const ticks = document.getElementById("game");
 const scoreBoard = document.getElementById("scoreboard");
 const htmlBoard = document.getElementById("board");
 const lowerText = document.getElementById("lowmessage");
-
+const bd = document.body;
+const retryB = document.getElementById("retryB");
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -12,15 +13,15 @@ function cell (status, location, prev, next) {
     this.next = next;
 }
 
-let board = []
+// let board = []
 
-snake = []  
+// snake = []  
 
-score = 1;
-scoreBoard.innerText = score;
+// score = 1;
+// scoreBoard.innerText = score;
 
-let snakeHead = null;
-let snakeTail = null;
+// let snakeHead = null;
+// let snakeTail = null;
 
 const wall = '⬛';
 const app = '🍎';
@@ -31,7 +32,7 @@ const sdown = '⬇️';
 const sright = '➡️';
 const body = '🟢'
 
-
+const dirs = [sup, sleft, sdown, sright];
 
 function makeBoard(){
     // 16 x 16 board
@@ -63,9 +64,6 @@ function makeBoard(){
     snakeTail.next = snakeHead;
     snakeHead.prev = snakeTail;    
 }
-
-
-const dirs = [sup, sleft, sdown, sright];
 
 function drawBoard(){
     // Reset Board
@@ -121,42 +119,32 @@ function handleMovement(dir){
     // If not going in opposite direction, change directions
     //console.log(snakeHead.status);
 
-    if (Math.abs(dirs.indexOf(snakeHead.status) - dirs.indexOf(dir)) !== 2 ){
+    // if (Math.abs(dirs.indexOf(snakeHead.status) - dirs.indexOf(dir)) !== 2){
+    //     board[snakeHead.location[1]][snakeHead.location[0]].status = dir;
+    // }
+    if (Math.abs(dirs.indexOf(lastMove) - dirs.indexOf(dir)) !== 2){
         board[snakeHead.location[1]][snakeHead.location[0]].status = dir;
     }
 }
 
 
-moveCount = 0;
+// moveCount = 0;
 
 //moveFrameGap = 8;
 
 function moveSnake(){
 
     function checkSpace(x, y){
+        // Checks if out of bounds
         if (0 > x || x >= board[0].length || 0 > y || y >= board.length){            
             return false;
         }
-        else if (board[y][x].status == body){
+        // Checks if the space you're moving is the body AND not the tail (you can move to the tail spot)
+        else if (board[y][x].status == body && board[y][x].prev != null){
             return false;
         }
         else {            
             return true;
-                        //move head to correct square
-            //move all body segments forward
-            // board[y][x].status = snakeHead.status; 
-            // board[y][x] = snakeHead;
-            
-            // c = snakeHead;
-            // cou = 0;
-            // while (c.prev != null){
-
-            //     c = c.prev;
-            //     cou++;
-            //     board[c.location[1]][c.location[0]].status = c.status;
-            //     //board[c.location[1]][c.location[0]] = c;
-            // }
-            // console.log(cou);
         }
     }
 
@@ -172,10 +160,10 @@ function moveSnake(){
 
         //Checks snake head direction, updates x / y shift accordingly
         dx = 0, dy = 0;
-        if (snakeHead.status ==sup) dy = -1;
-        if (snakeHead.status ==sleft) dx = -1;
-        if (snakeHead.status ==sdown) dy = 1;
-        if (snakeHead.status ==sright) dx = 1;
+        if (snakeHead.status ==sup) {dy = -1; lastMove = sup;}
+        if (snakeHead.status ==sleft) {dx = -1; lastMove = sleft;}
+        if (snakeHead.status ==sdown) {dy = 1; lastMove = sdown;}
+        if (snakeHead.status ==sright) {dx = 1; lastMove = sright;}
 
     //checks if space is occupied by body / out of bounds
     if (checkSpace(x + dx, y + dy)) {
@@ -192,7 +180,7 @@ function moveSnake(){
             snakeTail.prev = null;
         }
 
-        // create new head
+        // Create new head
         newHead = board[y + dy][x + dx];
         newHead.status = snakeHead.status;
 
@@ -214,7 +202,6 @@ function moveSnake(){
 //Apples spawned at a time
 //maxApples = 2;
 //Stores apple locations
-apples = [];
 
 function createApple(){
     //Randomly distributes apples until hits max apples
@@ -249,12 +236,11 @@ function changeScore(amt, mode){
 }
 
 function gameOver(){
-    lowerText.innerText = "You lost!"; 
+    lowerText.innerText = "You lost!";     
     clearInterval(gameId);
+    retryB.style.display = "flex";
 }
 
-
-i = 0;
 function update(){
     i++;
     ticks.innerText = i;
@@ -271,17 +257,76 @@ function update(){
 
 const slider = document.getElementById("difficulty");
 
+const babyPic = document.getElementById("baby");
+const snakePic = document.getElementById("evilsnake")
+
+evilMode = false;
+
 function updateColour(){
-    const r = Math.round((slider.value - 1) * 255 / 4);
-    const g = 255 - Math.round((slider.value - 1) * 255 / 4);
-    slider.style.accentColor = `rgb(${r}, ${g}, 0)`;
+    if (!evilMode){
+        const r = Math.round((slider.value - 1) * 255 / 4);
+        const g = 255 - Math.round((slider.value - 1) * 255 / 4);
+        slider.style.accentColor = `rgb(${r}, ${g}, 0)`;
+
+        if (+slider.value == slider.min){
+            babyPic.style.display = "block";
+        }
+        else if (+slider.value == slider.max){
+            snakePic.style.display = "block";
+        }
+        else{
+            babyPic.style.display = "none";
+            snakePic.style.display = "none";
+        }
+    }
+    else {
+        babyPic.style.display = "none";
+        snakePic.style.display = "none";
+        const c = 255;
+        const gb = 255 - Math.round((slider.value - 1) * 255 / 4);
+        console.log(gb);
+        slider.style.accentColor = `rgb(${c}, ${gb}, ${gb})`;
+    }
 }
 
 slider.addEventListener("input", updateColour);
 
 updateColour();
 
+function switchExtreme(){    
+    bd.classList.toggle("extremeMenu");
+
+    document.getElementById("playB").classList.toggle("blackonwhite");
+
+    evilMode = !evilMode;
+
+    updateColour();
+}
+
 function startGame(){
+
+    retryB.style.display = "none";
+
+    i = 0;
+
+    apples = [];
+
+    board = []
+
+    snake = []  
+
+    lastMove = sdown;
+
+    score = 1;
+    scoreBoard.innerText = score;
+
+    moveCount = 0;
+
+    snakeHead = null;
+    snakeTail = null;
+
+    lowerText.innerText = "";
+
 
     //+ Converts slider.value into a number
     difValue = +slider.value;
@@ -295,11 +340,11 @@ function startGame(){
 
     //Sets max apples and speed based on difficulty slider
     maxApples = 6 - difValue;
-    moveFrameGap = parseInt(13 - difValue * 2);
-    // console.log(moveFrameGap);
+    moveFrameGap = parseInt(42 - difValue * 7);
+    console.log(moveFrameGap);
 
     home.style.display = "none";
     document.getElementById("gameplay").style.display = "block";
     makeBoard();
-    gameId = setInterval(update, 62.5);
+    gameId = setInterval(update, 17);
 }

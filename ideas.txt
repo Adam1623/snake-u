@@ -1,5 +1,3 @@
-bug: have it possible to make a loop (move tail before checking the head space)
-bug: the turn bad no good
 restart button?
 score system (scale with difficulty)
 sp snake points
@@ -8,14 +6,6 @@ upgrades?????????
 daily item shop
 save score somewhere (to buy things)??
 snake account
-
-FUNNY:
-EXTREME MODE
-- FLASHING COLOURS (Change board colour / bg colour each frame)
-- SKRT NOISE WHEN TURNING SNAKE
-- APPLES ON EDGES ONLY
-- LOUD NOISE ON LOSS
-
 
 menu for selecting which kind of snake you want to play?
 - regular

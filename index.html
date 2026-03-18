@@ -1,19 +1,24 @@
 <html>
 
 <head> 
-
+<meta charset="UTF-8">
 <title> SNAKE </title>
 
 <link rel="stylesheet" href="styles.css">
 
 </head>
 
-<body>
+<body style="transition: 500ms;">
 
 <div class="container" id="home">
-    <button class="mainMenu" style="margin-inline: 100%; margin-top: 12%;" onclick="startGame()">Play</button>
+    <button class="mainMenu" id="playB" style="margin-inline: 100%; margin-top: 12%;" onclick="startGame()">Play</button>
     <label for="difficulty" style="margin-inline: 100%; font-size: 30px; margin-top: 30px; margin-bottom: 20px;">Difficulty</label>
-    <input type="range" id="difficulty" style="width: 15vw; transform: scale(2); accent-color: green;" min="1" max="5" step="0.001" value="3">
+    <input type="range" id="difficulty" style="width: 15vw; transform: scale(2); accent-color: white;" min="1" max="5" step="0.001" value="3">
+
+    <button class="mainMenu extremeButton" id="extremeB" style="margin-inline: 75%; margin-top: 3%;" onclick="switchExtreme()">EXTREME MODE</button>
+
+    <div style="display: none; margin-inline: 100%; margin-top: 5%;" id="baby"><img src="baby.png" alt="Baby" height="200px" width="auto"></div>
+    <div style="display: none; margin-inline: 100%; margin-top: 5%;" id="evilsnake"><img src="evilsnake.png" alt="Evil Snake" height="200px" width="auto"></div>
 </div>
 
 <div id="gameplay" style="display: none;">
@@ -21,7 +26,9 @@
     <div class="scoreboard"><div id="scoreboard"></div><div style="position: absolute; margin-top: 50px; font-size: 15px;">Score</div></div>
     <div class="container"><pre id="board" style="font-size: 25px;"> </pre></div>
     <div id="lowmessage" class="container" style="color:rgb(148, 20, 20); font-size: 35px; font-weight: bold; text-decoration: underline;"> </div>
+    <div id="retryB" class="container" style="margin-top: 10px;"><button id="playB" class="mainMenu"; onclick="startGame()">Retry</button></div>
 </div>
+
 
 <script src="snake.js"></script>
 </body>

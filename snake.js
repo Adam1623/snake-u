@@ -204,12 +204,53 @@ function moveSnake(){
 //Stores apple locations
 
 function createApple(){
-    //Randomly distributes apples until hits max apples
-    while (apples.length < maxApples){
-        pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
-        if (board[pos[1]][pos[0]].status == wall){
-            board[pos[1]][pos[0]].status = app;
-            apples.push([pos[0], pos[1]]); 
+
+    if (!evilMode){
+        //Randomly distributes apples until hits max apples
+        while (apples.length < maxApples){
+            pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
+            if (board[pos[1]][pos[0]].status == wall){
+                board[pos[1]][pos[0]].status = app;
+                apples.push([pos[0], pos[1]]); 
+            }
+        }
+    }
+    else{
+        console.log(maxApples);
+        while (apples.length < maxApples){
+            let c = evilAppleSpots;
+            for (let y = 0; y < board.length; y++) {
+                for (let x = 0; x < board.length; x++) {
+                    // Check if this cell is on the edge
+                    if (board[y][x].status == wall){
+                        if (x === 0 || x === board.length - 1 || y === 0 || y === board.length - 1) {
+                                // board[y][x].status = app;
+                                // apples.push(x, y); 
+                            if (Math.ceil(Math.random() * evilAppleSpots) >= c){
+                                board[y][x].status = app;
+                                apples.push(x, y); 
+                                x = board.length;
+                                y = board.length;
+                            }
+                        }
+                    }
+                    c--;
+                }
+            }
+
+            // for (let x = 0; x < board.length; x++){
+                
+            // }
+            // if (board[])
+
+            // if (Math.ceil(Math.random * evilAppleSpots) >= c){
+
+            // }
+            // pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
+            // if (board[pos[1]][pos[0]].status == wall){
+            //     board[pos[1]][pos[0]].status = app;
+            //     apples.push([pos[0], pos[1]]); 
+            // }
         }
     }
     // if (apples.length < maxApples){
@@ -283,8 +324,7 @@ function updateColour(){
         babyPic.style.display = "none";
         snakePic.style.display = "none";
         const c = 255;
-        const gb = 255 - Math.round((slider.value - 1) * 255 / 4);
-        console.log(gb);
+        const gb = 255 - Math.round((slider.value - 1) * 255 / 4);        
         slider.style.accentColor = `rgb(${c}, ${gb}, ${gb})`;
     }
 }
@@ -305,6 +345,8 @@ function switchExtreme(){
 
 function startGame(){
 
+
+    //console.log(evilMode);
     retryB.style.display = "none";
 
     i = 0;
@@ -346,5 +388,12 @@ function startGame(){
     home.style.display = "none";
     document.getElementById("gameplay").style.display = "block";
     makeBoard();
+
+    //EVIL STUFF
+
+    evilAppleSpots = board.length * 4 - 4;
+    
+    //
+
     gameId = setInterval(update, 17);
 }

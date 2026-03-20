@@ -7,6 +7,13 @@ daily item shop
 save score somewhere (to buy things)??
 snake account
 
+NEW MODE
+- time limit
+- every apple you get increases the timer
+- every apple increases snake speed
+- length is limited
+
+
 menu for selecting which kind of snake you want to play?
 - regular
 - extreme

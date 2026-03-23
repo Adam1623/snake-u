@@ -1,4 +1,3 @@
-restart button?
 score system (scale with difficulty)
 sp snake points
 shop?????
@@ -6,6 +5,15 @@ upgrades?????????
 daily item shop
 save score somewhere (to buy things)??
 snake account
+
+EXTREME MODE
+- apples spawn on edges
+- randomly spawning fire?
+- flashing colour?
+- sound effects?
+
+- difficulty : apples spawn on edge based on dif : board size : fire spawns : SPEED STAYS THE SAME
+
 
 NEW MODE
 - time limit

@@ -1,10 +1,13 @@
 const home = document.getElementById("home");
-const ticks = document.getElementById("game");
+const gameMain = document.getElementById("gameplay");
+
+const ticks = document.getElementById("ticks");
 const scoreBoard = document.getElementById("scoreboard");
 const htmlBoard = document.getElementById("board");
 const lowerText = document.getElementById("lowmessage");
 const bd = document.body;
 const retryB = document.getElementById("retryB");
+const homeB = document.getElementById("homeB");
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -23,22 +26,37 @@ function cell (status, location, prev, next) {
 // let snakeHead = null;
 // let snakeTail = null;
 
-const wall = '⬛';
-const app = '🍎';
-const app2 = '🍏';
-const sup = '⬆️';
-const sleft = '⬅️';
-const sdown = '⬇️';
-const sright = '➡️';
-const body = '🟢'
+function setCostumes(){
+    if (!evilMode){
+        wall = '⬛';
+        app = '🍎';
+        app2 = '🍏';
+        sup = '⬆️';
+        sleft = '⬅️';
+        sdown = '⬇️';
+        sright = '➡️';
+        body = '🟢'
+    }
+    else if (evilMode){
+        wall = '🟥';
+        app = '💀';
+        app2 = '🍏';
+        sup = '⬆️';
+        sleft = '⬅️';
+        sdown = '⬇️';
+        sright = '➡️';
+        body = '🟡'
+    }
+    dirs = [sup, sleft, sdown, sright];
+}
 
-const dirs = [sup, sleft, sdown, sright];
 
-function makeBoard(){
+
+function makeBoard(xDim, yDim){
     // 16 x 16 board
-    for (let y = 0; y < 16; y++){
+    for (let y = 0; y < yDim; y++){
         const row = [];
-        for (let x = 0; x < 16; x++){
+        for (let x = 0; x < xDim; x++){
             row.push(new cell(wall, [x, y], null, null));            
             // if (y % 2 == 0){
             //     row.push(new cell('#', [x, y]));            
@@ -46,11 +64,11 @@ function makeBoard(){
             // else{
             //     row.push(new cell('X', [x, y]));            
             // }            
-            if (x == 8 & y == 6) {
-                row[8].status = body;
+            if (x == xDim / 2 & y == yDim / 2 - 2) {
+                row[x].status = body;
             }
-            if (x == 8 && y == 7) {
-                row[8].status = sdown;
+            if (x == xDim / 2 && y == yDim / 2 - 1) {
+                row[x].status = sdown;
             }
 
 
@@ -59,8 +77,8 @@ function makeBoard(){
         //console.log(row);
     }
     //console.log(board[1]);
-    snakeTail = board[6][8];
-    snakeHead = board[7][8];
+    snakeTail = board[Math.floor(yDim / 2) - 2][xDim / 2];
+    snakeHead = board[Math.floor(yDim / 2) - 1][xDim / 2];
     snakeTail.next = snakeHead;
     snakeHead.prev = snakeTail;    
 }
@@ -106,7 +124,7 @@ document.addEventListener('keydown', function(event){
     }
 
     if (event.key === 'b'){
-        console.log(apples);
+        console.log(evilAppleSpots);
         //console.log(snakeHead);
         // board.forEach(ca =>{
         //     console.log(ca);
@@ -205,53 +223,74 @@ function moveSnake(){
 
 function createApple(){
 
-    if (!evilMode){
-        //Randomly distributes apples until hits max apples
-        while (apples.length < maxApples){
-            pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
+    while (apples.length < maxApples){
+
+        // Edge odds, guaranteed edge apple based on the odds (0 for normal, 30-61 for extreme)
+        if (edgeOdds > 0){
+            if (Math.random() < edgeOdds / 100){
+                let pos = evilAppleSpots[Math.floor(Math.random() * evilAppleSpots.length)];
+                if (board[pos[1]][pos[0]].status == wall){
+                    board[pos[1]][pos[0]].status = app;
+                    apples.push([pos[0], pos[1]]); 
+                }
+            }
+            else {
+                let pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
+                if (board[pos[1]][pos[0]].status == wall){
+                    board[pos[1]][pos[0]].status = app;
+                    apples.push([pos[0], pos[1]]); 
+                }
+            }
+        }
+        else {
+            let pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
             if (board[pos[1]][pos[0]].status == wall){
                 board[pos[1]][pos[0]].status = app;
                 apples.push([pos[0], pos[1]]); 
             }
         }
-    }
-    else{
-        console.log(maxApples);
-        while (apples.length < maxApples){
-            let c = evilAppleSpots;
-            for (let y = 0; y < board.length; y++) {
-                for (let x = 0; x < board.length; x++) {
-                    // Check if this cell is on the edge
-                    if (board[y][x].status == wall){
-                        if (x === 0 || x === board.length - 1 || y === 0 || y === board.length - 1) {
-                                // board[y][x].status = app;
-                                // apples.push(x, y); 
-                            if (Math.ceil(Math.random() * evilAppleSpots) >= c){
-                                board[y][x].status = app;
-                                apples.push(x, y); 
-                                x = board.length;
-                                y = board.length;
-                            }
-                        }
-                    }
-                    c--;
-                }
-            }
 
-            // for (let x = 0; x < board.length; x++){
+    //     let pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
+    //     if (board[pos[1]][pos[0]].status == wall){
+    //         board[pos[1]][pos[0]].status = app;
+    //         apples.push([pos[0], pos[1]]); 
+    //     }
+    //     }
+
+    // if (!evilMode){
+    //     //Randomly distributes apples until hits max apples
+    //     while (apples.length < maxApples){
+    //         let pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
+    //         if (board[pos[1]][pos[0]].status == wall){
+    //             board[pos[1]][pos[0]].status = app;
+    //             apples.push([pos[0], pos[1]]); 
+    //         }
+    //     }
+    // }
+    // else{
+    //     while (apples.length < maxApples){
+    //         let pos = evilAppleSpots[Math.floor(Math.random() * evilAppleSpots.length)];
+    //         if (board[pos[1]][pos[0]].status == wall){
+    //             board[pos[1]][pos[0]].status = app;
+    //             apples.push([pos[0], pos[1]]); 
+    //         }
+    //     }
+        // while (apples.length < maxApples){
+
+        //     // for (let x = 0; x < board.length; x++){
                 
-            // }
-            // if (board[])
+        //     // }
+        //     // if (board[])
 
-            // if (Math.ceil(Math.random * evilAppleSpots) >= c){
+        //     // if (Math.ceil(Math.random * evilAppleSpots) >= c){
 
-            // }
-            // pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
-            // if (board[pos[1]][pos[0]].status == wall){
-            //     board[pos[1]][pos[0]].status = app;
-            //     apples.push([pos[0], pos[1]]); 
-            // }
-        }
+        //     // }
+        //     // pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
+        //     // if (board[pos[1]][pos[0]].status == wall){
+        //     //     board[pos[1]][pos[0]].status = app;
+        //     //     apples.push([pos[0], pos[1]]); 
+        //     // }
+        // }
     }
     // if (apples.length < maxApples){
     //     for (const row of board){
@@ -280,6 +319,7 @@ function gameOver(){
     lowerText.innerText = "You lost!";     
     clearInterval(gameId);
     retryB.style.display = "flex";
+    homeB.style.display = "flex";
 }
 
 function update(){
@@ -338,16 +378,28 @@ function switchExtreme(){
 
     document.getElementById("playB").classList.toggle("blackonwhite");
 
+    //scoreBoard.style.color = "white";
+    scoreBoard.classList.toggle("blackonwhite");    
+
     evilMode = !evilMode;
+
+    //setCostumes();
 
     updateColour();
 }
 
+function homeMenu(){
+    home.style.display = "flex";
+    gameMain.style.display = "none";
+}
+
+
 function startGame(){
 
-
+    setCostumes();
     //console.log(evilMode);
     retryB.style.display = "none";
+    homeB.style.display = "none";
 
     i = 0;
 
@@ -381,19 +433,43 @@ function startGame(){
     }
 
     //Sets max apples and speed based on difficulty slider
-    maxApples = 6 - difValue;
-    moveFrameGap = parseInt(42 - difValue * 7);
-    console.log(moveFrameGap);
+    if (!evilMode){
+        // Max apples appearing on the board at a time
+        maxApples = Math.ceil(6 - difValue);
+        // Amount of frames that are drawn before moving (60 FPS tick rate)
+        moveFrameGap = parseInt(42 - difValue * 7);
+        // Odds apple is guaranteed to spawn on the edge (% of 100)
+        edgeOdds = 0;
+
+        boardX = 16;
+        boardY = 16;
+    }
+    else{
+        maxApples = 3 - (difValue / 2);
+        moveFrameGap = 4
+        edgeOdds = Math.ceil(difValue * 10) + 10;
+
+        boardX = Math.ceil(10 );
+        boardY = Math.ceil(10 );
+        //moveFrameGap = parseInt(24 - difValue * 4);
+    }
+
+    //console.log(moveFrameGap);
 
     home.style.display = "none";
-    document.getElementById("gameplay").style.display = "block";
-    makeBoard();
+    gameMain.style.display = "block";
+    makeBoard(boardX, boardY);
 
-    //EVIL STUFF
-
-    evilAppleSpots = board.length * 4 - 4;
+    // Finds edges of board, saves the locations to evilAppleSpots
+    evilAppleSpots = [];
+    for (let y = 0; y < board.length; y++) {
+        for (let x = 0; x < board.length; x++) {
+                if (x === 0 || x === board.length - 1 || y === 0 || y === board.length - 1) {
+                    evilAppleSpots.push([x, y]);
+                }
+            }
+    }        
     
-    //
 
     gameId = setInterval(update, 17);
 }

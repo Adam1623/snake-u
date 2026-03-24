@@ -6,7 +6,10 @@ daily item shop
 save score somewhere (to buy things)??
 snake account
 
+
 EXTREME MODE
+YOU HAVE TO SPEND SNAKE POINTS TO PLAY EXTREME
+WAGER POINTS ON EXTREME
 - apples spawn on edges
 - randomly spawning fire?
 - flashing colour?
@@ -21,6 +24,14 @@ NEW MODE
 - every apple increases snake speed
 - length is limited
 
+
+NEW MODE 
+- scrolling game
+- cross road kinda
+- one hand mouse + one hand keyboard
+- scroll while moving down with the snake
+- fire / death comes from above
+- avoid hazards, collect apples
 
 menu for selecting which kind of snake you want to play?
 - regular

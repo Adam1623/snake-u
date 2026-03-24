@@ -1,13 +1,22 @@
+//Main containers (home screen, game screen, timed mode exclusives)
 const home = document.getElementById("home");
 const gameMain = document.getElementById("gameplay");
+const timedInterface = document.getElementById("timedMode");
 
+//Smaller elements (tick count, scoreboard)
 const ticks = document.getElementById("ticks");
 const scoreBoard = document.getElementById("scoreboard");
 const htmlBoard = document.getElementById("board");
 const lowerText = document.getElementById("lowmessage");
 const bd = document.body;
+const timer = document.getElementById("timer");
+
+//Button div containers (retry, home)
 const retryB = document.getElementById("retryB");
 const homeB = document.getElementById("homeB");
+
+
+
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -64,21 +73,20 @@ function makeBoard(xDim, yDim){
             // else{
             //     row.push(new cell('X', [x, y]));            
             // }            
-            if (x == xDim / 2 & y == yDim / 2 - 2) {
+            if (x == Math.floor(xDim / 2) && y == Math.floor(yDim / 2) - 2) {
                 row[x].status = body;
             }
-            if (x == xDim / 2 && y == yDim / 2 - 1) {
+            if (x == Math.floor(xDim / 2) && y == Math.floor(yDim / 2) - 1) {
                 row[x].status = sdown;
             }
 
 
         }
         board.push(row)
-        //console.log(row);
     }
-    //console.log(board[1]);
-    snakeTail = board[Math.floor(yDim / 2) - 2][xDim / 2];
-    snakeHead = board[Math.floor(yDim / 2) - 1][xDim / 2];
+
+    snakeTail = board[Math.floor(yDim / 2) - 2][Math.floor(xDim / 2)];
+    snakeHead = board[Math.floor(yDim / 2) - 1][Math.floor(xDim / 2)];
     snakeTail.next = snakeHead;
     snakeHead.prev = snakeTail;    
 }
@@ -234,6 +242,7 @@ function createApple(){
                     apples.push([pos[0], pos[1]]); 
                 }
             }
+            // repetitive, bad elses
             else {
                 let pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
                 if (board[pos[1]][pos[0]].status == wall){
@@ -249,60 +258,7 @@ function createApple(){
                 apples.push([pos[0], pos[1]]); 
             }
         }
-
-    //     let pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
-    //     if (board[pos[1]][pos[0]].status == wall){
-    //         board[pos[1]][pos[0]].status = app;
-    //         apples.push([pos[0], pos[1]]); 
-    //     }
-    //     }
-
-    // if (!evilMode){
-    //     //Randomly distributes apples until hits max apples
-    //     while (apples.length < maxApples){
-    //         let pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
-    //         if (board[pos[1]][pos[0]].status == wall){
-    //             board[pos[1]][pos[0]].status = app;
-    //             apples.push([pos[0], pos[1]]); 
-    //         }
-    //     }
-    // }
-    // else{
-    //     while (apples.length < maxApples){
-    //         let pos = evilAppleSpots[Math.floor(Math.random() * evilAppleSpots.length)];
-    //         if (board[pos[1]][pos[0]].status == wall){
-    //             board[pos[1]][pos[0]].status = app;
-    //             apples.push([pos[0], pos[1]]); 
-    //         }
-    //     }
-        // while (apples.length < maxApples){
-
-        //     // for (let x = 0; x < board.length; x++){
-                
-        //     // }
-        //     // if (board[])
-
-        //     // if (Math.ceil(Math.random * evilAppleSpots) >= c){
-
-        //     // }
-        //     // pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
-        //     // if (board[pos[1]][pos[0]].status == wall){
-        //     //     board[pos[1]][pos[0]].status = app;
-        //     //     apples.push([pos[0], pos[1]]); 
-        //     // }
-        // }
     }
-    // if (apples.length < maxApples){
-    //     for (const row of board){
-    //             for (const c of row){
-    //                 if (c.status == wall){
-    //                     c.status = app;   
-    //                     apples.push([c.location[0], c.location[1]]);
-    //                     return true;
-    //                 }
-    //             }
-    //         }
-    // }
     
 }
 
@@ -318,6 +274,7 @@ function changeScore(amt, mode){
 function gameOver(){
     lowerText.innerText = "You lost!";     
     clearInterval(gameId);
+    if (timerInterval) clearInterval(timerInterval);
     retryB.style.display = "flex";
     homeB.style.display = "flex";
 }
@@ -376,7 +333,8 @@ updateColour();
 function switchExtreme(){    
     bd.classList.toggle("extremeMenu");
 
-    document.getElementById("playB").classList.toggle("blackonwhite");
+    document.getElementById("playNormalB").classList.toggle("blackonwhite");
+    document.getElementById("playTimedB").classList.toggle("blackonwhite");
 
     //scoreBoard.style.color = "white";
     scoreBoard.classList.toggle("blackonwhite");    
@@ -393,8 +351,29 @@ function homeMenu(){
     gameMain.style.display = "none";
 }
 
+function timedManagement(){
+    let curTime = 5;
 
-function startGame(){
+    timerInterval = setInterval(() => {
+        timer.textContent = curTime.toFixed(2);
+        curTime -= 0.01;
+
+        if (curTime <= 0){            
+            timer.textContent = "0.00";
+            gameOver();            
+        }
+
+    }, 10);
+
+
+}
+
+
+function sleep(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function startGame(mode){
 
     setCostumes();
     //console.log(evilMode);
@@ -445,12 +424,14 @@ function startGame(){
         boardY = 16;
     }
     else{
-        maxApples = 3 - (difValue / 2);
+        maxApples = Math.ceil(difValue / 2);
         moveFrameGap = 4
         edgeOdds = Math.ceil(difValue * 10) + 10;
 
-        boardX = Math.ceil(10 );
-        boardY = Math.ceil(10 );
+        console.log(20 - difValue + 1);
+        boardX = Math.ceil(7 + difValue * 2);
+        boardY = Math.ceil(7 + difValue * 2);
+        console.log(boardX);
         //moveFrameGap = parseInt(24 - difValue * 4);
     }
 
@@ -470,6 +451,37 @@ function startGame(){
             }
     }        
     
+
+    // The retryB stores whatever mode was last selected. The button returns null if it doesn't change the mode.
+    if (!mode){
+        mode = retryB.dataset.mode;
+    }
+    else retryB.dataset.mode = mode;
+
+    //SPECIAL MODE MODIFIERS || 0 = normal || 1 = timed ||
+    if (mode == 0 || mode == 'normal'){
+        //nothing
+        isTimed = false;
+        timedInterface.style.display = "none";
+    }
+    else if (mode == 1 || mode == 'timed'){
+        // TIMED MODE
+        // Display timer (to 2 decimal places)
+        // Start timer
+        // Apples make you go faster + add time to timer
+        // When the timer runs out without dying, display special message
+        isTimed = true;
+        timer.innerText = "0.00";
+        timedInterface.style.display = "block";
+    }
+
+    timerInterval = null;
+
+    // Displays board, freezes for a second, then starts timer / game loop
+    update();
+    await sleep(1000);
+
+    if (isTimed) timedManagement();
 
     gameId = setInterval(update, 17);
 }

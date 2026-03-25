@@ -33,6 +33,15 @@ NEW MODE
 - fire / death comes from above
 - avoid hazards, collect apples
 
+
+NEW MODE
+- horse (but it's called SNAKE)
+- 1v1 or groups playing horse
+- one person plays and gets a score
+- everyone needs to match or increase score or they get a letter (spelling SNAKE)
+- kinda like battle royale
+
+
 menu for selecting which kind of snake you want to play?
 - regular
 - extreme

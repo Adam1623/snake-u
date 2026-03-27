@@ -7,6 +7,7 @@ Fundamentals / back end:
 - db for user sign-ups and snake points and such
 - keep track of stats (average score achienincvd, highest per mode, highest overall, longest surived in time mode, most points won on extreme mode)
 - debugging things so i can acutally test the game (debug menu to change values)
+- custom fonts for unlimited customization
 
 score system (scale with difficulty)
 sp snake points

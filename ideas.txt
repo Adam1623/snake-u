@@ -1,4 +1,5 @@
 Fundamentals / back end:
+- display point multiplier on screen
 - have controls behave like a joystick (moves in last held direction)
 - speed up by mashing forwards
 - slow down by mashing backwards?

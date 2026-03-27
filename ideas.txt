@@ -1,3 +1,10 @@
+Fundamentals / back end:
+- have controls behave like a joystick (moves in last held direction)
+- speed up by mashing forwards
+- slow down by mashing backwards?
+- store points somewhere? (round down score, store in user profile)
+- db for user sign-ups and snake points and such
+
 score system (scale with difficulty)
 sp snake points
 shop?????

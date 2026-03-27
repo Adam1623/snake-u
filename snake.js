@@ -10,6 +10,7 @@ const htmlBoard = document.getElementById("board");
 const lowerText = document.getElementById("lowmessage");
 const bd = document.body;
 const timer = document.getElementById("timer");
+const countdown = document.getElementById("countdown");
 
 //Button div containers (retry, home)
 const retryB = document.getElementById("retryB");
@@ -111,7 +112,6 @@ function drawBoard(){
 document.addEventListener('keydown', function(event){
     if (event.key === 'w'){
         handleMovement(sup);
-        // console.log(snakeHead);
         //board[snakeHead.location[1]][snakeHead.location[0]].status = '^';
 
     }
@@ -143,11 +143,7 @@ document.addEventListener('keydown', function(event){
 function handleMovement(dir){
     // 1 up - 2 left - 3 down - 4 right
     // If not going in opposite direction, change directions
-    //console.log(snakeHead.status);
 
-    // if (Math.abs(dirs.indexOf(snakeHead.status) - dirs.indexOf(dir)) !== 2){
-    //     board[snakeHead.location[1]][snakeHead.location[0]].status = dir;
-    // }
     if (Math.abs(dirs.indexOf(lastMove) - dirs.indexOf(dir)) !== 2){
         board[snakeHead.location[1]][snakeHead.location[0]].status = dir;
     }
@@ -194,13 +190,44 @@ function moveSnake(){
     //checks if space is occupied by body / out of bounds
     if (checkSpace(x + dx, y + dy)) {
       
+        //EATING APPLE CODE eatapple eat apple
         //if eating an apple, removes apple from list, update score
         if (board[y + dy][x + dx].status == app){               
             apples.splice(apples.indexOf([x + dx, y + dy]), 1);    
             changeScore(1, "add");        
+
+            // this might be a bad idea
+            // but snake length is inaccurate for timed mode, it counts # of apples eaten + 1 in reality
+            snakeLength++;
+                        
+
+            //Special changes if timed mode
+            if (isTimed){
+
+                // bad code, but sets threshold initially
+                if (snakeLength <= 2){
+                    thresh = 3;
+                }
+                //console.log(thresh);
+                if (!evilMode){
+                    if (snakeLength >= thresh && moveFrameGap > 3){
+                        moveFrameGap--;
+                        thresh += (thresh - 1) / 2;
+                    }                    
+                    curTime += 1 * Math.exp(-0.08 * (snakeLength - 1)) / (14 / boardX) + 1.5;
+                }
+                else{
+                    if (snakeLength >= thresh && moveFrameGap > 2){
+                        moveFrameGap--;
+                        thresh += (thresh + 2) / 3;
+                    }
+                    curTime += 2 * Math.exp(-0.14 * (snakeLength - 1)) / (14 / boardX) + 1;
+                }
+                
+            }
         }
-        else{
-            // only removes tail if not eating an apple
+        if (board[y + dy][x + dx].status != app || snakeLength > maxSnakeLength){
+            // only removes tail if not eating an apple & less than max length
             board[snakeTail.location[1]][snakeTail.location[0]].status = wall;
             snakeTail = snakeTail.next;
             snakeTail.prev = null;
@@ -264,11 +291,55 @@ function createApple(){
 
 
 function changeScore(amt, mode){
+    let tempScore = 0;
+
+    // quarter done
+    if (snakeLength == Math.floor((boardX * boardY) / 4)){
+        baseMult *= 1.25;
+    }
+    // half done
+    if (snakeLength == Math.floor((boardX * boardY) / 2)){
+        baseMult *= 1.5;
+    }
+    // 3 / 4 done?
+    if (snakeLength == Math.floor((boardX * boardY) / 1.5)){
+        baseMult *= 2;
+    }
+
+    if (!evilMode){
+        if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
+            baseMult *= 1.2;
+        }
+        if (snakeLength % 10 == 0) baseMult += 0.2;
+    }
+    if (evilMode){
+        if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
+            baseMult *= 1.4;
+        }
+        baseMult += 0.1;
+    }
+    if (isTimed){
+        baseMult += 0.02;
+    }
+    //how to assign score???
+
+    // Normal, regular
+    // +1 per 1 (normal)
+    // Multiplier after certain point (maybe +0.1 to multiplier per boardx + boardy score?)
+
     // 1 add | 2 subtract | 3 multiply | 4 divide
     if (mode == "add" || mode == "1"){
-        score += amt;
+        tempScore += amt;
     }
-    scoreBoard.innerText = score;
+    if (mode == "subtract" || mode == "2"){
+        tempScore -= amt;
+    }
+
+    tempScore = tempScore * baseMult;
+
+    score += tempScore;
+
+    scoreBoard.innerText = Number(score.toFixed(5)).toString();
 }
 
 function gameOver(){
@@ -293,7 +364,7 @@ function update(){
 // home.appendChild(startButton);
 
 
-const slider = document.getElementById("difficulty");
+const dSlider = document.getElementById("difficulty");
 
 const babyPic = document.getElementById("baby");
 const snakePic = document.getElementById("evilsnake")
@@ -302,14 +373,14 @@ evilMode = false;
 
 function updateColour(){
     if (!evilMode){
-        const r = Math.round((slider.value - 1) * 255 / 4);
-        const g = 255 - Math.round((slider.value - 1) * 255 / 4);
-        slider.style.accentColor = `rgb(${r}, ${g}, 0)`;
+        const r = Math.round((dSlider.value - 1) * 255 / 4);
+        const g = 255 - Math.round((dSlider.value - 1) * 255 / 4);
+        dSlider.style.accentColor = `rgb(${r}, ${g}, 0)`;
 
-        if (+slider.value == slider.min){
+        if (+dSlider.value == dSlider.min){
             babyPic.style.display = "block";
         }
-        else if (+slider.value == slider.max){
+        else if (+dSlider.value == dSlider.max){
             snakePic.style.display = "block";
         }
         else{
@@ -321,12 +392,12 @@ function updateColour(){
         babyPic.style.display = "none";
         snakePic.style.display = "none";
         const c = 255;
-        const gb = 255 - Math.round((slider.value - 1) * 255 / 4);        
-        slider.style.accentColor = `rgb(${c}, ${gb}, ${gb})`;
+        const gb = 255 - Math.round((dSlider.value - 1) * 255 / 4);        
+        dSlider.style.accentColor = `rgb(${c}, ${gb}, ${gb})`;
     }
 }
 
-slider.addEventListener("input", updateColour);
+dSlider.addEventListener("input", updateColour);
 
 updateColour();
 
@@ -351,8 +422,23 @@ function homeMenu(){
     gameMain.style.display = "none";
 }
 
-function timedManagement(){
-    let curTime = 5;
+function onScreenCount(c){
+    let c2 = c / 1000
+    countdown.style.display = "block";
+    let countdownInterval = setInterval(() => {
+        countdown.innerText = c2.toFixed(2);
+        c2 -= 0.01;
+        if (c2 <= 0){            
+            clearInterval(countdownInterval);            
+            countdown.innerText = "0.00";   
+            countdown.style.display = "none";                         
+        }
+
+    }, 10);
+}
+
+function timedManagement(){    
+    //curTime
 
     timerInterval = setInterval(() => {
         timer.textContent = curTime.toFixed(2);
@@ -363,11 +449,8 @@ function timedManagement(){
             gameOver();            
         }
 
-    }, 10);
-
-
+    }, 10);    
 }
-
 
 function sleep(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -390,6 +473,7 @@ async function startGame(mode){
 
     lastMove = sdown;
 
+    snakeLength = 1;
     score = 1;
     scoreBoard.innerText = score;
 
@@ -400,15 +484,18 @@ async function startGame(mode){
 
     lowerText.innerText = "";
 
+    //Score stuff
+    baseMult = 1;
 
     //+ Converts slider.value into a number
-    difValue = +slider.value;
+    difValue = +dSlider.value;
     // Adjusts slider so max and min values are extreme
-    if (difValue == slider.min){
+    if (difValue == dSlider.min){
         difValue -= 0.01;
     }
-    else if (difValue == slider.max){
+    else if (difValue == dSlider.max){
         difValue += 0.01;
+        //baseMult += 0.05;
     }
 
     //Sets max apples and speed based on difficulty slider
@@ -422,20 +509,26 @@ async function startGame(mode){
 
         boardX = 16;
         boardY = 16;
+
+        //score
+        baseMult *= (dSlider.value) / 3;
     }
     else{
         maxApples = Math.ceil(difValue / 2);
         moveFrameGap = 4
         edgeOdds = Math.ceil(difValue * 10) + 10;
 
-        console.log(20 - difValue + 1);
         boardX = Math.ceil(7 + difValue * 2);
         boardY = Math.ceil(7 + difValue * 2);
-        console.log(boardX);
+
         //moveFrameGap = parseInt(24 - difValue * 4);
+
+        //score
+        //console.log(baseMult);
+        baseMult *= 2 ;//(dSlider.max - dSlider.value) / 3 + 1.5;
     }
 
-    //console.log(moveFrameGap);
+    maxSnakeLength = boardX * boardY;
 
     home.style.display = "none";
     gameMain.style.display = "block";
@@ -460,7 +553,6 @@ async function startGame(mode){
 
     //SPECIAL MODE MODIFIERS || 0 = normal || 1 = timed ||
     if (mode == 0 || mode == 'normal'){
-        //nothing
         isTimed = false;
         timedInterface.style.display = "none";
     }
@@ -470,15 +562,36 @@ async function startGame(mode){
         // Start timer
         // Apples make you go faster + add time to timer
         // When the timer runs out without dying, display special message
+
+        moveFrameGap = 12;
+
+        if ((boardX + boardY) / 2 >= 14){
+            maxApples = 2;
+        }
+        else maxApples = 1;
+
+        if (!evilMode){
+            moveFrameGap += 1;
+            maxSnakeLength = (boardX * boardY) / 8 + (boardX + boardY) / 2
+        }
+        else{
+            moveFrameGap -= 1;
+            maxSnakeLength = (boardX * boardY) / 6 
+        }
+        
+        curTime = (boardX + boardY) / 4;
         isTimed = true;
-        timer.innerText = "0.00";
+        timer.innerText = curTime.toFixed(2);
         timedInterface.style.display = "block";
     }
 
     timerInterval = null;
+    
 
     // Displays board, freezes for a second, then starts timer / game loop
     update();
+
+    onScreenCount(1000);
     await sleep(1000);
 
     if (isTimed) timedManagement();

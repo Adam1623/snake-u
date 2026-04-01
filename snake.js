@@ -132,7 +132,7 @@ document.addEventListener('keydown', function(event){
     }
 
     if (event.key === 'b'){
-        console.log(evilAppleSpots);
+        //console.log(evilAppleSpots);
         //console.log(snakeHead);
         // board.forEach(ca =>{
         //     console.log(ca);
@@ -208,7 +208,6 @@ function moveSnake(){
                 if (snakeLength <= 2){
                     thresh = 3;
                 }
-                //console.log(thresh);
                 if (!evilMode){
                     if (snakeLength >= thresh && moveFrameGap > 3){
                         moveFrameGap--;
@@ -340,6 +339,15 @@ function changeScore(amt, mode){
     score += tempScore;
 
     scoreBoard.innerText = Number(score.toFixed(5)).toString();
+
+    // fun scoreboard fx
+    const fxTime = Math.min(150 + tempScore / 5 , 300);
+    const fxSize = Math.min(34 + tempScore * 2, 90);
+    scoreBoard.style.transition = `${fxTime}ms`;
+    scoreBoard.style.fontSize = `${fxSize}px`;
+    setTimeout(() => {
+        scoreBoard.style.fontSize = `${40 + snakeLength / 5}px`;
+    }, fxTime);
 }
 
 function gameOver(){
@@ -440,9 +448,19 @@ function onScreenCount(c){
 function timedManagement(){    
     //curTime
 
+    
     timerInterval = setInterval(() => {
         timer.textContent = curTime.toFixed(2);
         curTime -= 0.01;
+
+        if (curTime <= 3){
+            timer.style.fontSize = `${40 + (3 - curTime) * 3}px`;
+            timer.style.color = `rgb(${Math.round((3.5 - curTime) * 100)}, 25, 25)`;
+        }
+        else {
+            timer.style.fontSize = "40px";
+            timer.style.removeProperty("color");
+        }
 
         if (curTime <= 0){            
             timer.textContent = "0.00";
@@ -456,10 +474,9 @@ function sleep(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function startGame(mode){
+async function startGame(mode){           
 
     setCostumes();
-    //console.log(evilMode);
     retryB.style.display = "none";
     homeB.style.display = "none";
 
@@ -579,6 +596,10 @@ async function startGame(mode){
             maxSnakeLength = (boardX * boardY) / 6 
         }
         
+        //clean up
+        timer.style.removeProperty("color");
+        timer.style.removeProperty("font-size");
+
         curTime = (boardX + boardY) / 4;
         isTimed = true;
         timer.innerText = curTime.toFixed(2);

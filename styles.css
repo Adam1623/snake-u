@@ -25,6 +25,12 @@ body {
     color: white;
 }
 
+.placeWherever{
+    position: absolute; 
+    left: 50%; 
+    transform: translate(-50%, 0%);
+}
+
 .blackonwhite{
     background-color: black;    
     color: white;

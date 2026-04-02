@@ -10,6 +10,36 @@
 
 <body style="transition: 500ms;">
 
+<!-- <h1 class="wavy-text">Wavy Text</h1> -->
+
+<!-- Wavy text filter thing -->
+<svg width="0" height="0" style="position:absolute;">
+  <defs>
+    <filter id="wavy">
+
+      <feTurbulence id="wave-animation"
+        numOctaves="2"
+        seed="777"
+        baseFrequency="0 0.02">
+      </feTurbulence> 
+
+        <feDisplacementMap
+        in="SourceGraphic"
+        scale="12">
+      </feDisplacementMap>
+    </filter>
+
+    <animate 
+      xlink:href="#wave-animation"
+      attributeName="baseFrequency"
+      dur="180s"
+      values="0 0.01; 0.02 0.01; 0.01 0.01; 0.03 0.01; 0.04 0.01; 0.03 0.01; 0.02 0.02; 0.01 0.01; 0 0.01;"
+      repeatCount="indefinite" />
+  </defs>
+</svg>
+<!-- End of Wavy Text filter thing -->
+
+
 <div class="container" id="home">
     <button class="mainMenu" id="playNormalB" style="margin-inline: 0%; margin-top: 12%; outline: 1px solid white; width: 200px;" onclick="startGame('normal')">Play Normal</button>
     <button class="mainMenu" id="playTimedB" style="margin-left: 5%; margin-top: 12%; outline: 1px solid white; width: 200px" onclick="startGame('timed')">Play Timed</button>
@@ -25,6 +55,7 @@
 <div id="gameplay" style="display: none;">
     <div class="container">Game tick: <div id="ticks"> </div></div>
     <div class="scoreboard placeWherever" style="margin-bottom: 3%; "><div id="scoreboard"></div><div class="placeWherever" style="margin-top: 50px; font-size: 15px;">Score</div></div>
+    <div id="multiplier" class="scoreboard placeWherever" style="margin-top: 5%;"></div>
 
     <div id="timedMode" style="display: none; margin-top: 3%;">
         <div class="scoreboard placeWherever" id="timer" style="font-weight: bold; margin-top: 3%;">0.00</div>
@@ -32,7 +63,7 @@
 
     <div class="container"><pre id="board" style="font-size: 23px; margin-top: 7%;"> </pre></div>
     <div class="scoreboard"><div id="countdown" style="position: absolute; font-weight: bold; margin-top: 1%;">0.00</div></div>
-    <div id="lowmessage" class="container" style="color:rgb(148, 20, 20); font-size: 35px; font-weight: bold; text-decoration: underline;"> </div>
+    <div id="lowmessage" class="container wavy-text" style="color:rgb(148, 20, 20); font-size: 40px; font-weight: bold; text-decoration: underline;"> </div>
     <div class="container">
         <div id="homeB" style="margin-top: 10px; margin-right: 2%;"><button class="mainMenu"; onclick="homeMenu()">Home</button></div>
         <div id="retryB" data-mode="normal" style="margin-top: 10px; margin-left: 0%;"><button class="mainMenu"; onclick="startGame(null)">Retry</button></div>

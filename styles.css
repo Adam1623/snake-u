@@ -12,6 +12,11 @@ body {
     src: url('./Sixtyfour_Convergence/SixtyfourConvergence-Regular-VariableFont_BLED\,SCAN\,XELA\,YELA.ttf') format('truetype');
 }
 
+/* very important, do not delete EVER */
+.wavy-text {
+  filter: url(#wavy);
+}
+
 /* Used for main menu items */
 .container {
     display: flex; /* Makes the children flex items, putting them on the same line */

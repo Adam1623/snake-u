@@ -6,6 +6,7 @@ const timedInterface = document.getElementById("timedMode");
 //Smaller elements (tick count, scoreboard)
 const ticks = document.getElementById("ticks");
 const scoreBoard = document.getElementById("scoreboard");
+const multiplier = document.getElementById("multiplier");
 const htmlBoard = document.getElementById("board");
 const lowerText = document.getElementById("lowmessage");
 const bd = document.body;
@@ -38,7 +39,7 @@ function cell (status, location, prev, next) {
 
 function setCostumes(){
     if (!evilMode){
-        wall = '⬛';
+        wall = '🟦';
         app = '🍎';
         app2 = '🍏';
         sup = '⬆️';
@@ -108,37 +109,6 @@ function drawBoard(){
     });
 
 }
-
-document.addEventListener('keydown', function(event){
-    if (event.key === 'w'){
-        handleMovement(sup);
-        //board[snakeHead.location[1]][snakeHead.location[0]].status = '^';
-
-    }
-
-    if (event.key === 'a'){
-        handleMovement(sleft);
-        //board[snakeHead.location[1]][snakeHead.location[0]].status = '<';
-    }
-
-    if (event.key === 's'){
-        handleMovement(sdown);
-        //board[snakeHead.location[1]][snakeHead.location[0]].status = 'v';
-    }
-
-    if (event.key === 'd'){
-        handleMovement(sright);
-        //board[snakeHead.location[1]][snakeHead.location[0]].status = '>';
-    }
-
-    if (event.key === 'b'){
-        //console.log(evilAppleSpots);
-        //console.log(snakeHead);
-        // board.forEach(ca =>{
-        //     console.log(ca);
-        // });
-    }
-});
 
 function handleMovement(dir){
     // 1 up - 2 left - 3 down - 4 right
@@ -351,11 +321,27 @@ function changeScore(amt, mode){
 }
 
 function gameOver(){
+    //Stops controls
+    gameControls.abort();
     lowerText.innerText = "You lost!";     
     clearInterval(gameId);
     if (timerInterval) clearInterval(timerInterval);
     retryB.style.display = "flex";
     homeB.style.display = "flex";
+    window.focus();
+    //Enables quick restart
+    if (quickRestart) window.addEventListener('keydown', handleFastReset);
+}
+
+//It's a function??? It's just weird looking
+let handleFastReset = function(event){
+
+    if (event.code === 'Space'){
+        event.preventDefault();                        
+        startGame(null);
+        console.log('Spacebar was pressed!'); 
+        window.removeEventListener('keydown', handleFastReset);
+    }
 }
 
 function update(){
@@ -365,12 +351,6 @@ function update(){
     createApple();
     moveSnake();
 }
-
-// const startButton = document.createElement("button");
-// startButton.textContent = "Play";
-// startButton.addEventListener("click", startGame);
-// home.appendChild(startButton);
-
 
 const dSlider = document.getElementById("difficulty");
 
@@ -415,17 +395,16 @@ function switchExtreme(){
     document.getElementById("playNormalB").classList.toggle("blackonwhite");
     document.getElementById("playTimedB").classList.toggle("blackonwhite");
 
-    //scoreBoard.style.color = "white";
     scoreBoard.classList.toggle("blackonwhite");    
 
     evilMode = !evilMode;
-
-    //setCostumes();
 
     updateColour();
 }
 
 function homeMenu(){
+    //Clears reset listener, in case it wasn't pressed (can be reset button or home button)
+    window.removeEventListener('keydown', handleFastReset);
     home.style.display = "flex";
     gameMain.style.display = "none";
 }
@@ -473,6 +452,9 @@ function timedManagement(){
 function sleep(ms){
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+// Placeholder, I guess it's a setting you can toggle 
+quickRestart = true;
 
 async function startGame(mode){           
 
@@ -532,7 +514,9 @@ async function startGame(mode){
     }
     else{
         maxApples = Math.ceil(difValue / 2);
-        moveFrameGap = 4
+        moveFrameGap = Math.floor(6 - difValue / 5);
+        console.log(difValue);
+        console.log(moveFrameGap);
         edgeOdds = Math.ceil(difValue * 10) + 10;
 
         boardX = Math.ceil(7 + difValue * 2);
@@ -608,6 +592,43 @@ async function startGame(mode){
 
     timerInterval = null;
     
+
+    gameControls = new AbortController();
+    
+    document.addEventListener('keydown', function(event){
+        event.preventDefault();
+        if (event.key === 'w'){               
+            handleMovement(sup);
+            //board[snakeHead.location[1]][snakeHead.location[0]].status = '^';
+
+        }
+
+        if (event.key === 'a'){
+            handleMovement(sleft);
+            //board[snakeHead.location[1]][snakeHead.location[0]].status = '<';
+        }
+
+        if (event.key === 's'){
+            handleMovement(sdown);
+            //board[snakeHead.location[1]][snakeHead.location[0]].status = 'v';
+        }
+
+        if (event.key === 'd'){
+            handleMovement(sright);
+            //board[snakeHead.location[1]][snakeHead.location[0]].status = '>';
+        }
+
+        if (event.key === 'b'){
+            //console.log(evilAppleSpots);
+            //console.log(snakeHead);
+            // board.forEach(ca =>{
+            //     console.log(ca);
+            // });
+        }
+    }, {signal: gameControls.signal});
+
+    //Clears reset listener, in case it wasn't pressed
+    window.removeEventListener('keydown', handleFastReset);
 
     // Displays board, freezes for a second, then starts timer / game loop
     update();

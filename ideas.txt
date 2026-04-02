@@ -21,6 +21,7 @@ snake account
 EXTREME MODE
 YOU HAVE TO SPEND SNAKE POINTS TO PLAY EXTREME
 WAGER POINTS ON EXTREME
+- heat filter the higher the difficulty?
 - apples spawn on edges
 - randomly spawning fire?
 - flashing colour?
@@ -28,6 +29,10 @@ WAGER POINTS ON EXTREME
 
 - difficulty : apples spawn on edge based on dif : board size : fire spawns : SPEED STAYS THE SAME
 
+NEW MODE
+- wavy filter
+- filter gets stronger the longer you survive
+- score increases the longer you survive
 
 NEW MODE
 - time limit

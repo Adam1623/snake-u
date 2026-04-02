@@ -39,7 +39,7 @@ function cell (status, location, prev, next) {
 
 function setCostumes(){
     if (!evilMode){
-        wall = '🟦';
+        wall = '⬛';
         app = '🍎';
         app2 = '🍏';
         sup = '⬆️';

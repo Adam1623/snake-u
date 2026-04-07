@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
 
 <head> 
 <meta charset="UTF-8">
@@ -11,6 +11,43 @@
 <body style="transition: 500ms;">
 
 <!-- <h1 class="wavy-text">Wavy Text</h1> -->
+
+<!-- Fire effect -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <filter id="fire">
+      <!-- Base turbulence for the heat waves -->
+      <feTurbulence 
+        id="heat-wave"
+        type="fractalNoise"
+        baseFrequency="0.2 0.1"
+        numOctaves="3"
+        seed="666"
+        result="turbulence" />
+      
+      <!-- Animate the turbulence to move upwards and fluctuate -->    
+      <animate 
+        xlink:href="#heat-wave"
+        attributeName="baseFrequency"
+        dur="4s"
+        values= "0.02 0.1; 0.03 0.12; 0.01 0.08; 0.02 0.1" 
+
+        repeatCount="indefinite" />
+
+      <!-- Use turbulence to displace the text -->
+      <feDisplacementMap 
+        in="SourceGraphic" 
+        in2="turbulence" 
+        scale="3" 
+        xChannelSelector="R" 
+        yChannelSelector="G" />
+      
+      <!-- Optional: slight blur for smooth heat shimmer -->
+      <feGaussianBlur stdDeviation="0.2" />
+    </filter>
+  </defs>
+</svg>
+
 
 <!-- Wavy text filter thing -->
 <svg width="0" height="0" style="position:absolute;">
@@ -46,22 +83,34 @@
     <label for="difficulty" style="margin-inline: 100%; font-size: 30px; margin-top: 30px; margin-bottom: 20px; pointer-events: none;">Difficulty</label>
     <input type="range" id="difficulty" style="pointer-events:fill; width: 15vw; transform: scale(2); accent-color: white;" min="1" max="5" step="0.001" value="3">
 
-    <button class="mainMenu extremeButton" id="extremeB" style="margin-inline: 75%; margin-top: 3%;" onclick="switchExtreme()">💀EXTREME MODE💀</button>
+    <div id="evilBg" class="evilBg" style="opacity: 0.0;"></div>
+
+    <button class="mainMenu extremeButton" id="extremeB" style="margin-inline: 75%; margin-top: 3%;" onclick="switchExtreme()"><div class="fire-text">💀EXTREME MODE💀</div></button>
 
     <div style="display: none; margin-inline: 100%; margin-top: 5%;" id="baby"><img src="baby.png" alt="Baby" height="200px" width="auto"></div>
     <div style="display: none; margin-inline: 100%; margin-top: 5%;" id="evilsnake"><img src="evilsnake.png" alt="Evil Snake" height="200px" width="auto"></div>
 </div>
 
 <div id="gameplay" style="display: none;">
-    <div class="container">Game tick: <div id="ticks"> </div></div>
-    <div class="scoreboard placeWherever" style="margin-bottom: 3%; "><div id="scoreboard"></div><div class="placeWherever" style="margin-top: 50px; font-size: 15px;">Score</div></div>
-    <div id="multiplier" class="scoreboard placeWherever" style="margin-top: 5%;"></div>
+    <!-- Game tick -->
+    <div class="container" style="display: none;">Game tick: <div id="ticks"> </div></div>
 
-    <div id="timedMode" style="display: none; margin-top: 3%;">
-        <div class="scoreboard placeWherever" id="timer" style="font-weight: bold; margin-top: 3%;">0.00</div>
+    <!-- Scoreboard -->
+    <div class="scoreboard placeWherever" style="margin-bottom: 3%;">
+      <!-- Score value -->
+      <div id="scoreboard"></div>
+      <!-- Score text -->
+      <div class="placeWherever" style="margin-top: 50px; font-size: 15px;">Score</div>
+      <!-- Multiplier value -->
+      <div class="placeWherever" id="multiplier" style="font-size: 15px; left: 50px; top: 0px; white-space: nowrap;">x 1.0</div> 
     </div>
 
-    <div class="container"><pre id="board" style="font-size: 23px; margin-top: 7%;"> </pre></div>
+
+    <div id="timedMode" style="display: none; margin-top: 0%;">
+        <div class="scoreboard placeWherever" id="timer" style="font-weight: bold; margin-top: 75px;">0.00</div>
+    </div>
+
+    <div class="container"><pre id="board" style="font-size: 20px;"> </pre></div>
     <div class="scoreboard"><div id="countdown" style="position: absolute; font-weight: bold; margin-top: 1%;">0.00</div></div>
     <div id="lowmessage" class="container wavy-text" style="color:rgb(148, 20, 20); font-size: 40px; font-weight: bold; text-decoration: underline;"> </div>
     <div class="container">

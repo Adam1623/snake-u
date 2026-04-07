@@ -17,11 +17,29 @@ body {
   filter: url(#wavy);
 }
 
+.fire-text {
+    filter: url(#fire);
+}
+
 /* Used for main menu items */
 .container {
     display: flex; /* Makes the children flex items, putting them on the same line */
     flex-wrap: wrap;
     justify-content: center; /* Centers divs within the container */
+}
+
+.evilBg{  
+    transition: 500ms;
+    top: 0;
+    left: 0;
+    position: absolute;
+    z-index: -1;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("lava.gif");
+    background-size: cover;     
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 .extremeMenu{

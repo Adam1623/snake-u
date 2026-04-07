@@ -17,8 +17,14 @@ const countdown = document.getElementById("countdown");
 const retryB = document.getElementById("retryB");
 const homeB = document.getElementById("homeB");
 
+const evilBg = document.getElementById("evilBg");
 
+const dSlider = document.getElementById("difficulty");
 
+const babyPic = document.getElementById("baby");
+const snakePic = document.getElementById("evilsnake");
+
+evilMode = false;
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -39,7 +45,7 @@ function cell (status, location, prev, next) {
 
 function setCostumes(){
     if (!evilMode){
-        wall = '⬛';
+        wall = '⬛'; //🟦
         app = '🍎';
         app2 = '🍏';
         sup = '⬆️';
@@ -296,12 +302,15 @@ function changeScore(amt, mode){
     // +1 per 1 (normal)
     // Multiplier after certain point (maybe +0.1 to multiplier per boardx + boardy score?)
 
-    // 1 add | 2 subtract | 3 multiply | 4 divide
+    // 1 add | 2 subtract | 3 multiply | 4 divide | 5 flat (no mult add)
     if (mode == "add" || mode == "1"){
         tempScore += amt;
     }
     if (mode == "subtract" || mode == "2"){
         tempScore -= amt;
+    }
+    if (mode == "flat" || mode == "5"){
+        score += amt;
     }
 
     tempScore = tempScore * baseMult;
@@ -309,6 +318,10 @@ function changeScore(amt, mode){
     score += tempScore;
 
     scoreBoard.innerText = Number(score.toFixed(5)).toString();
+
+    multiplier.innerText = `x${baseMult.toFixed(2)}`;
+    multiplier.style.left = `${scoreBoard.getBoundingClientRect().width + 30}px`;
+    multiplier.style.top = `${scoreBoard.getBoundingClientRect().height / 3}px`;
 
     // fun scoreboard fx
     const fxTime = Math.min(150 + tempScore / 5 , 300);
@@ -352,13 +365,6 @@ function update(){
     moveSnake();
 }
 
-const dSlider = document.getElementById("difficulty");
-
-const babyPic = document.getElementById("baby");
-const snakePic = document.getElementById("evilsnake")
-
-evilMode = false;
-
 function updateColour(){
     if (!evilMode){
         const r = Math.round((dSlider.value - 1) * 255 / 4);
@@ -383,6 +389,8 @@ function updateColour(){
         const gb = 255 - Math.round((dSlider.value - 1) * 255 / 4);        
         dSlider.style.accentColor = `rgb(${c}, ${gb}, ${gb})`;
     }
+    //lil bonus to update bg fire image 
+    evilBg.style.opacity = evilMode === true ? dSlider.value / 4 - 0.25: 0.0;
 }
 
 dSlider.addEventListener("input", updateColour);
@@ -473,7 +481,8 @@ async function startGame(mode){
     lastMove = sdown;
 
     snakeLength = 1;
-    score = 1;
+    //score starts at 0, but it adds 1 at the start
+    score = 0;
     scoreBoard.innerText = score;
 
     moveCount = 0;
@@ -515,8 +524,7 @@ async function startGame(mode){
     else{
         maxApples = Math.ceil(difValue / 2);
         moveFrameGap = Math.floor(6 - difValue / 5);
-        console.log(difValue);
-        console.log(moveFrameGap);
+
         edgeOdds = Math.ceil(difValue * 10) + 10;
 
         boardX = Math.ceil(7 + difValue * 2);
@@ -525,7 +533,6 @@ async function startGame(mode){
         //moveFrameGap = parseInt(24 - difValue * 4);
 
         //score
-        //console.log(baseMult);
         baseMult *= 2 ;//(dSlider.max - dSlider.value) / 3 + 1.5;
     }
 
@@ -556,6 +563,8 @@ async function startGame(mode){
     if (mode == 0 || mode == 'normal'){
         isTimed = false;
         timedInterface.style.display = "none";
+        console.log(window.innerHeight);
+        htmlBoard.style.marginTop = "85px";
     }
     else if (mode == 1 || mode == 'timed'){
         // TIMED MODE
@@ -563,6 +572,8 @@ async function startGame(mode){
         // Start timer
         // Apples make you go faster + add time to timer
         // When the timer runs out without dying, display special message
+
+        htmlBoard.style.marginTop = "130px";
 
         moveFrameGap = 12;
 
@@ -632,6 +643,8 @@ async function startGame(mode){
 
     // Displays board, freezes for a second, then starts timer / game loop
     update();
+
+    changeScore(0, 'flat')
 
     onScreenCount(1000);
     await sleep(1000);

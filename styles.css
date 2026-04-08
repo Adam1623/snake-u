@@ -12,6 +12,31 @@ body {
     src: url('./Sixtyfour_Convergence/SixtyfourConvergence-Regular-VariableFont_BLED\,SCAN\,XELA\,YELA.ttf') format('truetype');
 }
 
+.shimmer-text {
+  font-size: 32px;
+  font-family: "Montserrat", sans-serif;
+  font-weight: 600;
+  text-transform: uppercase;
+  --c1: #ffffff;
+  --c2: #5E5E5E;
+  --c3: #ffffff;
+  --dur: 5s;
+  background: linear-gradient(135deg, var(--c1), var(--c2), var(--c3));
+  background-clip: text;
+  color: transparent;
+  background-size: 200% 100%;
+  animation: shimmer var(--dur) linear infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
 /* very important, do not delete EVER */
 .wavy-text {
   filter: url(#wavy);

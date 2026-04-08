@@ -269,33 +269,35 @@ function changeScore(amt, mode){
     let tempScore = 0;
 
     // quarter done
-    if (snakeLength == Math.floor((boardX * boardY) / 4)){
-        baseMult *= 1.25;
+    if (snakeLength == Math.floor((boardX * boardY) / 4)){        
+        changeMult(1.25, "multiply");
     }
     // half done
     if (snakeLength == Math.floor((boardX * boardY) / 2)){
-        baseMult *= 1.5;
+        changeMult(1.5, "multiply");
     }
     // 3 / 4 done?
     if (snakeLength == Math.floor((boardX * boardY) / 1.5)){
-        baseMult *= 2;
+        changeMult(2, "multiply");
     }
 
     if (!evilMode){
         if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
-            baseMult *= 1.2;
+            changeMult(1.2, "multiply");
         }
-        if (snakeLength % 10 == 0) baseMult += 0.2;
+        if (snakeLength % 10 == 0) changeMult(0.2, "add");
     }
     if (evilMode){
         if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
             baseMult *= 1.4;
+            changeMult(1.4, "multiply");
         }
-        baseMult += 0.1;
+        changeMult(0.1, "add");
     }
     if (isTimed){
-        baseMult += 0.02;
+        changeMult(0.2, "add");
     }
+
     //how to assign score???
 
     // Normal, regular
@@ -306,10 +308,10 @@ function changeScore(amt, mode){
     if (mode == "add" || mode == "1"){
         tempScore += amt;
     }
-    if (mode == "subtract" || mode == "2"){
+    else if (mode == "subtract" || mode == "2"){
         tempScore -= amt;
     }
-    if (mode == "flat" || mode == "5"){
+    else if (mode == "flat" || mode == "5"){
         score += amt;
     }
 
@@ -319,9 +321,24 @@ function changeScore(amt, mode){
 
     scoreBoard.innerText = Number(score.toFixed(5)).toString();
 
+    const r = Math.min(240, baseMult * 10);
+    const g = Math.min(200, baseMult * 8);
+    const multColour = `rgb(${r}, ${g}, 0)`;    
+
+    // Makes multiplier shiny once you max out the gold hue
+    if (r >= 240){
+        multiplier.style.removeProperty("color");
+        multiplier.style.setProperty("--c1", "#b18700");
+        multiplier.style.setProperty("--c2", "#ffe77d");
+        multiplier.style.setProperty("--c3", "#b18700");
+    } 
+    else {multiplier.style.color = multColour;}
+    multiplier.style.color = "#FFFFFF";
+
+    multiplier.style.fontSize = `${Math.min(baseMult * 2 + 14, 35)}px`
     multiplier.innerText = `x${baseMult.toFixed(2)}`;
-    multiplier.style.left = `${scoreBoard.getBoundingClientRect().width + 30}px`;
-    multiplier.style.top = `${scoreBoard.getBoundingClientRect().height / 3}px`;
+    multiplier.style.left = `${scoreBoard.getBoundingClientRect().width + 15 + multiplier.getBoundingClientRect().width / 2}px`;
+    multiplier.style.top = `${(scoreBoard.getBoundingClientRect().height / 2) - multiplier.getBoundingClientRect().height / 1.8}px`;
 
     // fun scoreboard fx
     const fxTime = Math.min(150 + tempScore / 5 , 300);
@@ -331,6 +348,26 @@ function changeScore(amt, mode){
     setTimeout(() => {
         scoreBoard.style.fontSize = `${40 + snakeLength / 5}px`;
     }, fxTime);
+}
+
+function changeMult(amt, mode){
+    let tempMult = 0;
+    // 1 add | 2 subtract | 3 multiply | 4 divide | 5 flat (no mult add)
+    if (mode == "add" || mode == "1"){
+        tempMult += amt;
+    }
+    else if (mode == "subtract" || mode == "2"){
+        tempMult -= amt;
+    }
+    else if (mode == "multiply" || mode == "3"){
+        tempMult = baseMult * amt - baseMult;        
+    }
+    else if (mode == "flat" || mode == "5"){
+        baseMult += amt;
+    }
+
+    baseMult += tempMult;    
+
 }
 
 function gameOver(){
@@ -503,7 +540,7 @@ async function startGame(mode){
     }
     else if (difValue == dSlider.max){
         difValue += 0.01;
-        //baseMult += 0.05;
+        changeMult(0.1, "add");        
     }
 
     //Sets max apples and speed based on difficulty slider
@@ -519,7 +556,7 @@ async function startGame(mode){
         boardY = 16;
 
         //score
-        baseMult *= (dSlider.value) / 3;
+        changeMult(dSlider.value / 3, "multiply");        
     }
     else{
         maxApples = Math.ceil(difValue / 2);
@@ -533,7 +570,7 @@ async function startGame(mode){
         //moveFrameGap = parseInt(24 - difValue * 4);
 
         //score
-        baseMult *= 2 ;//(dSlider.max - dSlider.value) / 3 + 1.5;
+        changeMult(2, "multiply");        
     }
 
     maxSnakeLength = boardX * boardY;
@@ -607,7 +644,6 @@ async function startGame(mode){
     gameControls = new AbortController();
     
     document.addEventListener('keydown', function(event){
-        event.preventDefault();
         if (event.key === 'w'){               
             handleMovement(sup);
             //board[snakeHead.location[1]][snakeHead.location[0]].status = '^';

@@ -24,7 +24,19 @@ const dSlider = document.getElementById("difficulty");
 const babyPic = document.getElementById("baby");
 const snakePic = document.getElementById("evilsnake");
 
+//Mobile controls
+const mobileControls = document.getElementById("mobileControls");
+const innerJoystick = document.getElementById("innerJoystick");
+
+
 evilMode = false;
+
+// debug event listener for testing
+// document.addEventListener('keydown', function(event){
+//     console.log("evejn");
+//         if (event.key === 'p'){                                       
+//             changeMult(1, "add");
+//         }});
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -321,19 +333,35 @@ function changeScore(amt, mode){
 
     scoreBoard.innerText = Number(score.toFixed(5)).toString();
 
-    const r = Math.min(240, baseMult * 10);
-    const g = Math.min(200, baseMult * 8);
-    const multColour = `rgb(${r}, ${g}, 0)`;    
+    const multColourChangeThresh = 5;
 
-    // Makes multiplier shiny once you max out the gold hue
-    if (r >= 240){
+    let r = Math.min(240, baseMult * (240 / multColourChangeThresh));
+    let g = Math.min(200, baseMult * (200 / multColourChangeThresh));
+    let b = 0;
+    if (evilMode){
+        r = baseMult * (255 / multColourChangeThresh);
+        g = r;
+        b = r;
+    }
+    const multColour = `rgb(${r}, ${g}, ${b})`;    
+
+    // Makes multiplier shiny once you hit the threshold
+    if (baseMult >= multColourChangeThresh){
         multiplier.style.removeProperty("color");
-        multiplier.style.setProperty("--c1", "#b18700");
-        multiplier.style.setProperty("--c2", "#ffe77d");
-        multiplier.style.setProperty("--c3", "#b18700");
+        if (!multiplier.classList.contains("shimmer-text")) {multiplier.classList.add("shimmer-text");}
+        if (!evilMode){
+            multiplier.style.setProperty("--c1", "#b18700");
+            multiplier.style.setProperty("--c2", "#ffe77d");
+            multiplier.style.setProperty("--c3", "#b18700");
+        }
+        else{
+            multiplier.style.setProperty("--c1", "#ffffff");
+            multiplier.style.setProperty("--c2", "#797979");
+            multiplier.style.setProperty("--c3", "#ffffff");
+        }
     } 
     else {multiplier.style.color = multColour;}
-    multiplier.style.color = "#FFFFFF";
+    //multiplier.style.color = "#FFFFFF";
 
     multiplier.style.fontSize = `${Math.min(baseMult * 2 + 14, 35)}px`
     multiplier.innerText = `x${baseMult.toFixed(2)}`;
@@ -432,6 +460,10 @@ function updateColour(){
 
 dSlider.addEventListener("input", updateColour);
 
+document.getElementById("extremeB").addEventListener("click", () => {
+    document.getElementById("extremeB").classList.toggle("extremeButtonON");
+});
+
 updateColour();
 
 function switchExtreme(){    
@@ -452,6 +484,7 @@ function homeMenu(){
     window.removeEventListener('keydown', handleFastReset);
     home.style.display = "flex";
     gameMain.style.display = "none";
+    mobileControls.style.display = "none";
 }
 
 function onScreenCount(c){
@@ -577,6 +610,11 @@ async function startGame(mode){
 
     home.style.display = "none";
     gameMain.style.display = "block";
+
+    if (true){
+        mobileControls.style.display = "block";
+    }
+
     makeBoard(boardX, boardY);
 
     // Finds edges of board, saves the locations to evilAppleSpots
@@ -673,6 +711,29 @@ async function startGame(mode){
             // });
         }
     }, {signal: gameControls.signal});
+
+
+    //Mobile controls 
+    document.addEventListener('touchmove', function(event){
+        event.preventDefault();
+        //gets outer circle (jotstick container)
+        const rect = mobileControls.getBoundingClientRect();
+
+        //calculates based on joystick position on screen
+        const x = event.touches[0].clientX - rect.left;
+        const y = event.touches[0].clientY - rect.top;
+
+        //still needs to convert to magnitude from -1 to 1, and then different scale for visual display
+        innerJoystick.style.left = x + "px";
+        innerJoystick.style.top = y + "px";
+
+        //event.preventDefault();
+        // console.log(event.touches[0].screenX);
+        // innerJoystick.style.top = `${event.touches[0].clientY}px`;        
+        // innerJoystick.style.left = `${event.touches[0].clientX}px`;
+
+    }, {signal: gameControls.signal, passive: false});
+
 
     //Clears reset listener, in case it wasn't pressed
     window.removeEventListener('keydown', handleFastReset);

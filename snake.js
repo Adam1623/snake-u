@@ -37,11 +37,11 @@ const innerJoystick = document.getElementById("innerJoystick");
 evilMode = false;
 
 // debug event listener for testing
-document.addEventListener('keydown', function(event){    
-        if (event.key === 'p'){                                       
-                tooltip1.innerHTML = "<h2> Pro tip! </h2> press space bar <br> to restart instantly";
-            tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
-        }});
+// document.addEventListener('keydown', function(event){    
+//         if (event.key === 'p'){                                       
+//                 tooltip1.innerHTML = "<h2> Pro tip! </h2> press space bar <br> to restart instantly";
+//             tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
+//         }});
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -402,9 +402,23 @@ function gameOver(){
     retryB.style.display = "flex";
     homeB.style.display = "flex";
     window.focus();
-    //show quick restart tip 
-    tooltip1.innerHTML = "<h2> Pro tip! </h2> press space bar <br> to restart instantly";
-    tooltip1.style.display = "flex";    
+    //reset joystick
+    if (isMobile){
+        mobileControls.style.display = "none";
+        mobileControls.style.left = "75%";
+        mobileControls.style.top = "30%";
+        innerJoystick.style.left = "25%";        
+        innerJoystick.style.top = "25%";
+        mobileControls.opacity = 0.8;
+
+    }
+
+    //show quick restart tip (not on mobile though)
+    if (!isMobile)
+    {
+        tooltip1.innerHTML = "<h2> Pro tip! </h2> press space bar <br> to restart instantly";
+        tooltip1.style.display = "flex";    
+    }
     //Enables quick restart
     if (quickRestart) window.addEventListener('keydown', handleFastReset);
 }
@@ -615,7 +629,8 @@ async function startGame(mode){
     home.style.display = "none";
     gameMain.style.display = "block";
 
-    if (navigator.userAgentData.mobile){
+    isMobile = navigator.userAgentData.mobile;
+    if (isMobile){
         mobileControls.style.display = "block";
     }
     else {mobileControls.style.display = "none";}
@@ -712,9 +727,9 @@ async function startGame(mode){
     }, {signal: gameControls.signal});
 
     //Mobile controls, only appear if mobile detected
-    if (navigator.userAgentData.mobile){
-        document.addEventListener('touchmove', function(event){
-            event.preventDefault();
+    if (isMobile){
+
+        function moveInnerJoystick(event){
             //gets outer circle (joystick container)
             const rect = mobileControls.getBoundingClientRect();
 
@@ -724,25 +739,55 @@ async function startGame(mode){
             //calculates based on joystick position on screen
             const x = Math.floor(rect.width / 2 * magX + rect.width / 2) / 2;
             const y = Math.floor(rect.height / 2 * magY + rect.height / 2) / 2;
-
-            //still needs to convert to magnitude from -1 to 1, and then different scale for visual display
+           
             innerJoystick.style.left = x + "px";
             innerJoystick.style.top = y + "px";
 
-            const dir = Math.abs(magX) > Math.abs(magY) ? magX: magY;
-
+            // Check which direction is stronger, so only 4 directions are considered
+            // Nested if simulates deadzone, can be increased / decreased
             if (Math.abs(magX) > Math.abs(magY)){ //more x than y, so left / right
-                magX >= 0 ? handleMovement(sright): handleMovement(sleft);
+                if (Math.abs(magX) > 0.1) magX >= 0 ? handleMovement(sright): handleMovement(sleft);
             }
             else{ //more y than x, so up / down
-                magY >= 0 ? handleMovement(sdown): handleMovement(sup);
+                if (Math.abs(magY) > 0.1) magY >= 0 ? handleMovement(sdown): handleMovement(sup);
             }
+        }
+
+        document.addEventListener('touchmove', function(event){
+            event.preventDefault();
+            moveInnerJoystick(event);
+        }, {signal: gameControls.signal, passive: false});
+
+        //moves joystick to touched position
+        document.addEventListener('touchstart', function(event){
+            event.preventDefault();
+
+            const x = event.touches[0].clientX;
+            const y = event.touches[0].clientY;
+
+            const rect = mobileControls.getBoundingClientRect();
+            const left = rect.left;
+            const right = rect.right;
+            const top = rect.top;
+            const bottom = rect.bottom;
+
+            //If outside joystick area, move it to cursor
+            if (x > right || x < left || y < top || y > bottom){
+                mobileControls.style.left = event.touches[0].clientX - (mobileControls.getBoundingClientRect().width / 2);
+                mobileControls.style.top = event.touches[0].clientY - (mobileControls.getBoundingClientRect().height / 2);
+                innerJoystick.style.left = "25%";        
+                innerJoystick.style.top = "25%";
+            }            
+            else {moveInnerJoystick(event);}
+
+            mobileControls.style.opacity = 0.7;
         }, {signal: gameControls.signal, passive: false});
 
         // resets joystick position after releasing
         document.addEventListener('touchend', function(event){
             innerJoystick.style.left = "25%";        
             innerJoystick.style.top = "25%";
+            mobileControls.style.opacity = 0.2;
         }, {signal: gameControls.signal, passive: false});
     }
 

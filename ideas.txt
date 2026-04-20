@@ -2,6 +2,8 @@ TODO:
 - multiplier fun fx
 - space bar quick restart obvious to player
 - move html filters into separate file (chat basically)
+- logo
+- good looking joystick
 
 Fundamentals / back end:
 - have controls behave like a joystick (moves in last held direction)
@@ -20,7 +22,7 @@ upgrades?????????
 daily item shop
 save score somewhere (to buy things)??
 snake account
-
+give option to watch ad after dying to recieve DOUBLE snake points (so you can bask in glory after getting 1 million points and the ad is not that painful)
 
 EXTREME MODE
 YOU HAVE TO SPEND SNAKE POINTS TO PLAY EXTREME

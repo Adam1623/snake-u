@@ -46,6 +46,46 @@ body {
     filter: url(#fire);
 }
 
+.tooltip{
+    font-family: "Button";
+    font-size: 20px;
+    flex-wrap: wrap;
+    position: fixed;
+    display: flex;
+    margin: 0;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    top: 50%;
+    left: 50%; 
+    transform: translate(-50%, -50%);  
+    z-index: 1;
+    color: whitesmoke;
+    background-color: #0000009c;
+    padding: 3% 2%;
+    animation: pop 0.5s ease;
+}
+
+@keyframes pop {
+    0%   { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    50%  { transform: translate(-50%, -50%) scale(1.1); opacity: 1;}
+    70%  { transform: translate(-50%, -50%) scale(0.95); opacity: 1;}
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1;}    
+}
+
+h2{
+    flex-wrap: nowrap;
+    font-size: 40px;
+    margin: 0px;
+    margin-bottom: 25px;
+    font-weight: bold;    
+    flex-basis: 100%;
+    text-decoration: overline underline;
+    padding-top: 2%;
+    background: linear-gradient(90deg, rgba(165, 42, 42, 0.651), rgb(187, 13, 13), rgba(165, 42, 42, 0.651));
+    /* margin-right: 100%; */
+}
+
 /* Used for main menu items */
 .container {
     display: flex; /* Makes the children flex items, putting them on the same line */
@@ -129,7 +169,7 @@ body {
 }
 .extremeButtonON{
     transition: 0ms;
-    border: 4px solid rgb(214, 26, 26);
+    /* border: 4px solid rgb(214, 26, 26); */
     background-image: url('fire.gif'); 
     filter: grayscale(0);
 }

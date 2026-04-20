@@ -13,6 +13,11 @@ const bd = document.body;
 const timer = document.getElementById("timer");
 const countdown = document.getElementById("countdown");
 
+const tooltip1 = document.getElementById("tooltip1");
+
+
+const tooltips = [tooltip1];
+
 //Button div containers (retry, home)
 const retryB = document.getElementById("retryB");
 const homeB = document.getElementById("homeB");
@@ -32,11 +37,11 @@ const innerJoystick = document.getElementById("innerJoystick");
 evilMode = false;
 
 // debug event listener for testing
-// document.addEventListener('keydown', function(event){
-//     console.log("evejn");
-//         if (event.key === 'p'){                                       
-//             changeMult(1, "add");
-//         }});
+document.addEventListener('keydown', function(event){    
+        if (event.key === 'p'){                                       
+                tooltip1.innerHTML = "<h2> Pro tip! </h2> press space bar <br> to restart instantly";
+            tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
+        }});
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -44,16 +49,6 @@ function cell (status, location, prev, next) {
     this.prev = prev;
     this.next = next;
 }
-
-// let board = []
-
-// snake = []  
-
-// score = 1;
-// scoreBoard.innerText = score;
-
-// let snakeHead = null;
-// let snakeTail = null;
 
 function setCostumes(){
     if (!evilMode){
@@ -407,6 +402,9 @@ function gameOver(){
     retryB.style.display = "flex";
     homeB.style.display = "flex";
     window.focus();
+    //show quick restart tip 
+    tooltip1.innerHTML = "<h2> Pro tip! </h2> press space bar <br> to restart instantly";
+    tooltip1.style.display = "flex";    
     //Enables quick restart
     if (quickRestart) window.addEventListener('keydown', handleFastReset);
 }
@@ -417,7 +415,6 @@ let handleFastReset = function(event){
     if (event.code === 'Space'){
         event.preventDefault();                        
         startGame(null);
-        console.log('Spacebar was pressed!'); 
         window.removeEventListener('keydown', handleFastReset);
     }
 }
@@ -485,6 +482,9 @@ function homeMenu(){
     home.style.display = "flex";
     gameMain.style.display = "none";
     mobileControls.style.display = "none";
+    tooltips.forEach(tip => {
+        tip.style.display = "none";
+    });   
 }
 
 function onScreenCount(c){
@@ -539,6 +539,10 @@ async function startGame(mode){
     setCostumes();
     retryB.style.display = "none";
     homeB.style.display = "none";
+
+    tooltips.forEach(tip => {
+        tip.style.display = "none";
+    });   
 
     i = 0;
 
@@ -611,9 +615,10 @@ async function startGame(mode){
     home.style.display = "none";
     gameMain.style.display = "block";
 
-    if (true){
+    if (navigator.userAgentData.mobile){
         mobileControls.style.display = "block";
     }
+    else {mobileControls.style.display = "none";}
 
     makeBoard(boardX, boardY);
 
@@ -638,7 +643,6 @@ async function startGame(mode){
     if (mode == 0 || mode == 'normal'){
         isTimed = false;
         timedInterface.style.display = "none";
-        console.log(window.innerHeight);
         htmlBoard.style.marginTop = "85px";
     }
     else if (mode == 1 || mode == 'timed'){
@@ -685,7 +689,6 @@ async function startGame(mode){
         if (event.key === 'w'){               
             handleMovement(sup);
             //board[snakeHead.location[1]][snakeHead.location[0]].status = '^';
-
         }
 
         if (event.key === 'a'){
@@ -704,36 +707,44 @@ async function startGame(mode){
         }
 
         if (event.key === 'b'){
-            //console.log(evilAppleSpots);
-            //console.log(snakeHead);
-            // board.forEach(ca =>{
-            //     console.log(ca);
-            // });
+            //debug button
         }
     }, {signal: gameControls.signal});
 
+    //Mobile controls, only appear if mobile detected
+    if (navigator.userAgentData.mobile){
+        document.addEventListener('touchmove', function(event){
+            event.preventDefault();
+            //gets outer circle (joystick container)
+            const rect = mobileControls.getBoundingClientRect();
 
-    //Mobile controls 
-    document.addEventListener('touchmove', function(event){
-        event.preventDefault();
-        //gets outer circle (jotstick container)
-        const rect = mobileControls.getBoundingClientRect();
+            const magX = Math.max(-1, Math.min( 1, ((event.touches[0].clientX - rect.left) / rect.width) * 2 - 1));
+            const magY = Math.max(-1, Math.min( 1, ((event.touches[0].clientY - rect.top) / rect.height) * 2 - 1));
 
-        //calculates based on joystick position on screen
-        const x = event.touches[0].clientX - rect.left;
-        const y = event.touches[0].clientY - rect.top;
+            //calculates based on joystick position on screen
+            const x = Math.floor(rect.width / 2 * magX + rect.width / 2) / 2;
+            const y = Math.floor(rect.height / 2 * magY + rect.height / 2) / 2;
 
-        //still needs to convert to magnitude from -1 to 1, and then different scale for visual display
-        innerJoystick.style.left = x + "px";
-        innerJoystick.style.top = y + "px";
+            //still needs to convert to magnitude from -1 to 1, and then different scale for visual display
+            innerJoystick.style.left = x + "px";
+            innerJoystick.style.top = y + "px";
 
-        //event.preventDefault();
-        // console.log(event.touches[0].screenX);
-        // innerJoystick.style.top = `${event.touches[0].clientY}px`;        
-        // innerJoystick.style.left = `${event.touches[0].clientX}px`;
+            const dir = Math.abs(magX) > Math.abs(magY) ? magX: magY;
 
-    }, {signal: gameControls.signal, passive: false});
+            if (Math.abs(magX) > Math.abs(magY)){ //more x than y, so left / right
+                magX >= 0 ? handleMovement(sright): handleMovement(sleft);
+            }
+            else{ //more y than x, so up / down
+                magY >= 0 ? handleMovement(sdown): handleMovement(sup);
+            }
+        }, {signal: gameControls.signal, passive: false});
 
+        // resets joystick position after releasing
+        document.addEventListener('touchend', function(event){
+            innerJoystick.style.left = "25%";        
+            innerJoystick.style.top = "25%";
+        }, {signal: gameControls.signal, passive: false});
+    }
 
     //Clears reset listener, in case it wasn't pressed
     window.removeEventListener('keydown', handleFastReset);

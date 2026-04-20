@@ -1,12 +1,8 @@
 TODO:
-- multiplier fun fx
-- space bar quick restart obvious to player
 - move html filters into separate file (chat basically)
-- logo
-- good looking joystick
 
 Fundamentals / back end:
-- have controls behave like a joystick (moves in last held direction)
+- have keyboard controls behave like a joystick (moves in last held direction)
 - speed up by mashing forwards
 - slow down by mashing backwards?
 - store points somewhere? (round down score, store in user profile)

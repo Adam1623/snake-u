@@ -8,7 +8,7 @@ baby:
 generic
 
 flames:
-https://tracheotommy.wixsite.com/index
+can't find
 
 lava:
 https://www.pinterest.com/pin/lava-the-very-nature-of-red-gently-flowing-lava-imgur--2251868538387771/
@@ -20,9 +20,3 @@ https://openfontlicense.org/open-font-license-official-text/
 
 Ubuntu Mono: Designed by Dalton Maag
 https://canonical.com/legal/font-licence
-
-Playpen Sans: Designed by TypeTogether, Laura Meseguer, Veronika Burian, José Scaglione, Kostas Bartsokas, Vera Evstafieva, Tom Grace, Yorlmar Campos
-https://www.type-together.com/making-playpen-sans 
-
-Geo: Designed by Ben Weiner
-

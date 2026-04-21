@@ -2,6 +2,7 @@
 const home = document.getElementById("home");
 const gameMain = document.getElementById("gameplay");
 const timedInterface = document.getElementById("timedMode");
+const footer = document.querySelector('footer');
 
 //Smaller elements (tick count, scoreboard)
 const ticks = document.getElementById("ticks");
@@ -14,8 +15,6 @@ const timer = document.getElementById("timer");
 const countdown = document.getElementById("countdown");
 
 const tooltip1 = document.getElementById("tooltip1");
-
-
 const tooltips = [tooltip1];
 
 //Button div containers (retry, home)
@@ -490,15 +489,34 @@ function switchExtreme(){
     updateColour();
 }
 
+const sliderStep = 0.5;
+
 function homeMenu(){
     //Clears reset listener, in case it wasn't pressed (can be reset button or home button)
     window.removeEventListener('keydown', handleFastReset);
     home.style.display = "flex";
+    footer.style.display = "block";
     gameMain.style.display = "none";
     mobileControls.style.display = "none";
     tooltips.forEach(tip => {
         tip.style.display = "none";
     });   
+
+    homeControls = new AbortController();
+
+    dSlider.addEventListener('keydown', function(event){
+        if (event.key === 'ArrowLeft'){               
+            event.preventDefault();
+            dSlider.value = Math.max(dSlider.min, Number(dSlider.value) - sliderStep);
+            dSlider.dispatchEvent(new Event("input"));
+        }
+
+        if (event.key === 'ArrowRight'){               
+            event.preventDefault();
+            dSlider.value = Math.min(dSlider.max, Number(dSlider.value) + sliderStep);
+            dSlider.dispatchEvent(new Event("input"));
+        }
+    }, {signal: homeControls.signal});    
 }
 
 function onScreenCount(c){
@@ -553,10 +571,15 @@ async function startGame(mode){
     setCostumes();
     retryB.style.display = "none";
     homeB.style.display = "none";
+    footer.style.display = "none";
+
 
     tooltips.forEach(tip => {
         tip.style.display = "none";
     });   
+
+    //
+    homeControls.abort();
 
     i = 0;
 
@@ -807,3 +830,6 @@ async function startGame(mode){
 
     gameId = setInterval(update, 17);
 }
+
+//Calls home menu to ensure home controls are enabled
+homeMenu();

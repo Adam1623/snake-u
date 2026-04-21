@@ -2,13 +2,13 @@
 
 <head> 
 <meta charset="UTF-8">
-<title> SNAKE </title>
+<title>SnakeU </title>
 
 <link rel="stylesheet" href="./styles.css">
 
 </head>
 
-<body style="transition: 500ms;">
+<body>
   
   <!-- Fire effect -->
 <svg width="0" height="0" style="position:absolute">
@@ -75,20 +75,21 @@
 
 <!-- <h1 class="wavy-text">Wavy Text</h1> -->
 
-<div id="tooltip1" class="tooltip" style="display: none;"> <h2> Pro tip! </h2> press space bar <br> to restart instantly </div>
+<div id="tooltip1" class="tooltip" style="display: none; font-family: 'Pixels';"> <h2> Pro tip! </h2> press space bar <br> to restart instantly </div>
 
-<div class="container" id="home">
-    <button class="mainMenu normal-button" id="playNormalB" style="margin-inline: 0%; margin-top: 12%; width: 200px;" onclick="startGame('normal')">Play Normal</button>
-    <button class="mainMenu normal-button" id="playTimedB" style="margin-left: 5%; margin-top: 12%; width: 200px" onclick="startGame('timed')">Play Timed</button>
-    <label for="difficulty" style="margin-inline: 100%; font-size: 30px; margin-top: 30px; margin-bottom: 20px; pointer-events: none;">Difficulty</label>
+<div class="container" id="home" style="display: none; margin-bottom: 3%;">
+    <div style="margin-inline: 100%; margin-bottom: 6%; padding: 0px;"> <img src="./logov1.png" height="200px" width="400px" style="display: block;"> </div>
+    <button class="mainMenu normal-button" id="playNormalB" style="margin-inline: 0%; margin-top: 0%; width: 200px;" onclick="startGame('normal')">Play Normal</button>
+    <button class="mainMenu normal-button" id="playTimedB" style="margin-left: 5%; margin-top: 0%; width: 200px" onclick="startGame('timed')">Play Timed</button>
+    <label for="difficulty" class="niceFont" style="margin-inline: 100%; font-size: 30px; margin-top: 30px; margin-bottom: 20px; pointer-events: none;">Difficulty</label>
     <input type="range" id="difficulty" style="pointer-events:fill; width: 225px; transform: scale(2); accent-color: white;" min="1" max="5" step="0.001" value="3">
 
     <div id="evilBg" class="evilBg" style="opacity: 0.0;"></div>
 
     <button class="mainMenu extremeButton" id="extremeB" style="margin-inline: 75%; margin-top: 3%;" onclick="switchExtreme()"><div class="fire-text">💀EXTREME MODE💀</div></button>
 
-    <div style="display: none; margin-inline: 100%; margin-top: 5%;" id="baby"><img src="./baby.png" alt="Baby" height="200px" width="auto"></div>
-    <div style="display: none; margin-inline: 100%; margin-top: 5%;" id="evilsnake"><img src="./evilsnake.png" alt="Evil Snake" height="200px" width="auto"></div>
+    <div style="display: none; margin-inline: 100%; margin-top: 3%;" id="baby"><img src="./baby.png" alt="Baby" height="200px" width="auto"></div>
+    <div style="display: none; margin-inline: 100%; margin-top: 3%;" id="evilsnake"><img src="./evilsnake.png" alt="Evil Snake" height="200px" width="auto"></div>
 </div>
 
 <div id="gameplay" style="display: none;">
@@ -126,8 +127,23 @@
     </div>
 </div>
 
+<footer>
+
+<div style="font-size: 14px; margin-bottom: 1%"> © 2026 SnakeU. All rights reserved.<br></div> 
+Assets:<br>
+Animated fire: "tracheotommy" via Giphy (https://giphy.com)<br>
+Lava background: [source unknown — replace or properly attribute]<br>
+Fonts:<br>
+Sixtyfour Convergence — Simon Cozens & Jens Kutílek (SIL Open Font License)<br>
+Geo — Ben Weiner (SIL Open Font License)<br>
+Ubuntu Mono — Dalton Maag (Ubuntu Font License)<br>
+Playpen Sans — TypeTogether et al. (https://www.type-together.com/making-playpen-sans)<br>
+Fonts are provided via Google Fonts (https://fonts.google.com)<br>
+Some assets are used under open licenses. All rights belong to their respective owners.
+</footer>
 
 <script src="./snake.js"></script>
+
 </body>
 
 </html>

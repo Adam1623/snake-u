@@ -630,6 +630,7 @@ async function startGame(mode){
     gameMain.style.display = "block";
 
     isMobile = navigator.userAgentData.mobile;
+    // isMobile = true;
     if (isMobile){
         mobileControls.style.display = "block";
     }

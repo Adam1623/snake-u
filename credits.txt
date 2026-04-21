@@ -20,3 +20,9 @@ https://openfontlicense.org/open-font-license-official-text/
 
 Ubuntu Mono: Designed by Dalton Maag
 https://canonical.com/legal/font-licence
+
+Playpen Sans: Designed by TypeTogether, Laura Meseguer, Veronika Burian, José Scaglione, Kostas Bartsokas, Vera Evstafieva, Tom Grace, Yorlmar Campos
+https://www.type-together.com/making-playpen-sans 
+
+Geo: Designed by Ben Weiner
+

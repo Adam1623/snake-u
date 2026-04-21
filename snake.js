@@ -770,10 +770,10 @@ async function startGame(mode){
             // Check which direction is stronger, so only 4 directions are considered
             // Nested if simulates deadzone, can be increased / decreased
             if (Math.abs(magX) > Math.abs(magY)){ //more x than y, so left / right
-                if (Math.abs(magX) > 0.1) magX >= 0 ? handleMovement(sright): handleMovement(sleft);
+                if (Math.abs(magX) > 0.2) magX >= 0 ? handleMovement(sright): handleMovement(sleft);
             }
             else{ //more y than x, so up / down
-                if (Math.abs(magY) > 0.1) magY >= 0 ? handleMovement(sdown): handleMovement(sup);
+                if (Math.abs(magY) > 0.2) magY >= 0 ? handleMovement(sdown): handleMovement(sup);
             }
         }
 

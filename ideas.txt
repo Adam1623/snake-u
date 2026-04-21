@@ -1,5 +1,9 @@
 TODO:
-- move html filters into separate file (chat basically)
+- custom difficulty slider
+- cooler difficulty text
+- header / logo visible
+- legal footer
+- node js backend stuff / profiles / log in page
 
 Fundamentals / back end:
 - have keyboard controls behave like a joystick (moves in last held direction)

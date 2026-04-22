@@ -1,14 +1,14 @@
 credits:
 
 snake:
-https://clipart.com/download.php?iid=165957&start=0&keys=snakes&notkeys=&andor=AND&c1=COLOR&c2=BANDW&release1=&release2=&previewcheck=&cat=all&period=&collection=&group=&orien=&isfree=1&safe=1&tl=clipart&f1=y&f2=y&f3=y&f4=y&f5=y&f6=y&f7=y&f8=y&results=40&all=
-(should be replaced)
+Created by 13smok
+license: https://pixabay.com/service/license-summary/
 
 baby:
-generic
+license: https://pixabay.com/service/license-summary/
 
 flames:
-can't find
+"tracheotommy" via Giphy
 
 lava:
 https://www.pinterest.com/pin/lava-the-very-nature-of-red-gently-flowing-lava-imgur--2251868538387771/

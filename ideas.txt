@@ -1,0 +1,80 @@
+TODO:
+- custom difficulty slider
+- cooler difficulty text
+- header / logo visible
+- legal footer
+- node js backend stuff / profiles / log in page
+
+Fundamentals / back end:
+- have keyboard controls behave like a joystick (moves in last held direction)
+- speed up by mashing forwards
+- slow down by mashing backwards?
+- store points somewhere? (round down score, store in user profile)
+- db for user sign-ups and snake points and such
+- keep track of stats (average score achienincvd, highest per mode, highest overall, longest surived in time mode, most points won on extreme mode)
+- debugging things so i can acutally test the game (debug menu to change values)
+- custom fonts for unlimited customization (maybe just images instead :(  make images same dimensions)
+
+score system (scale with difficulty)
+sp snake points
+shop?????
+upgrades?????????
+daily item shop
+save score somewhere (to buy things)??
+snake account
+give option to watch ad after dying to recieve DOUBLE snake points (so you can bask in glory after getting 1 million points and the ad is not that painful)
+
+EXTREME MODE
+YOU HAVE TO SPEND SNAKE POINTS TO PLAY EXTREME
+WAGER POINTS ON EXTREME
+- heat filter the higher the difficulty?
+- apples spawn on edges
+- randomly spawning fire?
+- flashing colour?
+- sound effects?
+
+- difficulty : apples spawn on edge based on dif : board size : fire spawns : SPEED STAYS THE SAME
+
+NEW MODE
+- wavy filter
+- filter gets stronger the longer you survive
+- score increases the longer you survive
+
+NEW MODE
+- time limit
+- every apple you get increases the timer
+- every apple increases snake speed
+- length is limited
+
+
+NEW MODE 
+- scrolling game
+- cross road kinda
+- one hand mouse + one hand keyboard
+- scroll while moving down with the snake
+- fire / death comes from above
+- avoid hazards, collect apples
+
+
+NEW MODE
+- horse (but it's called SNAKE)
+- 1v1 or groups playing horse
+- one person plays and gets a score
+- everyone needs to match or increase score or they get a letter (spelling SNAKE)
+- kinda like battle royale
+
+
+menu for selecting which kind of snake you want to play?
+- regular
+- extreme
+- snake 2 - epic battle
+
+
+pattern start 2 snake epic battle 
+
+- bigger arena
+- two players (online???)
+- paint like splatoon
+- collect apples to try and kill your opponent
+- move faster the longer the match progresses
+- power ups??????

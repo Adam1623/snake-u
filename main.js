@@ -62,12 +62,13 @@ async function handleAddUser(){
 async function handleSignIn(){
     resetErrors();
     try{        
-        const email = emailI.value;
+        // const email = emailI.value;
+        const loginString = loginI.value;
         const password = passwordI.value;
-        const status = await signIn(email, password);
+        const status = await signIn(loginString, password);
         // console.log("THE NAME:" + username);
         // console.log("THE EMAIL:" + email);
-        // console.log("THE PASSWORD:" + password);
+        // console.log("THE PASSWORD:" + password);        
         signInStatus.textContent = "Successfully signed in!";
         signInStatus.className = "successMsg";
     } catch(err){
@@ -113,5 +114,6 @@ exitSignInButton.addEventListener('click', resetErrors);
 const usernameI = document.getElementById("username");
 const emailI = document.getElementById("email");
 const passwordI = document.getElementById("password");
+const loginI = document.getElementById("loginName");
 
 const signInStatus = document.getElementById("signInStatus");

@@ -19,9 +19,9 @@ async function addUser(params){
 }
 
 async function signIn(params){
-    const {email, password} = params; 
+    const {loginString, password} = params; 
 
-    const res = await pool.query('SELECT id, username, password_hash FROM users WHERE email = $1', [email]);
+    const res = await pool.query('SELECT id, username, password_hash FROM users WHERE (username = $1 OR email = $1)', [loginString]);
 
     if (res.rows.length === 0) {
         throw new Error("Invalid email or password");

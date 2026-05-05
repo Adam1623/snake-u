@@ -512,10 +512,12 @@ function switchSignIn(register){
     document.getElementById("username").value = "";
     document.getElementById("email").value = "";
     document.getElementById("password").value = "";
+    document.getElementById("loginName").value = "";
 
     document.getElementById("signInReq").style.display = register ? "none" : "block";
     document.getElementById("registerReq").style.display = register ? "block" : "none";
-    document.getElementById("usernameHolder").style.display = register ? "block" : "none";       
+    document.getElementById("usernameHolder").style.display = register ? "block" : "none"; 
+    document.getElementById("loginHolder").style.display = register ? "none" : "block";      
 }
 
 const sliderStep = 0.5;

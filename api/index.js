@@ -32,8 +32,8 @@ export default async function handler(req, res) {
                 if (password.length < 8) return res.status(400).json({ error: "Password must be at least 8 characters." });
             }
             if (action === 'signIn') {                
-                const { email, password } = params;
-                if (!email || !password) return res.status(400).json({ error: "Email and password are required." });
+                const { loginString, password } = params;
+                if (!loginString || !password) return res.status(400).json({ error: "Email and password are required." });
                 
             }
             

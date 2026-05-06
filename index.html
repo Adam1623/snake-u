@@ -91,6 +91,9 @@
       </div>
       <div class="container" style="position: absolute; align-items: center; flex-wrap: nowrap; margin-left: 150px; flex-direction: column; top: -185px; left: 60px;">
         <button id="signInButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px; margin-bottom: 0px;" onclick="switchSignIn(false)">Sign In</button>
+        <!-- switches sign in button to sign out button depending on main.js getting sign in status -->
+        <button id="signOutButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px; margin-bottom: 0px; display: none;">Sign Out</button>
+
         <button id="createAccountButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px; margin-bottom: 25px;" onclick="switchSignIn(true)">Create Account</button>
         <button id="settingsButton" class="normal-button" style="font-size: 25px; width: 125px; height: 180px;" disabled>Settings</button>
       </div>
@@ -110,12 +113,19 @@
     <br>
     <input id="username" name="username" placeholder="username" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">
     <br><br>
-    </a>
 
     <label for="email">Email</label>
     <br>
     <input id="email" name="email" type="email" placeholder="email" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">
     <br><br>
+    </a>
+
+    <a id="loginHolder">
+    <label for="loginName">Username / Email</label>
+    <br>
+    <input id="loginName" name="loginName" type="username" placeholder="username / email" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">
+    <br><br>
+    </a>
 
     <label for="password">Password</label> 
     <br>   
@@ -164,6 +174,12 @@
     </div>
 </div>
 
+<!-- maybe put an island here? (have bottom right corner display notifications) -->
+<!-- Sign in status -->
+<a id="notiIsland" class="notiIsland">
+  <a id="snakePointsDisplay" class="snakePointsDisplay shimmer-element">1 000 000 000 000 SP</a>
+  <a id="loginStatus" class="loginStatus"></a>
+</a>
 
 <footer>
 <div style="font-size: 10px; margin-bottom: 1%"> © 2026 SnakeU. All rights reserved.<br></div> 

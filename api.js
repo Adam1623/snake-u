@@ -45,14 +45,14 @@ export async function addUser(username, email, password) {
     return res.json();
 }
 
-export async function signIn(email, password){
+export async function signIn(loginString, password){
     const res = await fetch('/api?action=signIn', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            email: email,
+            loginString: loginString,
             password: password 
         })
     });

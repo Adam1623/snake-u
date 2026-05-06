@@ -24,8 +24,35 @@ async function resetErrors(){
     usernameI.style.outlineColor = "rgb(1, 39, 109)";
     passwordI.style.outlineColor = "rgb(1, 39, 109)";
     emailI.style.outlineColor = "rgb(1, 39, 109)";
+    loginI.style.outlineColor = "rgb(1, 39, 109)";
 }
 
+async function loginVisual(signIn, username){
+    if (signIn){
+        loginStatus.style.setProperty("--bgc1", "rgb(121, 218, 83)");
+        loginStatus.style.setProperty("--bdc1", "rgb(104, 151, 87)");
+        loginStatus.innerHTML = `<a style="position: relative; text-decoration: underline; font-size: 0.7cqw;">Signed in as</a><br>${username}`;
+        logoutButton.style.display = "block";
+        logoutInverseButton.style.display = "none";
+
+        //update snake point display here, function should take another var
+        snakePointsDisplay.style.display = "block";        
+    }
+    else{
+        loginStatus.style.setProperty("--bgc1", "rgb(211, 211, 211)");
+        loginStatus.style.setProperty("--bdc1", "rgb(161, 161, 161)");
+        loginStatus.innerHTML = `Signed out`;
+        logoutButton.style.display = "none";
+        logoutInverseButton.style.display = "block";
+        snakePointsDisplay.style.display = "none";
+    }
+}
+
+async function checkCurSession(){
+    const sessionCookie = await cookieStore.get('userSession');
+
+    sessionCookie ? loginVisual(true, sessionCookie.value): loginVisual(false, "");
+}
 
 async function handleAddUser(){
     resetErrors();
@@ -62,17 +89,23 @@ async function handleAddUser(){
 async function handleSignIn(){
     resetErrors();
     try{        
-        const email = emailI.value;
+        // const email = emailI.value;
+        const loginString = loginI.value;
         const password = passwordI.value;
-        const status = await signIn(email, password);
+        const status = await signIn(loginString, password);
         // console.log("THE NAME:" + username);
         // console.log("THE EMAIL:" + email);
-        // console.log("THE PASSWORD:" + password);
+        // console.log("THE PASSWORD:" + password);        
         signInStatus.textContent = "Successfully signed in!";
         signInStatus.className = "successMsg";
+
+        console.log(status);
+        document.cookie = `userSession=${status.user.username}`;
+        loginVisual(true, status.user.username);
+
     } catch(err){
         console.error("Sign in error:", err);
-        emailI.style.outlineColor = "red";
+        loginI.style.outlineColor = "red";
         passwordI.style.outlineColor = "red";
         signInStatus.textContent = "Incorrect username or password";
         signInStatus.className = "errorMsg";
@@ -82,7 +115,10 @@ async function handleSignIn(){
 
 //incomplete 
 async function handleSignOut(){
-
+    const sessionCookie = await cookieStore.get('userSession');
+    if(sessionCookie){await cookieStore.delete('userSession');}
+    loginVisual(false, "");
+    
 }
 
 //incomplete
@@ -100,6 +136,14 @@ async function handleCreateLeaderboard(){
 // const fetchButton = document.getElementById("getUsersButton");
 // fetchButton.addEventListener('click', getDatabaseData);
 
+//sign out is from home page
+const logoutButton = document.getElementById("signOutButton");
+logoutButton.addEventListener('click', handleSignOut);
+const logoutInverseButton = document.getElementById("signInButton");
+
+
+
+//sign in is from sign in page (DIFFERENT THAN SIGN OUT)
 const loginButton = document.getElementById("signInReq");
 loginButton.addEventListener('click', handleSignIn);
 
@@ -113,5 +157,10 @@ exitSignInButton.addEventListener('click', resetErrors);
 const usernameI = document.getElementById("username");
 const emailI = document.getElementById("email");
 const passwordI = document.getElementById("password");
+const loginI = document.getElementById("loginName");
 
-const signInStatus = document.getElementById("signInStatus");
+//island indicators
+const loginStatus = document.getElementById("loginStatus");
+const snakePointsDisplay = document.getElementById("snakePointsDisplay");
+
+checkCurSession();

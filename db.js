@@ -1,33 +1,32 @@
-import { Pool } from '@neondatabase/serverless';
+import { neon } from '@neondatabase/serverless';
 import bcrypt from 'bcryptjs';
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+const sql = neon(process.env.DATABASE_URL);
 
 async function addUser(params){
     const {username, email, password} = params;
 
     const hashed_password = await bcrypt.hash(password, 12);
-    const startingSp = 0;
-    const startingXp = 0;
-
-    const res = await pool.query(`
+    const rows = await sql`
         INSERT INTO users (username, email, password_hash, sp, xp)
-        VALUES ($1, $2, $3, $4, $5)
-        RETURNING *;`, [username, email, hashed_password, startingSp, startingXp]);
+        VALUES (${username}, ${email}, ${hashed_password}, 0, 0)
+        RETURNING *`;
 
-    return {success: true, updated: res.rows[0]};
+    return {success: true, updated: rows[0]};
 }
 
 async function signIn(params){
     const {loginString, password} = params; 
 
-    const res = await pool.query('SELECT id, username, password_hash FROM users WHERE (username = $1 OR email = $1)', [loginString]);
+    const rows = await sql`
+        SELECT id, username, password_hash FROM users 
+        WHERE (username = ${loginString} OR email = ${loginString})`;
 
-    if (res.rows.length === 0) {
+    if (rows.length === 0) {
         throw new Error("Invalid email or password");
     }
 
-    const user = res.rows[0];
+    const user = rows[0];
     const checkPassword = await bcrypt.compare(password, user.password_hash);
 
     if(!checkPassword){
@@ -42,24 +41,24 @@ async function signIn(params){
 //incomplete
 async function signOut(){
     //something with cookies    
-    return {success: true, updated: res.rowCount};
+    return {success: true, updated: rows.count};
 }
 
 //incomplete
 async function changePassword(){
-    return {success: true, updated: res.rowCount};
+    return {success: true, updated: rows.count};
 }
 
 //incomplete
 async function createLeaderboard(){
-    return {success: true, updated: res.rowCount};
+    return {success: true, updated: rows.count};
 }
 
 async function updateScore(params){
     const {username, score} = params;    
-    const res = await pool.query("UPDATE users SET sp = sp + $1 WHERE username = $2", [score, username]);
+    const rows = await sql`UPDATE users SET sp = sp + ${score} WHERE username = ${username}`;
 
-    return { success: true, updated: res.rowCount };
+    return { success: true, updated: rows.count};
 }
 
 // NECESSARY FUNCTIONS:

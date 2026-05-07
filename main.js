@@ -1,4 +1,3 @@
-import { json } from "stream/consumers";
 import { addUser, signIn, signOut, changePassword, createLeaderboard, updateScore } from "./api.js";
 
 //Lets snake.js access database

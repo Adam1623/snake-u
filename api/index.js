@@ -1,4 +1,4 @@
-import { signIn } from '../api.js';
+// import { signIn } from '../api.js';
 import * as db from '../db.js'; // Adjust path if your db.js is in a different folder
 import crypto from 'crypto';
 
@@ -47,6 +47,13 @@ export default async function handler(req, res) {
         }
 
         const result = await fn(params);
+
+        if (action === 'signIn' && result.success){
+            console.log("good good");
+            const sessionId = crypto.randomUUID();
+            res.setHeader('Set-Cookie', 
+                `session_id=${sessionId}; Max-Age=86400; Path=/; HttpOnly; Secure; SameSite=Lax`);
+        }
 
         return res.status(200).json(result);
 

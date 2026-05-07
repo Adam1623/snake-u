@@ -10,9 +10,32 @@ async function addUser(params){
     const rows = await sql`
         INSERT INTO users (username, email, password_hash, sp, xp)
         VALUES (${username}, ${email}, ${hashed_password}, 0, 0)
-        RETURNING *`;
+        RETURNING id, username, sp, xp`;
 
     return {success: true, updated: rows[0]};
+}
+
+async function createSession(params){
+    const {sessionId, userId} = params;
+    await sql`INSERT INTO sessions (session_id, user_id) VALUES (${sessionId}, ${userId})`;
+    return {success: true};
+}
+
+//cleanup, cleans every time a user session is gathered
+async function deleteExpiredSessions(){
+    await sql`DELETE FROM sessions WHERE created_at < NOW() - INTERVAL '1 day'`;
+}
+
+async function getUserBySession(params){
+    await deleteExpiredSessions();
+    const {sessionId} = params;
+    const rows = await sql`
+    SELECT users.id, users.username, users.email, users.sp, users.xp
+        FROM sessions
+        JOIN users ON sessions.user_id = users.id
+        WHERE sessions.session_id = ${sessionId}
+        AND sessions.created_at > NOW() - INTERVAL '1 day'`;
+    return rows[0] || false;
 }
 
 async function signIn(params){
@@ -39,9 +62,11 @@ async function signIn(params){
 }
 
 //incomplete
-async function signOut(){
-    //something with cookies    
-    return {success: true, updated: rows.count};
+async function signOut(params){
+    //something with cookies   
+    const {sessionId} = params;
+    await sql`DELETE FROM sessions WHERE session_id = ${sessionId}`;
+    return {success: true};
 }
 
 //incomplete
@@ -64,4 +89,4 @@ async function updateScore(params){
 // NECESSARY FUNCTIONS:
 // add user, sign out, addToInventory, changePassword, createLeaderboard
 
-export {addUser, signIn, signOut, changePassword, createLeaderboard, updateScore};
+export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, updateScore};

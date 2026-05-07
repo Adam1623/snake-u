@@ -45,9 +45,23 @@ export async function addUser(username, email, password) {
     return res.json();
 }
 
+export async function getUserBySession(){
+    const res = await fetch('/api?action=getUserBySession', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    });
+
+    return res.json();
+}
+
 export async function signIn(loginString, password){
     const res = await fetch('/api?action=signIn', {
         method: 'POST',
+        credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
         },
@@ -70,7 +84,16 @@ export async function signIn(loginString, password){
 
 //incomplete
 export async function signOut(){
-    
+    const res = await fetch('/api?action=signOut', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    });
+
+    return res.json();
 }
 
 //incomplete

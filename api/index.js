@@ -4,12 +4,20 @@ import crypto from 'crypto';
 
 const actions = {
     addUser: db.addUser,
+    createSession: db.createSession,    
+    getUserBySession: db.getUserBySession,
     signIn: db.signIn,
     signOut: db.signOut,
     changePassword: db.changePassword,
     createLeaderboard: db.createLeaderboard,
-    updateScore: db.updateScore
+    updateScore: db.updateScore    
 };
+
+function getCookie(req, name) {
+    const cookies = req.headers.cookie || '';
+    const match = cookies.split(';').find(c => c.trim().startsWith(`${name}=`));
+    return match ? match.split('=')[1].trim() : null;
+}
 
 export default async function handler(req, res) {
     try {        
@@ -34,8 +42,15 @@ export default async function handler(req, res) {
             }
             if (action === 'signIn') {                
                 const { loginString, password } = params;
-                if (!loginString || !password) return res.status(400).json({ error: "Email and password are required." });
-                
+                if (!loginString || !password) return res.status(400).json({ error: "Email and password are required." });                
+            }
+            if (action === 'signOut'){
+                params = {sessionId: getCookie(req, 'session_id')};
+                //removes cookie
+                res.setHeader('Set-Cookie', `session_id=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax`);
+            }
+            if (action === 'getUserBySession'){
+                params = {sessionId: getCookie(req, 'session_id')};
             }
             
         } else if (req.method === 'GET') {
@@ -49,8 +64,8 @@ export default async function handler(req, res) {
         const result = await fn(params);
 
         if (action === 'signIn' && result.success){
-            console.log("good good");
             const sessionId = crypto.randomUUID();
+            await db.createSession({sessionId, userId: result.user.id});
             res.setHeader('Set-Cookie', 
                 `session_id=${sessionId}; Max-Age=86400; Path=/; HttpOnly; Secure; SameSite=Lax`);
         }

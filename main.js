@@ -1,4 +1,4 @@
-import { addUser, signIn, signOut, changePassword, createLeaderboard, updateScore } from "./api.js";
+import { addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, updateScore } from "./api.js";
 
 //Lets snake.js access database
 window.updateScore = updateScore;
@@ -49,9 +49,8 @@ async function loginVisual(signIn, username){
 }
 
 async function checkCurSession(){
-    const sessionCookie = await cookieStore.get('userSession');
-
-    sessionCookie ? loginVisual(true, sessionCookie.value): loginVisual(false, "");
+    const signedIn = await getUserBySession();
+    signedIn ? loginVisual(true, signedIn.username) : loginVisual(false, "");
 }
 
 async function handleAddUser(){
@@ -60,7 +59,7 @@ async function handleAddUser(){
         const username = usernameI.value;
         const email = emailI.value;
         const password = passwordI.value;
-        const status = await addUser(username, email, password);
+        await addUser(username, email, password);
         // console.log("THE NAME:" + username);
         // console.log("THE EMAIL:" + email);
         // console.log("THE PASSWORD:" + password);
@@ -102,7 +101,7 @@ async function handleSignIn(){
         // console.log("THE PASSWORD:" + password);        
         signInStatus.textContent = "Successfully signed in!";
         signInStatus.className = "ambNoti successMsg";        
-        document.cookie = `userSession=${status.user.username}`;
+        // document.cookie = `userSession=${status.user.username}`;
         loginVisual(true, status.user.username);
 
     } catch(err){
@@ -117,10 +116,8 @@ async function handleSignIn(){
     exitSignInButton.disabled = false;
 }
 
-//incomplete 
 async function handleSignOut(){
-    const sessionCookie = await cookieStore.get('userSession');
-    if(sessionCookie){await cookieStore.delete('userSession');}
+    await signOut();
     loginVisual(false, "");
     
 }

@@ -1,6 +1,8 @@
 import { signIn } from '../api.js';
 import * as db from '../db.js'; // Adjust path if your db.js is in a different folder
 
+import crypto from 'crypto';
+
 const actions = {
     addUser: db.addUser,
     signIn: db.signIn,
@@ -46,6 +48,7 @@ export default async function handler(req, res) {
         }
 
         const result = await fn(params);
+
         return res.status(200).json(result);
 
     } catch (err) {        

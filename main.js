@@ -1,3 +1,4 @@
+import { json } from "stream/consumers";
 import { addUser, signIn, signOut, changePassword, createLeaderboard, updateScore } from "./api.js";
 
 //Lets snake.js access database
@@ -88,6 +89,10 @@ async function handleAddUser(){
 
 async function handleSignIn(){
     resetErrors();
+    loginButton.disabled = true;
+    exitSignInButton.disabled = true;
+    signInStatus.textContent = "Loading..."; 
+    signInStatus.className = "neutralMsg";
     try{        
         // const email = emailI.value;
         const loginString = loginI.value;
@@ -97,9 +102,7 @@ async function handleSignIn(){
         // console.log("THE EMAIL:" + email);
         // console.log("THE PASSWORD:" + password);        
         signInStatus.textContent = "Successfully signed in!";
-        signInStatus.className = "successMsg";
-
-        console.log(status);
+        signInStatus.className = "ambNoti successMsg";        
         document.cookie = `userSession=${status.user.username}`;
         loginVisual(true, status.user.username);
 
@@ -108,9 +111,11 @@ async function handleSignIn(){
         loginI.style.outlineColor = "red";
         passwordI.style.outlineColor = "red";
         signInStatus.textContent = "Incorrect username or password";
-        signInStatus.className = "errorMsg";
+        signInStatus.className = "ambNoti errorMsg";
         
     }
+    loginButton.disabled = false;
+    exitSignInButton.disabled = false;
 }
 
 //incomplete 

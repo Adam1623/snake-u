@@ -111,6 +111,15 @@ body {
     100% { transform: translate(-50%, -50%) scale(1); opacity: 1;}    
 }
 
+@keyframes ambient {
+    0% {transform: scale(1.05); opacity: 1;}
+    100% {transform: scale(0.95); opacity: 0.9;}
+}
+
+.ambNoti {
+    animation: ambient 2s ease-in-out infinite alternate;
+}
+
 h2{
     flex-wrap: nowrap;
     font-size: 40px;
@@ -220,6 +229,26 @@ button{
     /* outline: 2px solid black;     */
 }
 
+button:disabled{
+    /* Remove the 'bonus' outline or 3D border effect */
+  border: 0px solid #ccc; 
+  
+  /* Reset the background (browsers often make it gray) */
+  background-color: #f5f5f5;
+  
+  /* Reset the text color */
+  color: #999;
+  
+  /* Ensure the cursor doesn't look clickable */
+  cursor: not-allowed;
+  
+  /* Some browsers (like Safari) lower the opacity by default */
+  opacity: 1;
+  
+  /* Remove any browser-specific 'button' appearance */
+  appearance: none;
+}
+
 .normal-button:disabled{
     background-color: rgb(151, 151, 151);
     outline: 4px solid rgb(138, 138, 138);
@@ -246,6 +275,12 @@ button{
     transition: 100ms;
     filter: brightness(1.4) drop-shadow(3px 6px rgb(56, 56, 56));
     
+}
+
+.neutralMsg {
+    background-color: rgb(102, 102, 102, 0.8);
+    color: rgb(40, 40, 40);
+    outline: 10px solid rgba(102, 102, 102, 0.5);
 }
 
 .errorMsg {

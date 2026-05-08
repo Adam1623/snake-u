@@ -25,6 +25,10 @@ async function resetErrors(){
     passwordI.style.outlineColor = "rgb(1, 39, 109)";
     emailI.style.outlineColor = "rgb(1, 39, 109)";
     loginI.style.outlineColor = "rgb(1, 39, 109)";
+
+    usernameE.textContent = "";
+    passwordE.textContent = "";
+    emailE.textContent = "";
 }
 
 async function loginVisual(signIn, username){
@@ -64,24 +68,27 @@ async function handleAddUser(){
         // console.log("THE EMAIL:" + email);
         // console.log("THE PASSWORD:" + password);
         signInStatus.textContent = "Successfully added user!";
-        signInStatus.className = "successMsg";
+        signInStatus.className = "ambNoti successMsg";
     } catch(err){
-        signInStatus.className = "errorMsg";
+        signInStatus.className = "ambNoti errorMsg";
 
         if (err.validationErrors){
             const errors = err.validationErrors;
             if (errors.includes("Password must be at least 8 characters long") || errors.includes("Password is required")) {
                 passwordI.style.outlineColor = "red";
+                passwordE.textContent = "Password must be at least 8 characters long";
             }
             if (errors.includes("Invalid email address")) {
                 emailI.style.outlineColor = "red";
+                emailE.textContent = "Invalid email address";
             }
             if (errors.includes("Username is required")) {
-                usernameI.style.outlineColor = "red";
+                usernameI.style.outlineColor = "red";          
+                usernameE.textContent = "Username is required";      
             }
         }
         signInStatus.textContent = "Registration failed. Fix highlighted errors before trying again";
-        console.error("Registration error:", err);
+        // console.error("Registration error:", err);
     }
 }
 
@@ -105,9 +112,9 @@ async function handleSignIn(){
         loginVisual(true, status.user.username);
 
     } catch(err){
-        console.error("Sign in error:", err);
+        // console.error("Sign in error:", err);
         loginI.style.outlineColor = "red";
-        passwordI.style.outlineColor = "red";
+        passwordI.style.outlineColor = "red";        
         signInStatus.textContent = "Incorrect username or password";
         signInStatus.className = "ambNoti errorMsg";
         
@@ -117,9 +124,10 @@ async function handleSignIn(){
 }
 
 async function handleSignOut(){
+    logoutButton.disabled = true;
     await signOut();
     loginVisual(false, "");
-    
+    logoutButton.disabled = false;
 }
 
 //incomplete
@@ -159,6 +167,11 @@ const usernameI = document.getElementById("username");
 const emailI = document.getElementById("email");
 const passwordI = document.getElementById("password");
 const loginI = document.getElementById("loginName");
+
+// e = error / text (next to button)
+const passwordE = document.getElementById("passwordE");
+const emailE = document.getElementById("emailE");
+const usernameE = document.getElementById("usernameE");
 
 //island indicators
 const loginStatus = document.getElementById("loginStatus");

@@ -108,39 +108,58 @@
   <pre id="output"></pre>
   <div style="align-items: center; justify-content: center; text-align: center;">
 
-    <a id="usernameHolder">
+  <span id="usernameHolder">
+    <br>
     <label for="username">Username</label>
     <br>
-    <input id="username" name="username" placeholder="username" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">
-    <br><br>
+    <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: 25px; margin-top: 10px; ">
+      <a></a>
+      <input id="username" name="username" placeholder="username" class="signInField" style="width: 200px; height: 35px; font-size: 20px;">    
+      <span id="usernameE" class="errorText" style="margin-left: -70px;"> test test</span>
+    </div>
+    <br>
 
     <label for="email">Email</label>
     <br>
-    <input id="email" name="email" type="email" placeholder="email" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">
-    <br><br>
-    </a>
+    <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: 25px; margin-top: 10px; ">
+      <a></a>
+      <input id="email" name="email" type="email" placeholder="email" class="signInField" style="width: 200px; height: 35px; font-size: 20px;">    
+      <span id="emailE" class="errorText" style="margin-left: -70px;"> test test</span>
+    </div>
+    <br>
+  </span>
 
-    <a id="loginHolder">
+  <span id="loginHolder">
     <label for="loginName">Username / Email</label>
     <br>
     <input id="loginName" name="loginName" type="username" placeholder="username / email" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">
     <br><br>
-    </a>
+  </span>
 
-    <label for="password">Password</label> 
-    <br>   
-    <input id="password" name="password" type="password" placeholder="password" class="signInField" style="margin-top: 10px; margin-bottom: 25px; width: 200px; height: 35px; font-size: 20px;">    
-    <br><br>
-    <div id="signInStatus" style="margin-bottom: 50px; padding: 10px;"><br></div>
-    <div style="display: flex; justify-content: center; gap: 30px;"> 
-      <!-- shows sign in / create account button depending -->
-      <button id="signInReq" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px">Sign in</button>
-      <button id="registerReq" class="normal-button" style="font-size: 30px; height: auto; width: 250px; padding: 15px">Create Account</button>
-    <button id="exitSignIn" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchSignIn()">Back</button> </div>
-    </div>  
+  <label for="password">Password</label> 
+  <br>   
+  <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: -15px; margin-top: 10px; ">
+    <a></a>
+    <input id="password" name="password" type="password" placeholder="password" class="signInField" style="width: 200px; height: 35px; font-size: 20px;">    
+    <span id="passwordE" class="errorText" style="margin-left: -70px;"> test test</span>
+  </div>   
+  <br><br>
+
+  <div id="signInStatus" style="position: absolute; padding: 10px; justify-content: center; align-items: center;"></div>
+  <div style="display: flex; justify-content: center; gap: 30px;"> 
+    <!-- shows sign in / create account button depending -->
+    <button id="signInReq" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px">Sign in</button>
+    <button id="registerReq" class="normal-button" style="font-size: 30px; height: auto; width: 250px; padding: 15px">Create Account</button>
+  <button id="exitSignIn" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchSignIn()">Back</button> </div>
+  </div>  
 </div>
 
 <div id="gameplay" style="display: none;">
+  <!-- <a id="usernameE" class="errorText" style="margin-left: -70px;"> test test</a>
+  <a id="emailE" class="errorText" style="margin-left: -70px;"> test test</a>
+  <a id="passwordE" class="errorText" style="margin-left: -70px;"> test test</a> -->
+
+
     <!-- Game tick -->
     <div class="container" style="display: none;">Game tick: <div id="ticks"> </div></div>
     <!-- Scoreboard -->

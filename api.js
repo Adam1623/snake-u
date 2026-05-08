@@ -4,7 +4,7 @@
 //     return res.json();
 // }
 
-//addUser, signIn, signOut, changePassword, createLeaderboard, updateScore
+//addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, updateScore
 
 export async function addUser(username, email, password) {
     let errors = [];

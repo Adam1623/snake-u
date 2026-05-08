@@ -295,6 +295,14 @@ button:disabled{
     outline: 10px solid rgba(50, 179, 18, 0.5);
 }
 
+.errorText {
+    display: absolute;
+    font-family: "Times New Roman", "Button";
+    font-weight: bold;
+    color: rgb(121, 33, 33);
+    font-size: 14px;
+}
+
 input {
     background: none;
     font-family: "Times New Roman", "Button";

@@ -521,7 +521,9 @@ function switchExtreme(){
     document.getElementById("signOutButton").classList.toggle("blackonwhite");
     document.getElementById("settingsButton").classList.toggle("blackonwhite");
     document.getElementById("createAccountButton").classList.toggle("blackonwhite");
-
+    document.getElementById("leaderboardButton").classList.toggle("blackonwhite");
+    document.getElementById("statsButton").classList.toggle("blackonwhite");
+    
     scoreBoard.classList.toggle("blackonwhite");    
 
     evilMode = !evilMode;

@@ -7,12 +7,18 @@ async function addUser(params){
     const {username, email, password} = params;
 
     const hashed_password = await bcrypt.hash(password, 12);
-    const rows = await sql`
-        INSERT INTO users (username, email, password_hash, sp, xp)
-        VALUES (${username}, ${email}, ${hashed_password}, 0, 0)
-        RETURNING id, username, sp, xp`;
 
-    return {success: true, updated: rows[0]};
+    const rows = await sql`
+    INSERT INTO users (username, username_lower, email, password_hash, sp, xp)
+    VALUES (${username}, ${username.toLowerCase()}, ${email}, ${hashed_password}, 0, 0)
+    RETURNING id, username, sp, xp`
+    .catch(err => {
+        if (err.code === '23505') {
+            if (err.constraint === 'users_username_lower_unique' || err.constraint === 'users_username_key') throw { error: 'Username is already taken' };
+            if (err.constraint === 'users_email_key') throw { error: 'Email is already registered' };            
+    } else throw { error: 'DB error' };});
+
+    return {success: true, updated: rows[0]};    
 }
 
 async function createSession(params){
@@ -42,8 +48,8 @@ async function signIn(params){
     const {loginString, password} = params; 
 
     const rows = await sql`
-        SELECT id, username, password_hash FROM users 
-        WHERE (username = ${loginString} OR email = ${loginString})`;
+        SELECT id, username, sp, xp, password_hash FROM users 
+        WHERE (LOWER(username) = ${loginString} OR email = ${loginString})`;
 
     if (rows.length === 0) {
         throw new Error("Invalid email or password");
@@ -80,10 +86,12 @@ async function createLeaderboard(){
 }
 
 async function updateScore(params){
-    const {username, score} = params;    
-    const rows = await sql`UPDATE users SET sp = sp + ${score} WHERE username = ${username}`;
+    const {username, score, worthXP} = params;    
+    await sql`UPDATE users SET sp = sp + ${score} WHERE username = ${username}`;
 
-    return { success: true, updated: rows.count};
+    if (worthXP) {await sql`UPDATE users SET xp = xp + ${score} WHERE username = ${username}`;}
+
+    return { success: true};
 }
 
 // NECESSARY FUNCTIONS:

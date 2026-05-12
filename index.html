@@ -73,7 +73,7 @@
 </svg>
 <!-- End of Wavy Text filter thing -->
 
-<div id="tooltip1" class="tooltip" style="display: none; font-family: 'Pixels';"> <h2> Pro tip! </h2> press space bar <br> to restart instantly </div>
+<div id="tooltip1" class="tooltip" style="display: none;"> <h2> Pro tip! </h2> press space bar <br> to restart instantly </div>
 
 <div id="home" class="container" style="display: none; margin-bottom: 3%; flex-grow: 1; align-items: center; justify-content: center; max-width: 700px; max-height: 700px; margin: auto auto;">
     <div style="margin-inline: 100%; margin-bottom: 6%; padding: 0px;"> <img src="./logov1.png" height="200px" width="400px" style="display: block;"> </div>
@@ -112,20 +112,14 @@
     <br>
     <label for="username">Username</label>
     <br>
-    <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: 25px; margin-top: 10px; ">
-      <a></a>
-      <input id="username" name="username" placeholder="username" class="signInField" style="width: 200px; height: 35px; font-size: 20px;">    
-      <span id="usernameE" class="errorText" style="margin-left: -70px;"> test test</span>
-    </div>
+    <input id="username" name="username" type="username" placeholder="username" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">    
+    <span id="usernameE" class="errorText signinErrorMsg"></span>
     <br>
 
     <label for="email">Email</label>
     <br>
-    <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: 25px; margin-top: 10px; ">
-      <a></a>
-      <input id="email" name="email" type="email" placeholder="email" class="signInField" style="width: 200px; height: 35px; font-size: 20px;">    
-      <span id="emailE" class="errorText" style="margin-left: -70px;"> test test</span>
-    </div>
+    <input id="email" name="email" type="email" placeholder="email" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">    
+    <span id="emailE" class="errorText signinErrorMsg"></span>
     <br>
   </span>
 
@@ -133,19 +127,18 @@
     <label for="loginName">Username / Email</label>
     <br>
     <input id="loginName" name="loginName" type="username" placeholder="username / email" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">
-    <br><br>
+    <span id="loginE" class="errorText signinErrorMsg"></span>
+    <br>
   </span>
 
   <label for="password">Password</label> 
   <br>   
-  <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; margin-bottom: -15px; margin-top: 10px; ">
-    <a></a>
-    <input id="password" name="password" type="password" placeholder="password" class="signInField" style="width: 200px; height: 35px; font-size: 20px;">    
-    <span id="passwordE" class="errorText" style="margin-left: -70px;"> test test</span>
-  </div>   
+  <input id="password" name="password" type="password" placeholder="password" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">    
+  <span id="passwordE" class="errorText signinErrorMsg"></span>
   <br><br>
 
-  <div id="signInStatus" style="position: absolute; padding: 10px; justify-content: center; align-items: center;"></div>
+  <div id="signInStatus" style="display: flex; padding: 10px; justify-content: center; width: 550px"></div>
+  <br><br>
   <div style="display: flex; justify-content: center; gap: 30px;"> 
     <!-- shows sign in / create account button depending -->
     <button id="signInReq" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px">Sign in</button>
@@ -195,7 +188,7 @@
 
 <!-- maybe put an island here? (have bottom right corner display notifications) -->
 <!-- Sign in status -->
-<a id="notiIsland" class="notiIsland">
+<a id="notiIsland" class="notiIsland" pointer-events: none>
   <a id="snakePointsDisplay" class="snakePointsDisplay shimmer-element">1 000 000 000 000 SP</a>
   <a id="loginStatus" class="loginStatus"></a>
 </a>
@@ -213,9 +206,10 @@ Playpen Sans — TypeTogether et al. (https://www.type-together.com/making-playp
 Fonts are provided via Google Fonts (https://fonts.google.com)<br>
 Some assets are used under open licenses. All rights belong to their respective owners.
 </footer>
-<script src="./snake.js"></script>
 
 <script type="module" src="./main.js"></script>
+
+<script src="./snake.js"></script>
 
 </body>
 

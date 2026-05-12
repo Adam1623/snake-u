@@ -1,3 +1,6 @@
+window.switchSignIn = switchSignIn;
+window.createTooltip = createTooltip;
+
 //Main containers (home screen, game screen, timed mode exclusives)
 const home = document.getElementById("home");
 const gameMain = document.getElementById("gameplay");
@@ -37,17 +40,38 @@ const innerJoystick = document.getElementById("innerJoystick");
 evilMode = false;
 
 // debug event listener for testing
-// document.addEventListener('keydown', function(event){    
-//         if (event.key === 'p'){                                       
-//                 tooltip1.innerHTML = "<h2> Pro tip! </h2> press space bar <br> to restart instantly";
-//             tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
-//         }});
+document.addEventListener('keydown', function(event){    
+        if (event.key === 'p'){
+            createTooltip(0, true, "<h2> Pro tip! </h2> press space bar <br> to restart instantly", "tooltip", "font-family: 'Pixels'");
+            // tooltip1.innerHTML = "<button class='tooltipClose' onclick='closeTooltip(0)'>close</button><h2> Pro tip! </h2> press space bar <br> to restart instantly";
+            // tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
+        }});
 
 function cell (status, location, prev, next) {
     this.status = status;
     this.location = location;
     this.prev = prev;
     this.next = next;
+}
+
+function createTooltip(id, closeable, content, classes, styles){
+    let tip = tooltips[id];
+
+    if (classes) tip.classList = classes;
+    if (styles) Object.assign(tip.style, {styles});    
+
+    let temphtml = "";
+    
+    if (closeable) temphtml += `<button tabindex='0' class='tooltipClose' onclick='closeTooltip(${id})' style="color:rgb(129, 129, 129) ">X</button>`
+    temphtml += content;    
+
+    tip.innerHTML = temphtml; 
+    tip.style.display = 'flex';
+    // tip.focus();
+}
+
+function closeTooltip(id){
+    tooltips[id].style.display = 'none';
 }
 
 function setCostumes(){
@@ -404,9 +428,9 @@ function gameOver(){
     //Stops timer if needed
     if (timerInterval) clearInterval(timerInterval);
 
-    window.updateScore("adam", score);
+    window.handleUpdateScore(Math.floor(score), true);
 
-    
+
     //Shows loss ui
     retryB.style.display = "flex";
     homeB.style.display = "flex";
@@ -426,8 +450,7 @@ function gameOver(){
     //show quick restart tip (not on mobile though)
     else
     {
-        tooltip1.innerHTML = "<h2> Pro tip! </h2> press space bar <br> to restart instantly";
-        tooltip1.style.display = "flex";    
+        createTooltip(0, true, "<h2> Pro tip! </h2> press space bar <br> to restart instantly", "tooltip", "font-family: 'Pixels'");
     }
     //Enables quick restart
     if (quickRestart) window.addEventListener('keydown', handleFastReset);

@@ -23,26 +23,27 @@ export async function addUser(username, email, password) {
 
     if (errors.length > 0) throw {validationErrors: errors};
 
-    // We send the data as a JSON object in the body, NOT in the URL
-    const res = await fetch('/api?action=addUser', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-            username: username,
-            email: email,
-            password: password 
-        })
-    });
 
-    if (!res.ok) {
-        // Try to get the specific error message from your backend if possible
+    const res = await fetch('/api?action=addUser', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        username: username,
+        email: email,
+        password: password 
+    })});
+
+    if (!res.ok) {        
         const errorData = await res.json().catch(() => ({}));
-        throw new Error(errorData.error || "User registration failed");
+        throw {validationErrors: errorData ? [errorData.error] : []};
+        // console.log(errorData);
+        // throw new Error(errorData.error || "User registration failed");
     }
 
     return res.json();
+
 }
 
 export async function getUserBySession(){
@@ -106,7 +107,19 @@ export async function createLeaderboard(){
 
 }
 
-export async function updateScore(username, score){
-    const res = await fetch(`/api?action=updateScore&username=${encodeURIComponent(username)}&score=${Math.floor(score)}`);
+export async function updateScore(username, score, worthXP){
+    const res = await fetch('/api?action=updateScore', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            username: username,
+            score: score,
+            worthXP: worthXP
+        })
+    });
+
     return res.json();
 }

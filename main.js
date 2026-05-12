@@ -1,7 +1,7 @@
 import { addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, updateScore } from "./api.js";
 
 //Lets snake.js access database
-window.updateScore = updateScore;
+window.handleUpdateScore = handleUpdateScore;
 
 // async function getDatabaseData() {
 //     try {        
@@ -29,9 +29,10 @@ async function resetErrors(){
     usernameE.textContent = "";
     passwordE.textContent = "";
     emailE.textContent = "";
+    loginE.textContent = "";
 }
 
-async function loginVisual(signIn, username){
+async function loginVisual(signIn, username, snakePoints){
     if (signIn){
         loginStatus.style.setProperty("--bgc1", "rgb(121, 218, 83)");
         loginStatus.style.setProperty("--bdc1", "rgb(104, 151, 87)");
@@ -40,6 +41,7 @@ async function loginVisual(signIn, username){
         logoutInverseButton.style.display = "none";
 
         //update snake point display here, function should take another var
+        snakePointsDisplay.textContent = `${snakePoints} SP`;
         snakePointsDisplay.style.display = "block";        
     }
     else{
@@ -54,14 +56,14 @@ async function loginVisual(signIn, username){
 
 async function checkCurSession(){
     const signedIn = await getUserBySession();
-    signedIn ? loginVisual(true, signedIn.username) : loginVisual(false, "");
+    signedIn ? loginVisual(true, signedIn.username, signedIn.sp) : loginVisual(false, "");
 }
 
 async function handleAddUser(){
     resetErrors();
     try{
-        const username = usernameI.value;
-        const email = emailI.value;
+        const username = usernameI.value.trim();
+        const email = emailI.value.trim().toLowerCase();
         const password = passwordI.value;
         await addUser(username, email, password);
         // console.log("THE NAME:" + username);
@@ -82,9 +84,21 @@ async function handleAddUser(){
                 emailI.style.outlineColor = "red";
                 emailE.textContent = "Invalid email address";
             }
+            if (errors.includes("Email is already registered")){
+                emailI.style.outlineColor = "red";
+                emailE.textContent = "Email is already registered";
+            }
             if (errors.includes("Username is required")) {
                 usernameI.style.outlineColor = "red";          
                 usernameE.textContent = "Username is required";      
+            }
+            if (errors.includes("Username is profane")) {
+                usernameI.style.outlineColor = "red";          
+                usernameE.textContent = "Username is illegal";      
+            }
+            if (errors.includes("Username is already taken")) {
+                usernameI.style.outlineColor = "red";          
+                usernameE.textContent = "Username is already taken";      
             }
         }
         signInStatus.textContent = "Registration failed. Fix highlighted errors before trying again";
@@ -100,17 +114,23 @@ async function handleSignIn(){
     signInStatus.className = "neutralMsg";
     try{        
         // const email = emailI.value;
-        const loginString = loginI.value;
+        const loginString = loginI.value.trim().toLowerCase();
         const password = passwordI.value;
         const status = await signIn(loginString, password);
         // console.log("THE NAME:" + username);
         // console.log("THE EMAIL:" + email);
-        // console.log("THE PASSWORD:" + password);        
-        signInStatus.textContent = "Successfully signed in!";
-        signInStatus.className = "ambNoti successMsg";        
+        // console.log("THE PASSWORD:" + password);      
+        
+        tooltip1.innerHTML = "<span class='ambNoti successMsg'> <button class='tooltipClose' onclick='closeTooltip(0)'>close</button>Successfully signed in!</span>";
+        tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";  
+        
+        createTooltip(0, true, "Successfully signed in!", "tooltip successMsg ambNoti", null);
+        // signInStatus.textContent = "Successfully signed in!";
+        // signInStatus.className = "ambNoti successMsg";        
         // document.cookie = `userSession=${status.user.username}`;
-        loginVisual(true, status.user.username);
-
+        loginVisual(true, status.user.username, status.user.sp);  
+        resetErrors();      
+        switchSignIn(false);
     } catch(err){
         // console.error("Sign in error:", err);
         loginI.style.outlineColor = "red";
@@ -140,6 +160,11 @@ async function handleCreateLeaderboard(){
 
 }
 
+export async function handleUpdateScore(score, worthXP){
+    const signedIn = await getUserBySession();
+    if (signedIn){await updateScore(signedIn.username, score, worthXP); loginVisual(true, signedIn.username,  Number(signedIn.sp) + score);}    
+    else {console.log("Could not verify session");}
+}
 
 
 // const fetchButton = document.getElementById("getUsersButton");
@@ -172,6 +197,7 @@ const loginI = document.getElementById("loginName");
 const passwordE = document.getElementById("passwordE");
 const emailE = document.getElementById("emailE");
 const usernameE = document.getElementById("usernameE");
+const loginE = document.getElementById("loginE");
 
 //island indicators
 const loginStatus = document.getElementById("loginStatus");

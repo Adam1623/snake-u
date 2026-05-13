@@ -6,7 +6,7 @@
 
 //addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, updateScore
 
-export async function addUser(username, email, password) {
+export async function addUser(username, email, password, middleName) {
     let errors = [];
     if (!username) errors.push("Username is required");
     // if (!email) errors.push("Email address is required");
@@ -32,7 +32,8 @@ export async function addUser(username, email, password) {
     body: JSON.stringify({
         username: username,
         email: email,
-        password: password 
+        password: password,
+        middleName: middleName
     })});
 
     if (!res.ok) {        

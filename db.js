@@ -18,7 +18,7 @@ async function addUser(params){
             if (err.constraint === 'users_email_key') throw { error: 'Email is already registered' };            
     } else throw { error: 'DB error' };});
 
-    return {success: true, updated: rows[0]};    
+    return {success: true};    
 }
 
 async function createSession(params){

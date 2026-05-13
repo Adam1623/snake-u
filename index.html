@@ -73,6 +73,7 @@
 </svg>
 <!-- End of Wavy Text filter thing -->
 
+<!-- Tooltips (usable on any menu) -->
 <div id="tooltip1" class="tooltip" style="display: none;"> <h2> Pro tip! </h2> press space bar <br> to restart instantly </div>
 
 <div id="home" class="container" style="display: none; margin-bottom: 3%; flex-grow: 1; align-items: center; justify-content: center; max-width: 700px; max-height: 700px; margin: auto auto;">
@@ -141,6 +142,12 @@
   <span id="passwordE" class="errorText signinErrorMsg"></span>
   <br><br>
 
+  <!-- bot prevention -->
+  <div aria-hidden="true" style="position: absolute; top: -2000px; width: 1px; font-size: 1px;"> 
+  <label for="middleName">Middle Name</label>
+  <input type="text" id="middleName" name="middleName" tabindex="-1" autocomplete="off">
+  </div>
+
   <div id="signInStatus" style="display: flex; padding: 10px; justify-content: center; width: 550px"></div>
   <br><br>
   <div style="display: flex; justify-content: center; gap: 30px;"> 
@@ -151,12 +158,8 @@
   </div>  
 </div>
 
+<!-- Main game display -->
 <div id="gameplay" style="display: none;">
-  <!-- <a id="usernameE" class="errorText" style="margin-left: -70px;"> test test</a>
-  <a id="emailE" class="errorText" style="margin-left: -70px;"> test test</a>
-  <a id="passwordE" class="errorText" style="margin-left: -70px;"> test test</a> -->
-
-
     <!-- Game tick -->
     <div class="container" style="display: none;">Game tick: <div id="ticks"> </div></div>
     <!-- Scoreboard -->
@@ -193,7 +196,7 @@
 <!-- maybe put an island here? (have bottom right corner display notifications) -->
 <!-- Sign in status -->
 <a id="notiIsland" class="notiIsland" pointer-events: none>
-  <a id="snakePointsDisplay" class="snakePointsDisplay shimmer-element">1 000 000 000 000 SP</a>
+  <a id="snakePointsDisplay" class="snakePointsDisplay shimmer-element">0 SP</a>
   <a id="loginStatus" class="loginStatus"></a>
 </a>
 

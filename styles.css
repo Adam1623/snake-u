@@ -368,6 +368,18 @@ input {
     border: 0.2cqw solid rgb(138, 137, 110);  
 }
 
+.snakePointIcon {
+    position: absolute;
+    align-items: center;
+    align-content: center;
+    margin-left: 0.4cqw;
+    height: 2cqw;
+    width: 2cqw;
+    /* top: 0.3cqw;     */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 .loginStatus {
     box-sizing: border-box;
     font-family: 'Nice';

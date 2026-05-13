@@ -40,12 +40,12 @@ const innerJoystick = document.getElementById("innerJoystick");
 evilMode = false;
 
 // debug event listener for testing
-document.addEventListener('keydown', function(event){    
-        if (event.key === 'p'){
-            createTooltip(0, true, "<h2> Pro tip! </h2> press space bar <br> to restart instantly", "tooltip", "font-family: 'Pixels'");
-            // tooltip1.innerHTML = "<button class='tooltipClose' onclick='closeTooltip(0)'>close</button><h2> Pro tip! </h2> press space bar <br> to restart instantly";
-            // tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
-        }});
+// document.addEventListener('keydown', function(event){    
+//         if (event.key === 'p'){
+//             createTooltip(0, true, "<h2> Pro tip! </h2> press space bar <br> to restart instantly", "tooltip", "font-family: 'Pixels'");
+//             // tooltip1.innerHTML = "<button class='tooltipClose' onclick='closeTooltip(0)'>close</button><h2> Pro tip! </h2> press space bar <br> to restart instantly";
+//             // tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
+//         }});
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -62,7 +62,7 @@ function createTooltip(id, closeable, content, classes, styles){
 
     let temphtml = "";
     
-    if (closeable) temphtml += `<button tabindex='0' class='tooltipClose' onclick='closeTooltip(${id})' style="color:rgb(129, 129, 129) ">X</button>`
+    if (closeable) temphtml += `<button tabindex='0' class='tooltipClose' onclick='closeTooltip(${id})' style="color:rgb(129, 129, 129) ">X</button>`;
     temphtml += content;    
 
     tip.innerHTML = temphtml; 
@@ -295,42 +295,25 @@ function createApple(){
     
 }
 
+function changeMult(amt, mode){
+    let tempMult = 0;
+    // 1 add | 2 subtract | 3 multiply | 4 divide
+    if (mode == "add" || mode == "1"){
+        tempMult += amt;
+    }
+    else if (mode == "subtract" || mode == "2"){
+        tempMult -= amt;
+    }
+    else if (mode == "multiply" || mode == "3"){
+        tempMult = baseMult * amt - baseMult;        
+    }
+
+    baseMult += tempMult;    
+
+}
 
 function changeScore(amt, mode){
-    let tempScore = 0;
-
-    // quarter done
-    if (snakeLength == Math.floor((boardX * boardY) / 4)){        
-        changeMult(1.25, "multiply");
-    }
-    // half done
-    if (snakeLength == Math.floor((boardX * boardY) / 2)){
-        changeMult(1.5, "multiply");
-    }
-    // 3 / 4 done?
-    if (snakeLength == Math.floor((boardX * boardY) / 1.5)){
-        changeMult(2, "multiply");
-    }
-
-    if (!evilMode){
-        if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
-            changeMult(1.2, "multiply");
-        }
-        if (snakeLength % 10 == 0) changeMult(0.2, "add");
-    }
-    if (evilMode){
-        if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
-            baseMult *= 1.4;
-            changeMult(1.4, "multiply");
-        }
-        changeMult(0.1, "add");
-    }
-    if (isTimed){
-        changeMult(0.2, "add");
-    }
-
-    //how to assign score???
-
+    let tempScore = 0;    
     // Normal, regular
     // +1 per 1 (normal)
     // Multiplier after certain point (maybe +0.1 to multiplier per boardx + boardy score?)
@@ -342,6 +325,7 @@ function changeScore(amt, mode){
     else if (mode == "subtract" || mode == "2"){
         tempScore -= amt;
     }
+    // adds ignoring baseMult
     else if (mode == "flat" || mode == "5"){
         score += amt;
     }
@@ -349,6 +333,36 @@ function changeScore(amt, mode){
     tempScore = tempScore * baseMult;
 
     score += tempScore;
+
+    // quarter done
+    if (snakeLength == Math.floor((boardX * boardY) / 4)){        
+        changeMult(1.25, "multiply");
+    }
+    // half done
+    else if (snakeLength == Math.floor((boardX * boardY) / 2)){
+        changeMult(1.5, "multiply");
+    }
+    // 3 / 4 done?
+    else if (snakeLength == Math.floor((boardX * boardY) / 1.5)){
+        changeMult(2, "multiply");
+    }
+
+    if (!evilMode){
+        if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
+            changeMult(1.2, "multiply");
+        }
+        if (snakeLength % 5 == 0) changeMult(0.1, "add");
+    }
+    if (evilMode){
+        if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
+            // baseMult *= 1.4;
+            changeMult(1.4, "multiply");
+        }
+        changeMult(0.1, "add");
+    }
+    if (isTimed){
+        changeMult(0.05 + difValue / 30, "add");
+    }
 
     scoreBoard.innerText = Number(score.toFixed(5)).toString();
 
@@ -395,26 +409,6 @@ function changeScore(amt, mode){
     setTimeout(() => {
         scoreBoard.style.fontSize = `${40 + snakeLength / 5}px`;
     }, fxTime);
-}
-
-function changeMult(amt, mode){
-    let tempMult = 0;
-    // 1 add | 2 subtract | 3 multiply | 4 divide | 5 flat (no mult add)
-    if (mode == "add" || mode == "1"){
-        tempMult += amt;
-    }
-    else if (mode == "subtract" || mode == "2"){
-        tempMult -= amt;
-    }
-    else if (mode == "multiply" || mode == "3"){
-        tempMult = baseMult * amt - baseMult;        
-    }
-    else if (mode == "flat" || mode == "5"){
-        baseMult += amt;
-    }
-
-    baseMult += tempMult;    
-
 }
 
 function gameOver(){
@@ -649,7 +643,6 @@ async function startGame(mode){
     lastMove = sdown;
 
     snakeLength = 1;
-    //score starts at 0, but it adds 1 at the start
     score = 0;
     scoreBoard.innerText = score;
 
@@ -687,7 +680,7 @@ async function startGame(mode){
         boardY = 16;
 
         //score
-        changeMult(dSlider.value / 3, "multiply");        
+        changeMult(dSlider.value / 6 - 0.5, "add");        
     }
     else{
         maxApples = Math.ceil(difValue / 2);
@@ -701,7 +694,7 @@ async function startGame(mode){
         //moveFrameGap = parseInt(24 - difValue * 4);
 
         //score
-        changeMult(2, "multiply");        
+        changeMult(2.5, "multiply");        
     }
 
     maxSnakeLength = boardX * boardY;
@@ -728,7 +721,6 @@ async function startGame(mode){
             }
     }        
     
-
     // The retryB stores whatever mode was last selected. The button returns null if it doesn't change the mode.
     if (!mode){
         mode = retryB.dataset.mode;
@@ -743,34 +735,33 @@ async function startGame(mode){
     }
     else if (mode == 1 || mode == 'timed'){
         // TIMED MODE
-        // Display timer (to 2 decimal places)
-        // Start timer
-        // Apples make you go faster + add time to timer
-        // When the timer runs out without dying, display special message
 
         htmlBoard.style.marginTop = "130px";
 
-        moveFrameGap = 12;
+        changeMult(0.5, "subtract");
 
         if ((boardX + boardY) / 2 >= 14){
             maxApples = 2;
         }
         else maxApples = 1;
 
+        moveFrameGap = 12;
         if (!evilMode){
             moveFrameGap += 1;
-            maxSnakeLength = (boardX * boardY) / 8 + (boardX + boardY) / 2
+            maxSnakeLength = (boardX * boardY) / 8 + (boardX + boardY) / 2 + Math.floor(difValue);
         }
         else{
             moveFrameGap -= 1;
-            maxSnakeLength = (boardX * boardY) / 6 
+            maxSnakeLength = (boardX * boardY) / 6 + Math.floor(difValue * 2);
         }
         
         //clean up
         timer.style.removeProperty("color");
         timer.style.removeProperty("font-size");
-
-        curTime = (boardX + boardY) / 4;
+                
+        curTime = Math.floor((boardX + boardY) / 6 + 2);
+        if (!evilMode) {curTime += Math.floor(dSlider.max - difValue);} 
+        else {curTime += Math.floor((difValue - 1)); changeMult(0.5, "multiply");}
         isTimed = true;
         timer.innerText = curTime.toFixed(2);
         timedInterface.style.display = "block";
@@ -885,6 +876,7 @@ async function startGame(mode){
 
     if (isTimed) timedManagement();
 
+    //1000 / 60 = 17 frame refresh of ~17 milliseconds is around 60fps
     gameId = setInterval(update, 17);
 }
 

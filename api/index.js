@@ -21,7 +21,7 @@ function getCookie(req, name) {
 }
 
 // profanity filter helper functions vvv
-profanity.removeWords(['ass', 'hell'])
+profanity.removeWords(['ass', 'hell']);
 
 function normalizeUsername(username) {
   return username
@@ -31,7 +31,7 @@ function normalizeUsername(username) {
     .replace(/[^a-z0-9]/g, '');
 }
 
-function isUsernameAllowed(username) {    
+function isUsernameBad(username) {    
   const normalized = normalizeUsername(username);
   return profanity.exists(username) || profanity.exists(normalized);
 }
@@ -54,10 +54,11 @@ export default async function handler(req, res) {
 
             //security checks
             if (action === 'addUser') {
-                const { username, email, password } = params;
+                const { username, email, password, middleName } = params;
                 if (!username || !email || !password) return res.status(400).json({error: "All fields are required."});
                 if (password.length < 8) return res.status(400).json({ error: "Password must be at least 8 characters."});
-                if (isUsernameAllowed(username)) return res.status(400).json({error: "Username is profane"});
+                if (isUsernameBad(username)) return res.status(400).json({error: "Username is profane"});
+                if (middleName) return res.status(200).json({success: true});
             }
             if (action === 'signIn') {                
                 const { loginString, password } = params;
@@ -65,11 +66,12 @@ export default async function handler(req, res) {
             }
             if (action === 'signOut'){
                 params = {sessionId: getCookie(req, 'session_id')};
-                //removes cookie
-                res.setHeader('Set-Cookie', `session_id=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax`);
+                res.setHeader('Set-Cookie', `session_id=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax`);                                
             }
-            if (action === 'getUserBySession'){
+            if (action === 'getUserBySession'){                
                 params = {sessionId: getCookie(req, 'session_id')};
+                //if no cookie, automatically return without accessing db
+                if (!params.sessionId) {return res.status(200).json(false);}
             }
             
         } else if (req.method === 'GET') {
@@ -87,8 +89,7 @@ export default async function handler(req, res) {
             await db.createSession({sessionId, userId: result.user.id});
             res.setHeader('Set-Cookie', 
                 `session_id=${sessionId}; Max-Age=86400; Path=/; HttpOnly; Secure; SameSite=Lax`);
-        }
-
+        }        
         return res.status(200).json(result);
 
     } catch (err) {        

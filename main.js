@@ -41,7 +41,7 @@ async function loginVisual(signIn, username, snakePoints){
         logoutInverseButton.style.display = "none";
 
         //update snake point display here, function should take another var
-        snakePointsDisplay.textContent = `${snakePoints} SP`;
+        snakePointsDisplay.innerHTML = `${snakePoints}<img src="./snakepoint.png" class="snakePointIcon">`;
         snakePointsDisplay.style.display = "block";        
     }
     else{
@@ -65,12 +65,29 @@ async function handleAddUser(){
         const username = usernameI.value.trim();
         const email = emailI.value.trim().toLowerCase();
         const password = passwordI.value;
-        await addUser(username, email, password);
-        // console.log("THE NAME:" + username);
-        // console.log("THE EMAIL:" + email);
-        // console.log("THE PASSWORD:" + password);
+        const middleName = bonusI.value;
+        //detect
+        // if (document.getElementById("middleName").value) {
+        //     console.log("gottem")
+        //     signInStatus.textContent = "Successfully added user!"; 
+        //     signInStatus.className = "ambNoti successMsg"; 
+        //     return;}
+        
+        signInStatus.textContent = "Loading..."; 
+        signInStatus.className = "neutralMsg";
+        await addUser(username, email, password, middleName);
         signInStatus.textContent = "Successfully added user!";
         signInStatus.className = "ambNoti successMsg";
+
+        //auto sign in
+        try{
+            if (await getUserBySession()) {await signOut();}
+            const status = await signIn(username, password);                
+            loginVisual(true, status.user.username, status.user.sp);  
+        } catch(err){
+            console.log("failed automatic sign in");
+    }
+
     } catch(err){
         signInStatus.className = "ambNoti errorMsg";
 
@@ -117,17 +134,8 @@ async function handleSignIn(){
         const loginString = loginI.value.trim().toLowerCase();
         const password = passwordI.value;
         const status = await signIn(loginString, password);
-        // console.log("THE NAME:" + username);
-        // console.log("THE EMAIL:" + email);
-        // console.log("THE PASSWORD:" + password);      
-        
-        tooltip1.innerHTML = "<span class='ambNoti successMsg'> <button class='tooltipClose' onclick='closeTooltip(0)'>close</button>Successfully signed in!</span>";
-        tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";  
         
         createTooltip(0, true, "Successfully signed in!", "tooltip successMsg ambNoti", null);
-        // signInStatus.textContent = "Successfully signed in!";
-        // signInStatus.className = "ambNoti successMsg";        
-        // document.cookie = `userSession=${status.user.username}`;
         loginVisual(true, status.user.username, status.user.sp);  
         resetErrors();      
         switchSignIn(false);
@@ -192,6 +200,7 @@ const usernameI = document.getElementById("username");
 const emailI = document.getElementById("email");
 const passwordI = document.getElementById("password");
 const loginI = document.getElementById("loginName");
+const bonusI = document.getElementById("middleName");
 
 // e = error / text (next to button)
 const passwordE = document.getElementById("passwordE");

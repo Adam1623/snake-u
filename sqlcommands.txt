@@ -1,0 +1,24 @@
+first table:
+
+CREATE TABLE test1 (
+  user_id SERIAL PRIMARY KEY, 
+  user_name VARCHAR(255),
+  user_xp int
+)
+
+insert into test1 (user_name, user_xp)
+values
+('adam', 1000),
+('arvin', 9001),
+('joseph', 1);
+
+
+real table:
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY, 
+  username VARCHAR(255) UNIQUE NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,  
+  sp int,
+  xp int
+)

@@ -73,29 +73,95 @@
 </svg>
 <!-- End of Wavy Text filter thing -->
 
-<!-- <h1 class="wavy-text">Wavy Text</h1> -->
+<!-- Tooltips (usable on any menu) -->
+<div id="tooltip1" class="tooltip" style="display: none;"> <h2> Pro tip! </h2> press space bar <br> to restart instantly </div>
 
-<div id="tooltip1" class="tooltip" style="display: none; font-family: 'Pixels';"> <h2> Pro tip! </h2> press space bar <br> to restart instantly </div>
-
-<div class="container" id="home" style="display: none; margin-bottom: 3%;">
+<div id="home" class="container" style="display: none; margin-bottom: 3%; flex-grow: 1; align-items: center; justify-content: center; max-width: 700px; max-height: 700px; margin: auto auto;">
     <div style="margin-inline: 100%; margin-bottom: 6%; padding: 0px;"> <img src="./logov1.png" height="200px" width="400px" style="display: block;"> </div>
     <button class="mainMenu normal-button" id="playNormalB" style="margin-inline: 0%; margin-top: 0%; width: 200px;" onclick="startGame('normal')">Play Normal</button>
     <button class="mainMenu normal-button" id="playTimedB" style="margin-left: 5%; margin-top: 0%; width: 200px" onclick="startGame('timed')">Play Timed</button>
-    <label for="difficulty" class="niceFont" style="margin-inline: 100%; font-size: 30px; margin-top: 30px; margin-bottom: 20px; pointer-events: none;">Difficulty</label>
-    <input type="range" id="difficulty" style="pointer-events:fill; width: 225px; transform: scale(2); accent-color: white;" min="1" max="5" step="0.001" value="3">
-
-    <div id="evilBg" class="evilBg" style="opacity: 0.0;"></div>
+    <label for="difficulty" class="niceFont" style="margin-inline: 100%; font-size: 30px; margin-top: 30px; margin-bottom: 5px; pointer-events: none;">Difficulty</label>
+    <input type="range" id="difficulty" style="pointer-events:fill; width: 225px; transform: scale(2); accent-color: white;" min="1" max="5" step="0.001" value="3">    
 
     <button class="mainMenu extremeButton" id="extremeB" style="margin-inline: 75%; margin-top: 3%;" onclick="switchExtreme()"><div class="fire-text">💀EXTREME MODE💀</div></button>
 
-    <div style="display: none; margin-inline: 100%; margin-top: 3%;" id="baby"><img src="./baby.png" alt="Baby" height="200px" width="auto"></div>
-    <div style="display: none; margin-inline: 100%; margin-top: 3%;" id="evilsnake"><img src="./evilsnake.png" alt="Evil Snake" height="200px" width="auto"></div>
+    <div style="position: relative; left: 127px; top: -180px">
+      <div class="container" style="position: absolute; align-items: center; flex-wrap: nowrap; margin-left: -550px; flex-direction: column; top: -185px; left: -40px">
+        <button id="shopButton" class="normal-button" style="font-size: 25px; width: 125px; height: 180px; margin-bottom: 25px;" disabled>Shop</button>
+        
+        <button id="customizeButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px;" disabled>Customize</button>
+        <button id="leaderboardButton" class="normal-button" style="font-size: 20px; width: 125px; height: 90px;" disabled>Leaderboard</button>
+      </div>
+      <div class="container" style="position: absolute; align-items: center; flex-wrap: nowrap; margin-left: 150px; flex-direction: column; top: -185px; left: 60px;">
+        <button id="signInButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px; margin-bottom: 0px;" onclick="switchSignIn(false)">Sign In</button>
+        <!-- switches sign in button to sign out button depending on main.js getting sign in status -->
+        <button id="signOutButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px; margin-bottom: 0px; display: none;">Sign Out</button>
+
+        <button id="createAccountButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px; margin-bottom: 25px;" onclick="switchSignIn(true)">Create Account</button>
+
+        <button id="statsButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px;" disabled>Stats</button>
+        <button id="settingsButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px;" disabled>Settings</button>
+      </div>
+    </div>      
+    <div style="display: none; margin-inline: 100%; margin-top: 3%;" id="baby"><img src="./baby.png" alt="Baby" width="300px" height="auto"></div>
+    <div style="display: none; margin-inline: 100%; margin-top: 3%;" id="evilsnake"><img src="./evilsnake.png" alt="Evil Snake" width="300px" height="auto"></div>
+    <div id="evilBg" class="evilBg" style="opacity: 0.0;"></div>
 </div>
 
+<!-- Sign in menu -->
+<div id="signInMenu" class="container" style="display: none; font-family: 'Button'; font-size: 30px; align-items: center; justify-content: center; flex-grow: 1; max-width: 700px; max-height: 700px; margin: auto auto;">
+  <pre id="output"></pre>
+  <div style="align-items: center; justify-content: center; text-align: center;">
+
+  <span id="usernameHolder">
+    <br>
+    <label for="username">Username</label>
+    <br>
+    <input id="username" name="username" type="username" placeholder="username" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">    
+    <span id="usernameE" class="errorText signinErrorMsg"></span>
+    <br>
+
+    <label for="email">Email</label>
+    <br>
+    <input id="email" name="email" type="email" placeholder="email" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">    
+    <span id="emailE" class="errorText signinErrorMsg"></span>
+    <br>
+  </span>
+
+  <span id="loginHolder">
+    <label for="loginName">Username / Email</label>
+    <br>
+    <input id="loginName" name="loginName" type="username" placeholder="username / email" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">
+    <span id="loginE" class="errorText signinErrorMsg"></span>
+    <br>
+  </span>
+
+  <label for="password">Password</label> 
+  <br>   
+  <input id="password" name="password" type="password" placeholder="password" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">    
+  <span id="passwordE" class="errorText signinErrorMsg"></span>
+  <br><br>
+
+  <!-- bot prevention -->
+  <div aria-hidden="true" style="position: absolute; top: -2000px; width: 1px; font-size: 1px;"> 
+  <label for="middleName">Middle Name</label>
+  <input type="text" id="middleName" name="middleName" tabindex="-1" autocomplete="off">
+  </div>
+
+  <div id="signInStatus" style="display: flex; padding: 10px; justify-content: center; width: 550px"></div>
+  <br><br>
+  <div style="display: flex; justify-content: center; gap: 30px;"> 
+    <!-- shows sign in / create account button depending -->
+    <button id="signInReq" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px">Sign in</button>
+    <button id="registerReq" class="normal-button" style="font-size: 30px; height: auto; width: 250px; padding: 15px">Create Account</button>
+  <button id="exitSignIn" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchSignIn()">Back</button> </div>
+  </div>  
+</div>
+
+<!-- Main game display -->
 <div id="gameplay" style="display: none;">
     <!-- Game tick -->
     <div class="container" style="display: none;">Game tick: <div id="ticks"> </div></div>
-
     <!-- Scoreboard -->
     <div class="scoreboard placeWherever" style="margin-bottom: 3%;">
       <!-- Score value -->
@@ -127,20 +193,28 @@
     </div>
 </div>
 
-<footer>
+<!-- maybe put an island here? (have bottom right corner display notifications) -->
+<!-- Sign in status -->
+<a id="notiIsland" class="notiIsland" pointer-events: none>
+  <a id="snakePointsDisplay" class="snakePointsDisplay shimmer-element">0 SP</a>
+  <a id="loginStatus" class="loginStatus"></a>
+</a>
 
-<div style="font-size: 14px; margin-bottom: 1%"> © 2026 SnakeU. All rights reserved.<br></div> 
+<footer>
+<div style="font-size: 10px; margin-bottom: 1%"> © 2026 SnakeU. All rights reserved.<br></div> 
 Assets:<br>
-Animated fire: "tracheotommy" via Giphy (https://giphy.com)<br>
-Lava background: [source unknown — replace or properly attribute]<br>
+Animated fire: tracheotommy via Giphy (https://giphy.com) 
+Lava background: Anoop A Nair via pexels (https://pexels.com/)<br>
 Fonts:<br>
-Sixtyfour Convergence — Simon Cozens & Jens Kutílek (SIL Open Font License)<br>
-Geo — Ben Weiner (SIL Open Font License)<br>
-Ubuntu Mono — Dalton Maag (Ubuntu Font License)<br>
+Sixtyfour Convergence — Simon Cozens & Jens Kutílek (SIL Open Font License)  
+Geo — Ben Weiner (SIL Open Font License)  
+Ubuntu Mono — Dalton Maag (Ubuntu Font License)  
 Playpen Sans — TypeTogether et al. (https://www.type-together.com/making-playpen-sans)<br>
 Fonts are provided via Google Fonts (https://fonts.google.com)<br>
 Some assets are used under open licenses. All rights belong to their respective owners.
 </footer>
+
+<script type="module" src="./main.js"></script>
 
 <script src="./snake.js"></script>
 

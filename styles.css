@@ -1,14 +1,19 @@
 body {
-  font-family: 'Open Sans', 'Montserrat', 'Helvetica', sans-serif;
-  transition: 500ms;
-  /* font-family: 'Default'; */
-  /* font-weight: normal; */
-  font-size-adjust: 0.6;
+    font-family: 'Open Sans', 'Montserrat', 'Helvetica', sans-serif;
+    transition: 500ms;
+    /* font-family: 'Default'; */
+    /* font-weight: normal; */
+    font-size-adjust: 0.6;
+    margin: 0;
+
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 @font-face {
     font-family: 'Nice';
-    src: url('./Playpen_Sans/PlaypenSans-VariableFont_wght.ttf') format('truetype');
+    src: url('./fonts/Playpen_Sans/PlaypenSans-VariableFont_wght.ttf') format('truetype');
 }
 
 .niceFont{
@@ -18,33 +23,45 @@ body {
 
 @font-face{
     font-family: 'Pixels';
-    src: url('./Geo/Geo-Regular.ttf') format('truetype');
+    src: url('./fonts/Geo/Geo-Regular.ttf') format('truetype');
 }
 
 @font-face{
     font-family: 'Button';
-    src: url('./Ubuntu_Mono/UbuntuMono-Bold.ttf') format('truetype');    
+    src: url('./fonts/Ubuntu_Mono/UbuntuMono-Bold.ttf') format('truetype');    
 }
 
 @font-face{
     font-family: 'Evil';
-    src: url('./Sixtyfour_Convergence/SixtyfourConvergence-Regular-VariableFont_BLED\,SCAN\,XELA\,YELA.ttf') format('truetype');
+    src: url('./fonts/Sixtyfour_Convergence/SixtyfourConvergence-Regular-VariableFont_BLED\,SCAN\,XELA\,YELA.ttf') format('truetype');
 }
 
 .shimmer-text {
-  font-size: 32px;
-  /* font-family: "Montserrat", sans-serif; */
-  font-weight: 600;
-  text-transform: uppercase;
-  --c1: #ffffff;
-  --c2: #5E5E5E;
-  --c3: #ffffff;
-  --dur: 5s;
-  background: linear-gradient(135deg, var(--c1), var(--c2), var(--c3));
-  background-clip: text;
-  color: transparent;
-  background-size: 200% 100%;
-  animation: shimmer var(--dur) linear infinite;
+    font-size: 32px;
+    /* font-family: "Montserrat", sans-serif; */
+    font-weight: 600;
+    text-transform: uppercase;
+    --c1: #ffffff;
+    --c2: #5E5E5E;
+    --c3: #ffffff;
+    --dur: 5s;
+    background: linear-gradient(135deg, var(--c1), var(--c2), var(--c3));
+    background-clip: text;
+    color: transparent;
+    background-size: 200% 100%;
+    animation: shimmer var(--dur) linear infinite;
+}
+
+.shimmer-element {
+    font-weight: 600;
+    --c1: #ca9c06; 
+    --c2: #f8dd64; 
+    --c3: #ca9c06; 
+    --dur: 20s;
+
+    background: linear-gradient(135deg, var(--c1) 25%, var(--c2) 50%, var(--c3) 75%);
+    background-size: 200% 100%;
+    animation: shimmer var(--dur) linear infinite;
 }
 
 @keyframes shimmer {
@@ -63,6 +80,22 @@ body {
 
 .fire-text {
     filter: url(#fire);
+}
+
+@keyframes pop {
+    0%   { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    50%  { transform: translate(-50%, -50%) scale(1.1); opacity: 1;}
+    70%  { transform: translate(-50%, -50%) scale(0.95); opacity: 1;}
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1;}    
+}
+
+@keyframes ambient {
+    0% {transform: scale(1.05); opacity: 1;}
+    100% {transform: scale(0.95); opacity: 0.9;}
+}
+
+.ambNoti {
+    animation: ambient 2s ease-in-out infinite alternate;
 }
 
 .tooltip{
@@ -85,11 +118,24 @@ body {
     animation: pop 0.5s ease;
 }
 
-@keyframes pop {
-    0%   { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-    50%  { transform: translate(-50%, -50%) scale(1.1); opacity: 1;}
-    70%  { transform: translate(-50%, -50%) scale(0.95); opacity: 1;}
-    100% { transform: translate(-50%, -50%) scale(1); opacity: 1;}    
+.tooltipClose {    
+    display: flex;
+    position: absolute;
+    left: 100%;
+    top: 0%;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    width: 20px;
+    background-color: rgba(0, 0, 0, 0.3);
+    transform: translate(-115%, 15%);
+}
+
+.tooltipClose:hover,
+.tooltipClose:focus{
+    transition: 0.2s;
+    background-color:  rgba(0, 0, 0, 0.6);
 }
 
 h2{
@@ -174,12 +220,12 @@ h2{
     background-position: 50% 55%; 
     color: rgb(255, 255, 255); 
     font-weight: bold; 
-    border-color: rgb(49, 27, 17);
+    outline-color: rgb(49, 27, 17);
     filter: grayscale(1);
 }
 .extremeButton:focus{
     transition: 100ms;
-    border: 4px solid rgb(214, 26, 26);
+    outline: 4px solid rgb(214, 26, 26);
     filter: grayscale(0);
     /* background-image: url('fire.gif');  */
 }
@@ -188,11 +234,10 @@ h2{
 }
 .extremeButtonON{
     transition: 0ms;
-    /* border: 4px solid rgb(214, 26, 26); */
+    /* outline: 4px solid rgb(214, 26, 26); */
     background-image: url('fire.gif'); 
     filter: grayscale(0);
 }
-
 
 button{
     font-family: 'Button', 'Open Sans';
@@ -202,7 +247,24 @@ button{
     /* outline: 2px solid black;     */
 }
 
-.normal-button:hover{
+button:disabled{
+  border: 0px solid #ccc; 
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  opacity: 1;
+  appearance: none;
+}
+
+.normal-button:disabled{
+    background-color: rgb(151, 151, 151);
+    outline: 4px solid rgb(138, 138, 138);
+    color: rgb(120, 120, 120);
+    cursor: not-allowed;    
+    font-style: italic;
+}
+
+.normal-button:not(:disabled):hover{
     transition: 50ms;
     filter: brightness(1.3);
     outline-width: 4px;
@@ -222,13 +284,128 @@ button{
     
 }
 
-input[type="range"]{
-    filter: none;
+.neutralMsg {
+    background-color: rgb(102, 102, 102, 0.8);
+    color: rgb(40, 40, 40);
+    outline: 10px solid rgba(102, 102, 102, 0.5);
+}
+
+.errorMsg {
+    background-color: rgba(180, 34, 34, 0.8);
+    color: rgb(20, 20, 20);
+    outline: 10px solid rgba(180, 34, 34, 0.5);
+}
+
+.successMsg {
+    background-color: rgba(38, 136, 14, 0.9);
+    color: rgb(20, 20, 20);
+    outline: 10px solid rgba(50, 179, 18, 0.5);
+}
+
+.errorText {
+    display: absolute;
+    font-family: "Times New Roman", "Button";
+    font-weight: bold;
+    color: rgb(121, 33, 33);
+    font-size: 14px;
+}
+
+input {
+    background: none;
+    font-family: "Times New Roman", "Button";
+}
+
+.signInErrorMsg {
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    margin-bottom: -15px; 
+    margin-top: 10px;
+}
+
+.signInField{
+    outline: 3px solid rgb(1, 39, 109);
+}
+
+.notiIsland {
+    box-sizing: border-box;
+    /* font-family: 'Button'; */
+    display: flex;
+    /* background-color: grey; */
+    position: fixed;
+    left: 100%;
+    top: 100%;
+    transform: translate(-100%, -100%);
+    font-size: 1cqw;
+    width: 20%;
+    height: 40%;
+    /* border: 0.4cqw solid rgb(70, 70, 70); */
+    align-items: center;
+    text-align: center;
+    align-content: center;
+}
+
+.snakePointsDisplay {
+    display: none;
+    box-sizing: border-box;
+    font-family: 'Nice';
+    /* padding-top : 10px;
+    padding-bottom : 10px; */
+    align-items: center;
+    text-align: center;
+    align-content: center;
+    font-size: 1cqw;
+    position: fixed;
+    width: 20%;
+    height: 6%;
+    left: 100%; 
+    top: 90%;
+    transform: translate(-100%, -100%);
+    background-color: rgb(216, 216, 216);
+    
+    /* color: whitesmoke; */
+    opacity: 1;
+    border: 0.2cqw solid rgb(138, 137, 110);  
+}
+
+.snakePointIcon {
+    position: absolute;
+    align-items: center;
+    align-content: center;
+    margin-left: 0.4cqw;
+    height: 2cqw;
+    width: 2cqw;
+    /* top: 0.3cqw;     */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.loginStatus {
+    box-sizing: border-box;
+    font-family: 'Nice';
+    /* padding-top : 10px;
+    padding-bottom : 10px; */
+    align-items: center;
+    text-align: center;
+    align-content: center;
+    font-size: 1.5cqw;
+    position: fixed;
+    width: 20%;
+    height: 10%;
+    left: 100%; 
+    top: 100%;
+    transform: translate(-100%, -100%);
+    opacity: 0.8;
+    --bgc1: rgb(211, 211, 211);
+    --bdc1: rgb(148, 148, 148);
+    background-color: var(--bgc1);
+    border: 0.4cqw solid var(--bdc1);    
 }
 
 footer {
     font-family: "Times New Roman";
     color: rgb(124, 124, 124);
-    font-size: 12px;
+    font-size: 8px;
     text-align: center;
+    padding: 20px;
 }

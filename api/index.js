@@ -1,4 +1,3 @@
-// import { signIn } from '../api.js';
 import * as db from '../db.js'; // Adjust path if your db.js is in a different folder
 import crypto from 'crypto';
 import { profanity } from '@2toad/profanity';

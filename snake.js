@@ -218,16 +218,17 @@ function moveSnake(){
                 if (!evilMode){
                     if (snakeLength >= thresh && moveFrameGap > 3){
                         moveFrameGap--;
-                        thresh += (thresh - 1) / 2;
+                        thresh += thresh;
                     }                    
-                    curTime += 1 * Math.exp(-0.08 * (snakeLength - 1)) / (14 / boardX) + 1.5;
+                    curTime += 1 * Math.exp(-0.06 * (snakeLength - 1)) / (14 / ((boardX + boardY) / 2)) + 1.5;
                 }
                 else{
                     if (snakeLength >= thresh && moveFrameGap > 2){
                         moveFrameGap--;
-                        thresh += (thresh + 2) / 3;
+                        thresh += thresh;
+                        // console.log(thresh);
                     }
-                    curTime += 2 * Math.exp(-0.14 * (snakeLength - 1)) / (14 / boardX) + 1;
+                    curTime += 2 * Math.exp(-0.06 * (snakeLength - 1)) / (14 / ((boardX + boardY) / 2)) + 0.5;
                 }
                 
             }
@@ -347,21 +348,24 @@ function changeScore(amt, mode){
         changeMult(2, "multiply");
     }
 
-    if (!evilMode){
-        if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
-            changeMult(1.2, "multiply");
+    if (!isTimed){
+        if (!evilMode){
+            if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
+                changeMult(1.2, "multiply");
+            }
+            if (snakeLength % 5 == 0) changeMult(0.1, "add");
         }
-        if (snakeLength % 5 == 0) changeMult(0.1, "add");
-    }
-    if (evilMode){
-        if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
-            // baseMult *= 1.4;
-            changeMult(1.4, "multiply");
+        if (evilMode){
+            if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
+                // baseMult *= 1.4;
+                changeMult(1.4, "multiply");
+            }
+            changeMult(0.1, "add");
         }
-        changeMult(0.1, "add");
     }
-    if (isTimed){
-        changeMult(0.05 + difValue / 30, "add");
+
+    if (isTimed && amt != 0){        
+        changeMult(0.025 + difValue / 40, "add");
     }
 
     scoreBoard.innerText = Number(score.toFixed(5)).toString();
@@ -738,8 +742,6 @@ async function startGame(mode){
 
         htmlBoard.style.marginTop = "130px";
 
-        changeMult(0.5, "subtract");
-
         if ((boardX + boardY) / 2 >= 14){
             maxApples = 2;
         }
@@ -751,7 +753,7 @@ async function startGame(mode){
             maxSnakeLength = (boardX * boardY) / 8 + (boardX + boardY) / 2 + Math.floor(difValue);
         }
         else{
-            moveFrameGap -= 1;
+            moveFrameGap -= 3;
             maxSnakeLength = (boardX * boardY) / 6 + Math.floor(difValue * 2);
         }
         
@@ -759,9 +761,9 @@ async function startGame(mode){
         timer.style.removeProperty("color");
         timer.style.removeProperty("font-size");
                 
-        curTime = Math.floor((boardX + boardY) / 6 + 2);
-        if (!evilMode) {curTime += Math.floor(dSlider.max - difValue);} 
-        else {curTime += Math.floor((difValue - 1)); changeMult(0.5, "multiply");}
+        curTime = Math.floor((boardX + boardY) / 6);
+        if (!evilMode) {curTime += Math.floor(dSlider.max - difValue) + 5; baseMult = Math.min(Math.max(baseMult, 0.9), 1.1);} 
+        else {curTime += Math.floor((difValue - 1)); changeMult(0.5, "multiply"); changeMult((dSlider.max - difValue / 2) / 5, "add");}
         isTimed = true;
         timer.innerText = curTime.toFixed(2);
         timedInterface.style.display = "block";

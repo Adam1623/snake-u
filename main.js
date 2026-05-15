@@ -1,4 +1,4 @@
-import { addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, updateScore } from "./api.js";
+import { addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, updateScore} from "./api.js";
 
 //Lets snake.js access database
 window.handleUpdateScore = handleUpdateScore;
@@ -57,7 +57,13 @@ async function loginVisual(signIn, username, snakePoints){
 
 async function checkCurSession(){
     const signedIn = await getUserBySession();
-    signedIn ? loginVisual(true, signedIn.username, signedIn.sp) : loginVisual(false, "");
+    if (signedIn && signedIn.username) {loginVisual(true, signedIn.username, signedIn.sp);}
+    else {
+        loginVisual(false, "");
+        const guestId = 'guest_' + Math.random().toString(36).substring(2, 9);
+        document.cookie = `session_id=${guestId}; Path=/; Max-Age=86400; SameSite=Lax`;
+    }    
+
 }
 
 async function handleAddUser(){
@@ -171,12 +177,12 @@ async function handleCreateLeaderboard(){
 
 //incomplete
 export async function handleStartGame(){
-
+    await(startGame());
 }
 
 export async function handleUpdateScore(score, worthXP){  
     const result =  await updateScore(score, worthXP); 
-    if (result.success) {loginVisual(true, result.user.username, Number(result.user.sp));}
+    if (result.success && result.user) {loginVisual(true, result.user.username, Number(result.user.sp));}
     else {console.log("Could not verify session to update score");}
 }
 

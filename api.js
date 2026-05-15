@@ -108,9 +108,17 @@ export async function createLeaderboard(){
 
 }
 
-//DO THIS NEXT
 export async function startGame(){
+    const res = await fetch('/api?action=startGame', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    });
 
+    return res.json();
 }
 
 export async function updateScore(score, worthXP){

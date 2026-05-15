@@ -77,27 +77,52 @@ async function signOut(params){
 
 //incomplete
 async function changePassword(){
-    return {success: true, updated: rows.count};
+    return {success: true};
 }
 
 //incomplete
 async function createLeaderboard(){
-    return {success: true, updated: rows.count};
+    return {success: true};
 }
 
 //start game timer, count to see if they're a cheater
-async function startGame(){
+async function startGame(params){
+    const {sessionId} = params;
 
+    await sql`
+        UPDATE sessions 
+        SET last_game_start = NOW() 
+        WHERE session_id = ${sessionId}`;
 
     return {success: true};
 }
 
-async function updateScore(params){
-    //kinda unneccessary to send sp here, oh well
-    const {username, score, worthXP} = params;    
-    // await sql`UPDATE users SET sp = sp + ${Number(score)} WHERE username = ${username}`;
+async function getGameStart(params){
+    const {sessionId} = params;
+    // const rows = await sql`
+    //     SELECT last_game_start 
+    //     FROM sessions 
+    //     WHERE session_id = ${sessionId}`;
+    
 
-    // if (worthXP) {await sql`UPDATE users SET xp = xp + ${Number(score)} WHERE username = ${username}`;}
+    const rows = await sql`
+        WITH old_session AS (
+            SELECT last_game_start 
+            FROM sessions 
+            WHERE session_id = ${sessionId}
+        )
+        UPDATE sessions 
+        SET last_game_start = NULL 
+        WHERE session_id = ${sessionId}
+        RETURNING EXTRACT(EPOCH FROM (SELECT last_game_start FROM old_session)) * 1000 AS last_game_start`;
+
+    if (!rows[0] || !rows[0].last_game_start) return false;
+
+    return Math.floor(Number(rows[0].last_game_start));
+}
+
+async function updateScore(params){
+    const {username, score, worthXP} = params;    
     const rows = await sql`
             UPDATE users 
             SET 
@@ -112,4 +137,4 @@ async function updateScore(params){
 // NECESSARY FUNCTIONS:
 // add user, sign out, addToInventory, changePassword, createLeaderboard
 
-export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, updateScore};
+export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, getGameStart, updateScore};

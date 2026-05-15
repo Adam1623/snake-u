@@ -5,8 +5,7 @@ import { profanity } from '@2toad/profanity';
 const publicActions = {
     addUser: db.addUser,
     signIn: db.signIn,
-    getUserBySession: db.getUserBySession,
-    startGame: db.startGame
+    getUserBySession: db.getUserBySession
 };
 
 const actions = {
@@ -58,13 +57,36 @@ export default async function handler(req, res) {
 
         if (req.method === 'POST') {
             params = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;            
+            
+            let sessionId = getCookie(req, 'session_id');
+
+            if (!sessionId){
+                sessionId = 'guest_' + crypto.randomUUID().split('-')[0];
+                res.setHeader('Set-Cookie', `session_id=${sessionId}; Path=/; Max-Age=86400; HttpOnly; Secure; SameSite=Lax`);
+            }
+
+            const isGuest = sessionId && sessionId.startsWith('guest_');
 
             let curUser;
             //verifies current sign in status for private (signed in) actions
-            if (!publicActions[action]) {
-                curUser = await db.getUserBySession({sessionId: getCookie(req, 'session_id')});
+            if (!publicActions[action] && !isGuest) {
+                curUser = await db.getUserBySession({sessionId: sessionId});
                 if (!curUser) return res.status(401).json({success: false});
-            }            
+            }             
+
+            //guest routing layer
+            if (isGuest){
+                if (action === 'getUserBySession'){
+                    return res.status(200).json(false);
+                }
+                if (action === 'startGame'){
+                    return res.status(200).json({success: true});
+                }
+                if (action === 'updateScore'){
+                    return res.status(200).json({success: false});
+                }
+            }
+
             //security checks
             if (action === 'addUser') {
                 const { username, email, password, middleName } = params;
@@ -79,18 +101,30 @@ export default async function handler(req, res) {
             }
 
             if (action === 'signOut'){
-                params = {sessionId: getCookie(req, 'session_id')};
+                params = {sessionId: sessionId};
                 res.setHeader('Set-Cookie', `session_id=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax`);                                
             }
             if (action === 'getUserBySession'){                
-                params = {sessionId: getCookie(req, 'session_id')};
+                params = {sessionId: sessionId};
                 //if no cookie, automatically return without accessing db
                 if (!params.sessionId) {return res.status(200).json(false);}
             }
             if (action === 'startGame') {
-                //probably unneeded
+                params = {sessionId: sessionId};
+                // if (!params.sessionId) {return res.status(200).json(false);}                
             }
             if (action === 'updateScore'){
+                const startTime = await db.getGameStart({sessionId: sessionId});
+
+                if (!startTime) return res.status(400).json({ error: "No active game found"});
+
+                const secondsPlayed = Math.max(0.1, (Date.now() - startTime) / 1000);
+
+                const maxScore = secondsPlayed * 15;                
+                if (Number(params.score) > maxScore){
+                    console.warn("Suspicious amount of points blocked.");
+                    return res.status(403).json({error: "Suspicious points blocked"});
+                }
                 params.username = curUser.username;
             }
 

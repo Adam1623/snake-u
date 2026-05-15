@@ -108,7 +108,12 @@ export async function createLeaderboard(){
 
 }
 
-export async function updateScore(username, score, worthXP){
+//DO THIS NEXT
+export async function startGame(){
+
+}
+
+export async function updateScore(score, worthXP){
     const res = await fetch('/api?action=updateScore', {
         method: 'POST',
         credentials: 'include',
@@ -116,7 +121,6 @@ export async function updateScore(username, score, worthXP){
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            username: username,
             score: score,
             worthXP: worthXP
         })

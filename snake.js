@@ -1,3 +1,5 @@
+import { handleStartGame } from "./main";
+
 window.switchSignIn = switchSignIn;
 window.createTooltip = createTooltip;
 
@@ -427,7 +429,6 @@ function gameOver(){
     if (timerInterval) clearInterval(timerInterval);
 
     window.handleUpdateScore(Math.floor(score), true);
-
 
     //Shows loss ui
     retryB.style.display = "flex";
@@ -872,6 +873,8 @@ async function startGame(mode){
     update();
 
     changeScore(0, 'flat')
+
+    handleStartGame();
 
     onScreenCount(1000);
     await sleep(1000);

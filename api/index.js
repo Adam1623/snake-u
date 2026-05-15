@@ -2,6 +2,13 @@ import * as db from '../db.js'; // Adjust path if your db.js is in a different f
 import crypto from 'crypto';
 import { profanity } from '@2toad/profanity';
 
+const publicActions = {
+    addUser: db.addUser,
+    signIn: db.signIn,
+    getUserBySession: db.getUserBySession,
+    startGame: db.startGame
+};
+
 const actions = {
     addUser: db.addUser,
     createSession: db.createSession,    
@@ -10,6 +17,7 @@ const actions = {
     signOut: db.signOut,
     changePassword: db.changePassword,
     createLeaderboard: db.createLeaderboard,
+    startGame: db.startGame,
     updateScore: db.updateScore    
 };
 
@@ -51,6 +59,12 @@ export default async function handler(req, res) {
         if (req.method === 'POST') {
             params = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;            
 
+            let curUser;
+            //verifies current sign in status for private (signed in) actions
+            if (!publicActions[action]) {
+                curUser = await db.getUserBySession({sessionId: getCookie(req, 'session_id')});
+                if (!curUser) return res.status(401).json({success: false});
+            }            
             //security checks
             if (action === 'addUser') {
                 const { username, email, password, middleName } = params;
@@ -63,6 +77,7 @@ export default async function handler(req, res) {
                 const { loginString, password } = params;
                 if (!loginString || !password) return res.status(400).json({ error: "Email and password are required." });                
             }
+
             if (action === 'signOut'){
                 params = {sessionId: getCookie(req, 'session_id')};
                 res.setHeader('Set-Cookie', `session_id=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax`);                                
@@ -72,7 +87,14 @@ export default async function handler(req, res) {
                 //if no cookie, automatically return without accessing db
                 if (!params.sessionId) {return res.status(200).json(false);}
             }
-            
+            if (action === 'startGame') {
+                //probably unneeded
+            }
+            if (action === 'updateScore'){
+                params.username = curUser.username;
+            }
+
+
         } else if (req.method === 'GET') {
             // Extract all query parameters EXCEPT 'action'
             const { action: _, ...restParams } = req.query;

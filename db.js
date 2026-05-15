@@ -36,7 +36,7 @@ async function getUserBySession(params){
     await deleteExpiredSessions();
     const {sessionId} = params;
     const rows = await sql`
-    SELECT users.id, users.username, users.email, users.sp, users.xp
+    SELECT users.id, users.username, users.sp, users.xp
         FROM sessions
         JOIN users ON sessions.user_id = users.id
         WHERE sessions.session_id = ${sessionId}
@@ -85,16 +85,31 @@ async function createLeaderboard(){
     return {success: true, updated: rows.count};
 }
 
+//start game timer, count to see if they're a cheater
+async function startGame(){
+
+
+    return {success: true};
+}
+
 async function updateScore(params){
+    //kinda unneccessary to send sp here, oh well
     const {username, score, worthXP} = params;    
-    await sql`UPDATE users SET sp = sp + ${score} WHERE username = ${username}`;
+    // await sql`UPDATE users SET sp = sp + ${Number(score)} WHERE username = ${username}`;
 
-    if (worthXP) {await sql`UPDATE users SET xp = xp + ${score} WHERE username = ${username}`;}
+    // if (worthXP) {await sql`UPDATE users SET xp = xp + ${Number(score)} WHERE username = ${username}`;}
+    const rows = await sql`
+            UPDATE users 
+            SET 
+                sp = sp + ${Number(score)},
+                xp = xp + (CASE WHEN ${!!worthXP} THEN ${Number(score)} ELSE 0 END)
+            WHERE username = ${username}
+            RETURNING id, username, sp, xp`;
 
-    return { success: true};
+    return { success: true, user: rows[0] };
 }
 
 // NECESSARY FUNCTIONS:
 // add user, sign out, addToInventory, changePassword, createLeaderboard
 
-export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, updateScore};
+export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, updateScore};

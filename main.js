@@ -2,6 +2,7 @@ import { addUser, getUserBySession, signIn, signOut, changePassword, createLeade
 
 //Lets snake.js access database
 window.handleUpdateScore = handleUpdateScore;
+window.handleStartGame = handleStartGame;
 
 // async function getDatabaseData() {
 //     try {        
@@ -168,10 +169,15 @@ async function handleCreateLeaderboard(){
 
 }
 
-export async function handleUpdateScore(score, worthXP){
-    const signedIn = await getUserBySession();
-    if (signedIn){await updateScore(signedIn.username, score, worthXP); loginVisual(true, signedIn.username,  Number(signedIn.sp) + score);}    
-    else {console.log("Could not verify session");}
+//incomplete
+export async function handleStartGame(){
+
+}
+
+export async function handleUpdateScore(score, worthXP){  
+    const result =  await updateScore(score, worthXP); 
+    if (result.success) {loginVisual(true, result.user.username, Number(result.user.sp));}
+    else {console.log("Could not verify session to update score");}
 }
 
 

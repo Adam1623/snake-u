@@ -17,6 +17,7 @@ const lowerText = document.getElementById("lowmessage");
 const bd = document.body;
 const timer = document.getElementById("timer");
 const countdown = document.getElementById("countdown");
+const gameReport = document.getElementById("gameReport");
 
 const tooltip1 = document.getElementById("tooltip1");
 const tooltips = [tooltip1];
@@ -226,7 +227,6 @@ function moveSnake(){
                     if (snakeLength >= thresh && moveFrameGap > 2){
                         moveFrameGap--;
                         thresh += thresh;
-                        // console.log(thresh);
                     }
                     curTime += 2 * Math.exp(-0.06 * (snakeLength - 1)) / (14 / ((boardX + boardY) / 2)) + 0.5;
                 }
@@ -428,7 +428,6 @@ function gameOver(){
 
     window.handleUpdateScore(Math.floor(score), true);
 
-
     //Shows loss ui
     retryB.style.display = "flex";
     homeB.style.display = "flex";
@@ -450,6 +449,11 @@ function gameOver(){
     {
         createTooltip(0, true, "<h2> Pro tip! </h2> press space bar <br> to restart instantly", "tooltip", "font-family: 'Pixels'");
     }
+
+    const gameEndTime = performance.now();
+    const survivalTime = (gameEndTime - gameStartTime) / 1000;
+    gameReport.innerHTML = `Survived for ${Math.round(survivalTime)} seconds <br>Earned ${Math.floor(score)} Snake Points<br> Collected ${snakeLength} apples`;
+    gameReport.style.display = 'block';
     //Enables quick restart
     if (quickRestart) window.addEventListener('keydown', handleFastReset);
 }
@@ -627,13 +631,14 @@ async function startGame(mode){
     retryB.style.display = "none";
     homeB.style.display = "none";
     footer.style.display = "none";
-
+    gameReport.style.display = "none";
+    gameReport.innerHTML = "";
 
     tooltips.forEach(tip => {
         tip.style.display = "none";
     });   
 
-    //
+    
     homeControls.abort();
 
     i = 0;
@@ -760,7 +765,7 @@ async function startGame(mode){
         //clean up
         timer.style.removeProperty("color");
         timer.style.removeProperty("font-size");
-                
+        
         curTime = Math.floor((boardX + boardY) / 6);
         if (!evilMode) {curTime += Math.floor(dSlider.max - difValue) + 5; baseMult = Math.min(Math.max(baseMult, 0.9), 1.1);} 
         else {curTime += Math.floor((difValue - 1)); changeMult(0.5, "multiply"); changeMult((dSlider.max - difValue / 2) / 5, "add");}
@@ -872,6 +877,11 @@ async function startGame(mode){
     update();
 
     changeScore(0, 'flat')
+
+
+    //handshake with server
+    gameStartTime = performance.now();
+    window.handleStartGame();    
 
     onScreenCount(1000);
     await sleep(1000);

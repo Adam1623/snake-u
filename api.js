@@ -108,7 +108,20 @@ export async function createLeaderboard(){
 
 }
 
-export async function updateScore(username, score, worthXP){
+export async function startGame(){
+    const res = await fetch('/api?action=startGame', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    });
+
+    return res.json();
+}
+
+export async function updateScore(score, worthXP){
     const res = await fetch('/api?action=updateScore', {
         method: 'POST',
         credentials: 'include',
@@ -116,7 +129,6 @@ export async function updateScore(username, score, worthXP){
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            username: username,
             score: score,
             worthXP: worthXP
         })

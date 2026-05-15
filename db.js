@@ -36,7 +36,7 @@ async function getUserBySession(params){
     await deleteExpiredSessions();
     const {sessionId} = params;
     const rows = await sql`
-    SELECT users.id, users.username, users.email, users.sp, users.xp
+    SELECT users.id, users.username, users.sp, users.xp
         FROM sessions
         JOIN users ON sessions.user_id = users.id
         WHERE sessions.session_id = ${sessionId}
@@ -77,24 +77,64 @@ async function signOut(params){
 
 //incomplete
 async function changePassword(){
-    return {success: true, updated: rows.count};
+    return {success: true};
 }
 
 //incomplete
 async function createLeaderboard(){
-    return {success: true, updated: rows.count};
+    return {success: true};
+}
+
+//start game timer, count to see if they're a cheater
+async function startGame(params){
+    const {sessionId} = params;
+
+    await sql`
+        UPDATE sessions 
+        SET last_game_start = NOW() 
+        WHERE session_id = ${sessionId}`;
+
+    return {success: true};
+}
+
+async function getGameStart(params){
+    const {sessionId} = params;
+    // const rows = await sql`
+    //     SELECT last_game_start 
+    //     FROM sessions 
+    //     WHERE session_id = ${sessionId}`;
+    
+
+    const rows = await sql`
+        WITH old_session AS (
+            SELECT last_game_start 
+            FROM sessions 
+            WHERE session_id = ${sessionId}
+        )
+        UPDATE sessions 
+        SET last_game_start = NULL 
+        WHERE session_id = ${sessionId}
+        RETURNING EXTRACT(EPOCH FROM (SELECT last_game_start FROM old_session)) * 1000 AS last_game_start`;
+
+    if (!rows[0] || !rows[0].last_game_start) return false;
+
+    return Math.floor(Number(rows[0].last_game_start));
 }
 
 async function updateScore(params){
     const {username, score, worthXP} = params;    
-    await sql`UPDATE users SET sp = sp + ${score} WHERE username = ${username}`;
+    const rows = await sql`
+            UPDATE users 
+            SET 
+                sp = sp + ${Number(score)},
+                xp = xp + (CASE WHEN ${!!worthXP} THEN ${Number(score)} ELSE 0 END)
+            WHERE username = ${username}
+            RETURNING id, username, sp, xp`;
 
-    if (worthXP) {await sql`UPDATE users SET xp = xp + ${score} WHERE username = ${username}`;}
-
-    return { success: true};
+    return { success: true, user: rows[0] };
 }
 
 // NECESSARY FUNCTIONS:
 // add user, sign out, addToInventory, changePassword, createLeaderboard
 
-export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, updateScore};
+export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, getGameStart, updateScore};

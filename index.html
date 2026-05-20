@@ -159,7 +159,7 @@
 <!-- Leaderboard menu -->
 <div id="leaderboardMenu" class="container" style="display: none; align-items: center; text-align: center;">
   <h1>🏆LEADERBOARD🏆</h1>
-  <ol id="leaderboardList" style="flex-basis: 100%;">...</ol>
+  <ol id="leaderboardList" style="flex-basis: 100%; font-family: 'Button';">...</ol>
   <button id="exitLeaderboard" type="button" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchLeaderboard()">Back</button> </div>
 </div>
 
@@ -193,7 +193,8 @@
     <div class="scoreboard"><div id="countdown" style="position: absolute; font-weight: bold; margin-top: 1%;">0.00</div></div>
     <div id="lowmessage" class="container wavy-text" style="color:rgb(148, 20, 20); font-size: 40px; font-weight: bold; text-decoration: underline;"> </div>
     <div class="container">
-        <div id="gameReport" style="display: none; align-self: center; text-align: center; width: 100%; margin-top: 25px; margin-bottom: 25px;"></div>
+        <!-- game report -->
+        <div id="gameReport" style="display: none; font-family: 'Nice'; font-size: 22px; align-self: center; text-align: center; width: 100%; margin-top: 25px; margin-bottom: 25px;"></div>
         <div id="homeB" style="margin-top: 10px; margin-right: 2%;"><button class="mainMenu simple-button"; onclick="homeMenu()">Home</button></div>
         <div id="retryB" data-mode="normal" style="margin-top: 10px; margin-left: 0%;"><button class="mainMenu simple-button"; onclick="startGame(null)">Retry</button></div>
     </div>

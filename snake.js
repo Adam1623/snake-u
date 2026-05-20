@@ -465,12 +465,20 @@ function gameOver(){
 
     const gameEndTime = performance.now();
     const survivalTime = (gameEndTime - gameStartTime) / 1000;
-    gameReport.innerHTML = `Survived for ${Math.round(survivalTime)} seconds <br>Earned ${Math.floor(score)} Snake Points<br> Collected ${snakeLength - 1} apples`;
+    gameReport.innerHTML = `Survived for ${Math.round(survivalTime)} 
+                            second${Math.round(survivalTime) !== 1 ? 's' : ''}<br>
+                            Earned ${Math.floor(score)} Snake Point${Math.floor(score) !== 1 ? 's' : ''}<br> 
+                            Collected ${snakeLength - 1} apple${snakeLength - 1 !== 1 ? 's' : ''}`;
     gameReport.style.display = 'block';    
-    //saves game stats to table
-    handleReportGame(Math.round(survivalTime), Math.floor(score), snakeLength - 1, appleInfo);
+
     //Enables quick restart
     if (quickRestart) window.addEventListener('keydown', handleFastReset);
+
+    //saves game stats to table
+    let mode = "";
+    mode += evilMode ? "extreme mode " : "normal mode ";
+    mode += isTimed ? "timed" : "untimed";    
+    handleReportGame(Math.round(survivalTime), Math.floor(score), snakeLength - 1, appleInfo, mode, difValue.toFixed(2));
 }
 
 //It's a function??? It's just weird looking
@@ -573,6 +581,7 @@ async function switchLeaderboard(){
 
     let listContent = "";
     let count = 0;
+    console.log(leaderboardEntries);
     for (entry of leaderboardEntries.leaderboard){
         count++;
         uName = entry.username.length > 25 ? `${entry.username.slice(0, 25)}...` : entry.username;

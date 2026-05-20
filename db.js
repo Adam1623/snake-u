@@ -85,10 +85,9 @@ async function createLeaderboard() {
     const leaderboard = await sql`
         SELECT username, xp
         FROM users
-        ORDER BY xp DESC LIMIT 10
+        ORDER BY xp DESC LIMIT 10        
     `;
-
-    return { success: true, leaderboard };
+    return { success: true, leaderboard};
 }
 //start game timer, count to see if they're a cheater
 async function startGame(params){
@@ -140,17 +139,19 @@ async function updateScore(params){
 }
 
 async function reportGame(params){
-    const {username, apples, avg_pps, sTime, timestamps, score} = params;
+    const {username, apples, avg_pps, sTime, timestamps, score, mode, difficulty} = params;
 
     await sql`
-        INSERT INTO global_game_stats (username, apples, survival_time, avg_pps, apple_log, score)
+        INSERT INTO global_game_stats (username, apples, survival_time, avg_pps, apple_log, score, game_mode, difficulty)
         VALUES (
             ${username},
             ${apples},
             ${sTime},
             ${avg_pps},
             ${JSON.stringify(timestamps)},
-            ${score}
+            ${score},
+            ${mode},
+            ${difficulty}
         )
     `;
     return {success: true};

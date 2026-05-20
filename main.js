@@ -172,8 +172,8 @@ export async function handleUpdateScore(score, worthXP){
     else {console.log("Could not verify session to update score");}
 }
 
-export async function handleReportGame(sTime, score, apples, timestamps){
-    await reportGame(sTime, score, apples, timestamps);
+export async function handleReportGame(sTime, score, apples, timestamps, mode, difficulty){
+    await reportGame(sTime, score, apples, timestamps, mode, difficulty);
 }
 
 document.getElementById('accountForm').addEventListener('submit', async function(event){

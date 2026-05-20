@@ -105,7 +105,16 @@ export async function changePassword(){
 
 //incomplete
 export async function createLeaderboard(){
+    const res = await fetch('/api?action=createLeaderboard', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    });
 
+    return res.json();
 }
 
 export async function startGame(){
@@ -134,5 +143,22 @@ export async function updateScore(score, worthXP){
         })
     });
 
+    return res.json();
+}
+
+export async function reportGame(sTime, score, apples, timestamps){
+    const res = await fetch('/api?action=reportGame', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            sTime: sTime,
+            score: score,
+            apples: apples,
+            timestamps: timestamps
+        })
+    });
     return res.json();
 }

@@ -76,7 +76,7 @@
 <!-- Tooltips (usable on any menu) -->
 <div id="tooltip1" class="tooltip" style="display: none;"> <h2> Pro tip! </h2> press space bar <br> to restart instantly </div>
 
-<div id="home" class="container" style="display: none; margin-bottom: 3%; flex-grow: 1; align-items: center; justify-content: center; max-width: 700px; max-height: 700px; margin: auto auto;">
+<div id="home" class="container" style="display: none; margin-bottom: 3%; flex-grow: 1; align-items: center; max-width: 700px; max-height: 700px; margin: auto auto;">
     <div style="margin-inline: 100%; margin-bottom: 6%; padding: 0px;"> <img src="./logov1.png" height="200px" width="400px" style="display: block;"> </div>
     <button class="mainMenu normal-button" id="playNormalB" style="margin-inline: 0%; margin-top: 0%; width: 200px;" onclick="startGame('normal')">Play Normal</button>
     <button class="mainMenu normal-button" id="playTimedB" style="margin-left: 5%; margin-top: 0%; width: 200px" onclick="startGame('timed')">Play Timed</button>
@@ -90,7 +90,7 @@
         <button id="shopButton" class="normal-button" style="font-size: 25px; width: 125px; height: 180px; margin-bottom: 25px;" disabled>Shop</button>
         
         <button id="customizeButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px;" disabled>Customize</button>
-        <button id="leaderboardButton" class="normal-button" style="font-size: 20px; width: 125px; height: 90px;" disabled>Leaderboard</button>
+        <button id="leaderboardButton" class="normal-button" style="font-size: 20px; width: 125px; height: 90px;" onclick="switchLeaderboard()">Leaderboard</button>
       </div>
       <div class="container" style="position: absolute; align-items: center; flex-wrap: nowrap; margin-left: 150px; flex-direction: column; top: -185px; left: 60px;">
         <button id="signInButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px; margin-bottom: 0px;" onclick="switchSignIn(false)">Sign In</button>
@@ -109,15 +109,14 @@
 </div>
 
 <!-- Sign in menu -->
-<div id="signInMenu" class="container" style="display: none; font-family: 'Button'; font-size: 30px; align-items: center; justify-content: center; flex-grow: 1; max-width: 700px; max-height: 700px; margin: auto auto;">
+<div id="signInMenu" class="container" style="display: none; font-family: 'Button'; font-size: 30px; align-items: center; flex-grow: 1; max-width: 700px; max-height: 700px; margin: auto auto;">
   <pre id="output"></pre>
-  <div style="align-items: center; justify-content: center; text-align: center;">
-
+  <form id="accountForm" style="align-items: center; justify-content: center; text-align: center;"> 
   <span id="usernameHolder">
     <br>
     <label for="username">Username</label>
     <br>
-    <input id="username" name="username" type="username" placeholder="username" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">    
+    <input id="username" name="username" type="text" placeholder="username" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">    
     <span id="usernameE" class="errorText signinErrorMsg"></span>
     <br>
 
@@ -131,7 +130,7 @@
   <span id="loginHolder">
     <label for="loginName">Username / Email</label>
     <br>
-    <input id="loginName" name="loginName" type="username" placeholder="username / email" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">
+    <input id="loginName" name="loginName" type="text" placeholder="username / email" class="signInField" style="margin-top: 10px; width: 200px; height: 35px; font-size: 20px;">
     <span id="loginE" class="errorText signinErrorMsg"></span>
     <br>
   </span>
@@ -147,15 +146,21 @@
   <label for="middleName">Middle Name</label>
   <input type="text" id="middleName" name="middleName" tabindex="-1" autocomplete="off">
   </div>
-
   <div id="signInStatus" style="display: flex; padding: 10px; justify-content: center; width: 550px"></div>
   <br><br>
   <div style="display: flex; justify-content: center; gap: 30px;"> 
     <!-- shows sign in / create account button depending -->
-    <button id="signInReq" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px">Sign in</button>
-    <button id="registerReq" class="normal-button" style="font-size: 30px; height: auto; width: 250px; padding: 15px">Create Account</button>
-  <button id="exitSignIn" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchSignIn()">Back</button> </div>
-  </div>  
+    <button id="signInReq" type="submit" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px">Sign in</button>
+    <button id="registerReq" type="submit" class="normal-button" style="font-size: 30px; height: auto; width: 250px; padding: 15px">Create Account</button>
+  <button id="exitSignIn" type="button" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchSignIn()">Back</button> </div>
+  </form> 
+</div>
+
+<!-- Leaderboard menu -->
+<div id="leaderboardMenu" class="container" style="display: none; align-items: center; text-align: center;">
+  <h1>🏆LEADERBOARD🏆</h1>
+  <ol id="leaderboardList" style="flex-basis: 100%;">...</ol>
+  <button id="exitLeaderboard" type="button" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchLeaderboard()">Back</button> </div>
 </div>
 
 <!-- Main game display -->
@@ -197,6 +202,7 @@
 <!-- maybe put an island here? (have bottom right corner display notifications) -->
 <!-- Sign in status -->
 <a id="notiIsland" class="notiIsland" pointer-events: none>
+  <a id="xpDisplay" class="xpDisplay">0 XP</a>
   <a id="snakePointsDisplay" class="snakePointsDisplay shimmer-element">0 SP</a>
   <a id="loginStatus" class="loginStatus"></a>
 </a>

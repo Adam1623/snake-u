@@ -5,7 +5,8 @@ import { profanity } from '@2toad/profanity';
 const publicActions = {
     addUser: db.addUser,
     signIn: db.signIn,
-    getUserBySession: db.getUserBySession
+    getUserBySession: db.getUserBySession,
+    createLeaderboard: db.createLeaderboard
 };
 
 const actions = {
@@ -17,7 +18,8 @@ const actions = {
     changePassword: db.changePassword,
     createLeaderboard: db.createLeaderboard,
     startGame: db.startGame,
-    updateScore: db.updateScore    
+    updateScore: db.updateScore,
+    reportGame: db.reportGame
 };
 
 function getCookie(req, name) {
@@ -58,16 +60,35 @@ export default async function handler(req, res) {
         if (req.method === 'POST') {
             params = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;            
             
-            let sessionId = getCookie(req, 'session_id');
+            //stops external post requests
+            if (req.headers['sec-fetch-site'] !== 'same-origin' || req.headers['sec-fetch-mode'] !== 'cors') {
+                return res.status(403).json({ error: "Direct API access forbidden." });
+            }
 
+            let sessionId = getCookie(req, 'session_id');
+            let curUser;
+            let isGuest = sessionId && sessionId.startsWith('guest_');
+
+            //checks if they have a stale cookie, clears it 
+            if (sessionId && !isGuest) {
+                    curUser = await db.getUserBySession({ sessionId: sessionId });
+                    
+                    // If it's not found in the sessions table, it's a ghost session!
+                    if (!curUser) {
+                        // Force reset the sessionId variable to null so the generator below triggers
+                        sessionId = null; 
+                    }
+            }
+
+            //checks if they have no cookie at all
             if (!sessionId){
                 sessionId = 'guest_' + crypto.randomUUID().split('-')[0];
                 res.setHeader('Set-Cookie', `session_id=${sessionId}; Path=/; Max-Age=86400; HttpOnly; Secure; SameSite=Lax`);
             }
 
-            const isGuest = sessionId && sessionId.startsWith('guest_');
-
-            let curUser;
+            //verifies guest status again
+            isGuest = sessionId && sessionId.startsWith('guest_');
+            
             //verifies current sign in status for private (signed in) actions
             if (!publicActions[action] && !isGuest) {
                 curUser = await db.getUserBySession({sessionId: sessionId});
@@ -84,6 +105,9 @@ export default async function handler(req, res) {
                 }
                 if (action === 'updateScore'){
                     return res.status(200).json({success: false});
+                }
+                if (action === 'reportGame'){
+                    return res.status(200).json({success: true});
                 }
             }
 
@@ -126,6 +150,10 @@ export default async function handler(req, res) {
                     return res.status(403).json({error: "Suspicious points blocked"});
                 }
                 params.username = curUser.username;
+            }
+            if (action === 'reportGame'){
+                params.username = curUser.username;
+                params.avg_pps = params.score / params.sTime;                
             }
 
 

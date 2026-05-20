@@ -1,24 +1,11 @@
-import { addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, updateScore} from "./api.js";
+import { addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, updateScore, reportGame} from "./api.js";
 
 //Lets snake.js access database
 window.handleUpdateScore = handleUpdateScore;
 window.handleStartGame = handleStartGame;
+window.handleCreateLeaderboard = handleCreateLeaderboard;
+window.handleReportGame = handleReportGame;
 
-// async function getDatabaseData() {
-//     try {        
-
-//         const data = await getUsers();
-//         console.log("Data received:", data);
-        
-//         // 2. Check if the element exists before trying to update it
-//         const outputElement = document.getElementById('output');
-//         if (outputElement) {
-//             outputElement.textContent = JSON.stringify(data, null, 2);
-//         }
-//     } catch (err) {
-//         console.error("Fetch error:", err);
-//     }
-// }
 async function resetErrors(){
     signInStatus.textContent = "";
     signInStatus.className = "";
@@ -33,7 +20,7 @@ async function resetErrors(){
     loginE.textContent = "";
 }
 
-async function loginVisual(signIn, username, snakePoints){
+async function loginVisual(signIn, username, snakePoints, xp){
     if (signIn){
         loginStatus.style.setProperty("--bgc1", "rgb(121, 218, 83)");
         loginStatus.style.setProperty("--bdc1", "rgb(104, 151, 87)");
@@ -44,6 +31,10 @@ async function loginVisual(signIn, username, snakePoints){
         //update snake point display here, function should take another var
         snakePointsDisplay.innerHTML = `${snakePoints}<img src="./snakepoint.png" class="snakePointIcon">`;
         snakePointsDisplay.style.display = "block";        
+
+        const xpSlider = '<input type="range" class="shimmer-element" style="accent-color: #0c31ac; --c1: #0c31ac; --c2: #2970db; --c3: #0c31ac; --dur: 5s; pointer-events: none;" tabindex="-1">';
+        xpDisplay.innerHTML = `${xp} xp <br>`;
+        xpDisplay.style.display = "block";
     }
     else{
         loginStatus.style.setProperty("--bgc1", "rgb(211, 211, 211)");
@@ -52,12 +43,13 @@ async function loginVisual(signIn, username, snakePoints){
         logoutButton.style.display = "none";
         logoutInverseButton.style.display = "block";
         snakePointsDisplay.style.display = "none";
+        xpDisplay.style.display = "none";
     }
 }
 
 async function checkCurSession(){
     const signedIn = await getUserBySession();
-    if (signedIn && signedIn.username) {loginVisual(true, signedIn.username, signedIn.sp);}
+    if (signedIn && signedIn.username) {loginVisual(true, signedIn.username, signedIn.sp, signedIn.xp);}
     else {
         loginVisual(false, "");
         const guestId = 'guest_' + Math.random().toString(36).substring(2, 9);
@@ -73,12 +65,6 @@ async function handleAddUser(){
         const email = emailI.value.trim().toLowerCase();
         const password = passwordI.value;
         const middleName = bonusI.value;
-        //detect
-        // if (document.getElementById("middleName").value) {
-        //     console.log("gottem")
-        //     signInStatus.textContent = "Successfully added user!"; 
-        //     signInStatus.className = "ambNoti successMsg"; 
-        //     return;}
         
         signInStatus.textContent = "Loading..."; 
         signInStatus.className = "neutralMsg";
@@ -90,7 +76,7 @@ async function handleAddUser(){
         try{
             if (await getUserBySession()) {await signOut();}
             const status = await signIn(username, password);                
-            loginVisual(true, status.user.username, status.user.sp);  
+            loginVisual(true, status.user.username, status.user.sp, status.user.xp);  
         } catch(err){
             console.log("failed automatic sign in");
     }
@@ -142,8 +128,8 @@ async function handleSignIn(){
         const password = passwordI.value;
         const status = await signIn(loginString, password);
         
-        createTooltip(0, true, "Successfully signed in!", "tooltip successMsg ambNoti", null);
-        loginVisual(true, status.user.username, status.user.sp);  
+        createTooltip(0, true, "Successfully signed in!", "tooltip successMsg", "pop fadeOut", null);
+        loginVisual(true, status.user.username, status.user.sp, status.user.xp);  
         resetErrors();      
         switchSignIn(false);
     } catch(err){
@@ -172,7 +158,7 @@ async function handleChangePassword(){
 
 //incomplete
 async function handleCreateLeaderboard(){
-
+    return await(createLeaderboard());
 }
 
 //incomplete
@@ -182,11 +168,26 @@ export async function handleStartGame(){
 
 export async function handleUpdateScore(score, worthXP){  
     const result =  await updateScore(score, worthXP); 
-    if (result.success && result.user) {loginVisual(true, result.user.username, Number(result.user.sp));}
+    if (result.success && result.user) {loginVisual(true, result.user.username, Number(result.user.sp), result.user.xp);}
     else {console.log("Could not verify session to update score");}
 }
 
+export async function handleReportGame(sTime, score, apples, timestamps){
+    await reportGame(sTime, score, apples, timestamps);
+}
 
+document.getElementById('accountForm').addEventListener('submit', async function(event){
+    event.preventDefault();   
+    
+    const isSignUp = document.getElementById('usernameHolder').style.display !== 'none';
+
+    if (isSignUp){
+        await handleAddUser();
+    }
+    else{
+        await handleSignIn();
+    }
+});
 // const fetchButton = document.getElementById("getUsersButton");
 // fetchButton.addEventListener('click', getDatabaseData);
 
@@ -197,12 +198,12 @@ const logoutInverseButton = document.getElementById("signInButton");
 
 
 
-//sign in is from sign in page (DIFFERENT THAN SIGN OUT)
+//sign in is from sign in page (DIFFERENT THAN SIGN OUT) don't need event listeners anymore because form
 const loginButton = document.getElementById("signInReq");
-loginButton.addEventListener('click', handleSignIn);
+// loginButton.addEventListener('click', handleSignIn);
 
 const registerButton = document.getElementById("registerReq");
-registerButton.addEventListener('click', handleAddUser);
+// registerButton.addEventListener('click', handleAddUser);
 
 const exitSignInButton = document.getElementById("exitSignIn");
 exitSignInButton.addEventListener('click', resetErrors);
@@ -223,5 +224,6 @@ const loginE = document.getElementById("loginE");
 //island indicators
 const loginStatus = document.getElementById("loginStatus");
 const snakePointsDisplay = document.getElementById("snakePointsDisplay");
+const xpDisplay = document.getElementById("xpDisplay");
 
 checkCurSession();

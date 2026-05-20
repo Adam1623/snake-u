@@ -63,6 +63,7 @@ async function signIn(params){
     }
 
     delete user.password_hash;
+    // delete user.id;
 
     return {success: true, user: user};
 }
@@ -80,11 +81,15 @@ async function changePassword(){
     return {success: true};
 }
 
-//incomplete
-async function createLeaderboard(){
-    return {success: true};
-}
+async function createLeaderboard() {
+    const leaderboard = await sql`
+        SELECT username, xp
+        FROM users
+        ORDER BY xp DESC LIMIT 10
+    `;
 
+    return { success: true, leaderboard };
+}
 //start game timer, count to see if they're a cheater
 async function startGame(params){
     const {sessionId} = params;
@@ -129,12 +134,30 @@ async function updateScore(params){
                 sp = sp + ${Number(score)},
                 xp = xp + (CASE WHEN ${!!worthXP} THEN ${Number(score)} ELSE 0 END)
             WHERE username = ${username}
-            RETURNING id, username, sp, xp`;
+            RETURNING username, sp, xp`;
 
     return { success: true, user: rows[0] };
+}
+
+async function reportGame(params){
+    const {username, apples, avg_pps, sTime, timestamps, score} = params;
+
+    await sql`
+        INSERT INTO global_game_stats (username, apples, survival_time, avg_pps, apple_log, score)
+        VALUES (
+            ${username},
+            ${apples},
+            ${sTime},
+            ${avg_pps},
+            ${JSON.stringify(timestamps)},
+            ${score}
+        )
+    `;
+    return {success: true};
+
 }
 
 // NECESSARY FUNCTIONS:
 // add user, sign out, addToInventory, changePassword, createLeaderboard
 
-export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, getGameStart, updateScore};
+export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, getGameStart, updateScore, reportGame};

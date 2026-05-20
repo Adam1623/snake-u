@@ -7,6 +7,7 @@ const gameMain = document.getElementById("gameplay");
 const timedInterface = document.getElementById("timedMode");
 const footer = document.querySelector('footer');
 const signInMenu = document.getElementById("signInMenu");
+const leaderboardMenu = document.getElementById("leaderboardMenu");
 
 //Smaller elements (tick count, scoreboard)
 const ticks = document.getElementById("ticks");
@@ -41,12 +42,12 @@ const innerJoystick = document.getElementById("innerJoystick");
 evilMode = false;
 
 // debug event listener for testing
-// document.addEventListener('keydown', function(event){    
-//         if (event.key === 'p'){
-//             createTooltip(0, true, "<h2> Pro tip! </h2> press space bar <br> to restart instantly", "tooltip", "font-family: 'Pixels'");
-//             // tooltip1.innerHTML = "<button class='tooltipClose' onclick='closeTooltip(0)'>close</button><h2> Pro tip! </h2> press space bar <br> to restart instantly";
-//             // tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
-//         }});
+document.addEventListener('keydown', function(event){    
+        if (event.key === 'p'){
+            createTooltip(0, true, "Successfully signed in!", "tooltip successMsg", "pop fadeOut", null);
+            // tooltip1.innerHTML = "<button class='tooltipClose' onclick='closeTooltip(0)'>close</button><h2> Pro tip! </h2> press space bar <br> to restart instantly";
+            // tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
+        }});
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -55,7 +56,7 @@ function cell (status, location, prev, next) {
     this.next = next;
 }
 
-function createTooltip(id, closeable, content, classes, styles){
+async function createTooltip(id, closeable, content, classes, anims, styles){
     let tip = tooltips[id];
 
     if (classes) tip.classList = classes;
@@ -67,8 +68,20 @@ function createTooltip(id, closeable, content, classes, styles){
     temphtml += content;    
 
     tip.innerHTML = temphtml; 
-    tip.style.display = 'flex';
-    // tip.focus();
+    tip.style.display = 'flex';    
+
+    const animList = anims.split(" ");
+
+    if (animList.includes('pop')){
+        tip.classList.toggle('pop');
+        await sleep(500);
+        tip.classList.toggle('pop');
+    }
+    if (animList.includes('fadeOut')){
+        tip.classList.toggle('fadeOut');
+        await sleep(1500);
+        closeTooltip(id);
+    }
 }
 
 function closeTooltip(id){
@@ -207,7 +220,8 @@ function moveSnake(){
             // this might be a bad idea
             // but snake length is inaccurate for timed mode, it counts # of apples eaten + 1 in reality
             snakeLength++;
-                        
+
+            appleInfo.push({time: Date.now(), mult: baseMult});                        
 
             //Special changes if timed mode
             if (isTimed){
@@ -426,8 +440,7 @@ function gameOver(){
     //Stops timer if needed
     if (timerInterval) clearInterval(timerInterval);
 
-    window.handleUpdateScore(Math.floor(score), true);
-
+    window.handleUpdateScore(Math.floor(score), true);    
     //Shows loss ui
     retryB.style.display = "flex";
     homeB.style.display = "flex";
@@ -447,13 +460,15 @@ function gameOver(){
     //show quick restart tip (not on mobile though)
     else
     {
-        createTooltip(0, true, "<h2> Pro tip! </h2> press space bar <br> to restart instantly", "tooltip", "font-family: 'Pixels'");
+        createTooltip(0, true, "<h2> Pro tip! </h2> press space bar <br> to restart instantly", "tooltip", "pop", "font-family: 'Pixels'");
     }
 
     const gameEndTime = performance.now();
     const survivalTime = (gameEndTime - gameStartTime) / 1000;
-    gameReport.innerHTML = `Survived for ${Math.round(survivalTime)} seconds <br>Earned ${Math.floor(score)} Snake Points<br> Collected ${snakeLength} apples`;
-    gameReport.style.display = 'block';
+    gameReport.innerHTML = `Survived for ${Math.round(survivalTime)} seconds <br>Earned ${Math.floor(score)} Snake Points<br> Collected ${snakeLength - 1} apples`;
+    gameReport.style.display = 'block';    
+    //saves game stats to table
+    handleReportGame(Math.round(survivalTime), Math.floor(score), snakeLength - 1, appleInfo);
     //Enables quick restart
     if (quickRestart) window.addEventListener('keydown', handleFastReset);
 }
@@ -533,6 +548,7 @@ function switchExtreme(){
     updateColour();
 }
 
+//MENU STUFF
 function switchSignIn(register){    
     home.style.display = home.style.display == "none" ? "flex": "none";
     signInMenu.style.display = signInMenu.style.display == "none" ? "flex": "none";
@@ -547,6 +563,36 @@ function switchSignIn(register){
     document.getElementById("usernameHolder").style.display = register ? "block" : "none"; 
     document.getElementById("loginHolder").style.display = register ? "none" : "block";      
 }
+
+let leaderboardEntries = null;
+
+async function switchLeaderboard(){
+    home.style.display = home.style.display == "none" ? "flex": "none";
+    leaderboardMenu.style.display = leaderboardMenu.style.display == "none" ? "flex": "none";
+    if (!leaderboardEntries) leaderboardEntries = await handleCreateLeaderboard();    
+
+    let listContent = "";
+    let count = 0;
+    for (entry of leaderboardEntries.leaderboard){
+        count++;
+        uName = entry.username.length > 25 ? `${entry.username.slice(0, 25)}...` : entry.username;
+        if (count <= 3){
+            if (count == 1){
+                listContent += `<li class='shimmer-text' style='margin-bottom: 15px; font-size: 50px; --c1: #ca9c06; --c2: #f8dd64; --c3: #ca9c06; '>${count}. ${uName} — ${entry.xp} XP</li>`;
+            }
+            else if (count == 2){
+                listContent += `<li class='shimmer-text' style='margin-bottom: 10px; font-size: 40px;'>${count}. ${uName} — ${entry.xp} XP</li>`;
+            }
+            else if (count === 3){
+                listContent += `<li class='shimmer-text' style='margin-bottom: 8px; font-size: 25px; --c1: #66350d; --c2: #b96016; --c3: #66350d; '>${count}. ${uName} — ${entry.xp} XP</li>`;
+            }    
+        }
+        else listContent += `<li>${count}. ${uName} — ${entry.xp} XP</li>`;
+    }
+
+    document.getElementById("leaderboardList").innerHTML = listContent;
+}
+//END OF MENU STUFF
 
 const sliderStep = 0.5;
 
@@ -638,6 +684,8 @@ async function startGame(mode){
         tip.style.display = "none";
     });   
 
+    //list of apple times + points earned
+    appleInfo = [];
     
     homeControls.abort();
 

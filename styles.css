@@ -41,9 +41,9 @@ body {
     /* font-family: "Montserrat", sans-serif; */
     font-weight: 600;
     text-transform: uppercase;
-    --c1: #ffffff;
+    --c1: #c4c4c4;
     --c2: #5E5E5E;
-    --c3: #ffffff;
+    --c3: #c4c4c4;
     --dur: 5s;
     background: linear-gradient(135deg, var(--c1), var(--c2), var(--c3));
     background-clip: text;
@@ -51,6 +51,30 @@ body {
     background-size: 200% 100%;
     animation: shimmer var(--dur) linear infinite;
 }
+
+/* input[type="range"] {
+    --val: 50%; 
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px; 
+    border-radius: 4px;
+    background: #744343;
+}
+input[type="range"]::-moz-range-track {
+    height: 8px;
+    border-radius: 4px;
+    background: #423a3a;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    display: none;
+}
+input[type="range"]::-moz-range-thumb {
+    display: none;
+} */
 
 .shimmer-element {
     font-weight: 600;
@@ -82,6 +106,10 @@ body {
     filter: url(#fire);
 }
 
+.pop {
+    animation: pop 0.5s ease;
+}
+
 @keyframes pop {
     0%   { transform: translate(-50%, -50%) scale(0); opacity: 0; }
     50%  { transform: translate(-50%, -50%) scale(1.1); opacity: 1;}
@@ -96,6 +124,26 @@ body {
 
 .ambNoti {
     animation: ambient 2s ease-in-out infinite alternate;
+}
+
+
+.fadeOut{
+    animation: fadeOut 1.5s ease-in-out;
+}
+
+@keyframes fadeOut{
+    0% {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    75% {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    100% {
+        opacity: 0;
+        pointer-events: none; 
+    }
 }
 
 .tooltip{
@@ -115,7 +163,6 @@ body {
     color: whitesmoke;
     background-color: #0000009c;
     padding: 3% 2%;
-    animation: pop 0.5s ease;
 }
 
 .tooltipClose {    
@@ -138,6 +185,13 @@ body {
     background-color:  rgba(0, 0, 0, 0.6);
 }
 
+h1{
+    flex-wrap: wrap;
+    font-size: 60px;
+    font-weight: bold;
+    flex-basis: 100%;
+}
+
 h2{
     flex-wrap: nowrap;
     font-size: 40px;
@@ -149,6 +203,13 @@ h2{
     padding-top: 2%;
     background: linear-gradient(90deg, rgba(165, 42, 42, 0.651), rgb(187, 13, 13), rgba(165, 42, 42, 0.651));
     /* margin-right: 100%; */
+}
+
+#leaderboardList{
+    list-style: none;
+    list-style-position: inside;
+    padding-left: 0;
+
 }
 
 /* Used for main menu items */
@@ -343,6 +404,29 @@ input {
     align-items: center;
     text-align: center;
     align-content: center;
+}
+
+.xpDisplay {
+    display: none;
+    box-sizing: border-box;
+    font-family: 'Nice';
+    /* padding-top : 10px;
+    padding-bottom : 10px; */
+    align-items: center;
+    text-align: center;
+    align-content: center;
+    font-size: 1cqw;
+    position: fixed;
+    width: 20%;
+    height: 10%;
+    left: 100%; 
+    top: 84%;
+    transform: translate(-100%, -100%);
+    background-color: rgb(193, 199, 206);
+    
+    /* color: whitesmoke; */
+    opacity: 1;
+    border: 0.2cqw solid rgb(110, 112, 138); 
 }
 
 .snakePointsDisplay {

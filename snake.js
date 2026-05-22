@@ -225,26 +225,28 @@ function moveSnake(){
 
             //Special changes if timed mode
             if (isTimed){
+                const BASE_TIME = 1.0;
+                const PEAK_TIME = 1.8;
+                const PEAK_APPLE = 15; 
+                const WIDTH = 30; 
+                const DEFAULT_AREA = 16 * 16;
+                const boardScalar = ((boardX * boardY) / DEFAULT_AREA) ** 0.2;
+                timePerApple = boardScalar * (BASE_TIME + (PEAK_TIME - BASE_TIME) * Math.exp(-((snakeLength - PEAK_APPLE) ** 2) / (2 * WIDTH ** 2)));
+                console.log(timePerApple);
+                //increases speed upon hitting each threshhold
+                if (speedThreshholds.includes(snakeLength)){
+                    moveFrameGap--;
+                }    
 
-                // bad code, but sets threshold initially
-                if (snakeLength <= 2){
-                    thresh = 3;
-                }
                 if (!evilMode){
-                    if (snakeLength >= thresh && moveFrameGap > 3){
-                        moveFrameGap--;
-                        thresh += thresh;
-                    }                    
-                    curTime += 1 * Math.exp(-0.06 * (snakeLength - 1)) / (14 / ((boardX + boardY) / 2)) + 1.5;
+                                   
+                    timePerApple += (-0.01 * (snakeLength - 1)) + 0.2; //1 * Math.exp(-0.06 * (snakeLength - 1)) / (14 / ((boardX + boardY) / 2)) + 1.5;
+                    curTime += timePerApple;
                 }
                 else{
-                    if (snakeLength >= thresh && moveFrameGap > 2){
-                        moveFrameGap--;
-                        thresh += thresh;
-                    }
-                    curTime += 2 * Math.exp(-0.06 * (snakeLength - 1)) / (14 / ((boardX + boardY) / 2)) + 0.5;
-                }
-                
+                    timePerApple +=  (-0.05 * snakeLength) / (snakeLength / 2 + 1); //2 * Math.exp(-0.06 * (snakeLength - 1)) / (14 / ((boardX + boardY) / 2)) + 0.5;
+                    curTime += timePerApple;
+                }                
             }
         }
         if (board[y + dy][x + dx].status != app || snakeLength > maxSnakeLength){
@@ -351,11 +353,11 @@ function changeScore(amt, mode){
 
     // quarter done
     if (snakeLength == Math.floor((boardX * boardY) / 4)){        
-        changeMult(1.25, "multiply");
+        changeMult(2, "multiply");
     }
     // half done
     else if (snakeLength == Math.floor((boardX * boardY) / 2)){
-        changeMult(1.5, "multiply");
+        changeMult(2, "multiply");
     }
     // 3 / 4 done?
     else if (snakeLength == Math.floor((boardX * boardY) / 1.5)){
@@ -372,7 +374,7 @@ function changeScore(amt, mode){
         if (evilMode){
             if (snakeLength % Math.floor(((boardX + boardY) / 2)) == 0){
                 // baseMult *= 1.4;
-                changeMult(1.4, "multiply");
+                changeMult(1.5, "multiply");
             }
             changeMult(0.1, "add");
         }
@@ -506,10 +508,10 @@ function updateColour(){
         dSlider.style.accentColor = `rgb(${r}, ${g}, 0)`;
 
         if (+dSlider.value == dSlider.min){
-            babyPic.style.display = "block";
+            babyPic.style.display = "flex";
         }
         else if (+dSlider.value == dSlider.max){
-            snakePic.style.display = "block";
+            snakePic.style.display = "flex";
         }
         else{
             babyPic.style.display = "none";
@@ -710,6 +712,7 @@ async function startGame(mode){
 
     snakeLength = 1;
     score = 0;
+    timePerApple = 1.5;
     scoreBoard.innerText = score;
 
     moveCount = 0;
@@ -809,23 +812,27 @@ async function startGame(mode){
         }
         else maxApples = 1;
 
-        moveFrameGap = 12;
+        // moveFrameGap = 12;
         if (!evilMode){
-            moveFrameGap += 1;
+            moveFrameGap = 12;
             maxSnakeLength = (boardX * boardY) / 8 + (boardX + boardY) / 2 + Math.floor(difValue);
+            // timePerApple = 1.5;
+            speedThreshholds = [3, 10, 20, 40, 80, 100, 130, 160];
         }
         else{
-            moveFrameGap -= 3;
+            moveFrameGap = 9;
             maxSnakeLength = (boardX * boardY) / 6 + Math.floor(difValue * 2);
+            // timePerApple = 0.5;
+            speedThreshholds = [3, 6, 15, 30, 60, 100, 130, 160, 180];
         }
         
         //clean up
         timer.style.removeProperty("color");
         timer.style.removeProperty("font-size");
         
-        curTime = Math.floor((boardX + boardY) / 6);
-        if (!evilMode) {curTime += Math.floor(dSlider.max - difValue) + 5; baseMult = Math.min(Math.max(baseMult, 0.9), 1.1);} 
-        else {curTime += Math.floor((difValue - 1)); changeMult(0.5, "multiply"); changeMult((dSlider.max - difValue / 2) / 5, "add");}
+        curTime = Math.floor((boardX + boardY) / 4);
+        // if (!evilMode) {curTime = 12;} 
+        // else {curTime += Math.floor((difValue + 1)); changeMult(0.5, "multiply"); changeMult((dSlider.max - difValue) / 5, "add");}
         isTimed = true;
         timer.innerText = curTime.toFixed(2);
         timedInterface.style.display = "block";

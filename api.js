@@ -39,7 +39,6 @@ export async function addUser(username, email, password, middleName) {
     if (!res.ok) {        
         const errorData = await res.json().catch(() => ({}));
         throw {validationErrors: errorData ? [errorData.error] : []};
-        // console.log(errorData);
         // throw new Error(errorData.error || "User registration failed");
     }
 
@@ -103,7 +102,6 @@ export async function changePassword(){
 
 }
 
-//incomplete
 export async function createLeaderboard(){
     const res = await fetch('/api?action=createLeaderboard', {
         method: 'POST',
@@ -114,6 +112,18 @@ export async function createLeaderboard(){
         body: JSON.stringify({})
     });
 
+    return res.json();
+}
+
+export async function fetchStats(){
+    const res = await fetch('/api?action=fetchStats', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({})
+    });
     return res.json();
 }
 

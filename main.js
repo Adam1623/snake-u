@@ -1,10 +1,11 @@
-import { addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, updateScore, reportGame} from "./api.js";
+import { addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, fetchStats, startGame, updateScore, reportGame} from "./api.js";
 
 //Lets snake.js access database
 window.handleUpdateScore = handleUpdateScore;
 window.handleStartGame = handleStartGame;
 window.handleCreateLeaderboard = handleCreateLeaderboard;
 window.handleReportGame = handleReportGame;
+window.handleFetchStats = handleFetchStats;
 
 async function resetErrors(){
     signInStatus.textContent = "";
@@ -27,6 +28,7 @@ async function loginVisual(signIn, username, snakePoints, xp){
         loginStatus.innerHTML = `<a style="position: relative; text-decoration: underline; font-size: 0.7cqw;">Signed in as</a><br>${username}`;
         logoutButton.style.display = "block";
         logoutInverseButton.style.display = "none";
+        statsButton.disabled = false;
 
         //update snake point display here, function should take another var
         snakePointsDisplay.innerHTML = `${snakePoints}<img src="./snakepoint.png" class="snakePointIcon">`;
@@ -44,6 +46,7 @@ async function loginVisual(signIn, username, snakePoints, xp){
         logoutInverseButton.style.display = "block";
         snakePointsDisplay.style.display = "none";
         xpDisplay.style.display = "none";
+        statsButton.disabled = true;
     }
 }
 
@@ -141,14 +144,15 @@ async function handleSignIn(){
         
     }
     loginButton.disabled = false;
-    exitSignInButton.disabled = false;
+    exitSignInButton.disabled = false;    
 }
 
 async function handleSignOut(){
     logoutButton.disabled = true;
+    statsButton.disabled = true;
     await signOut();
     loginVisual(false, "");
-    logoutButton.disabled = false;
+    logoutButton.disabled = false;    
 }
 
 //incomplete
@@ -156,9 +160,12 @@ async function handleChangePassword(){
 
 }
 
-//incomplete
 async function handleCreateLeaderboard(){
     return await(createLeaderboard());
+}
+
+async function handleFetchStats(){
+    return await(fetchStats());
 }
 
 //incomplete
@@ -208,6 +215,7 @@ const registerButton = document.getElementById("registerReq");
 const exitSignInButton = document.getElementById("exitSignIn");
 exitSignInButton.addEventListener('click', resetErrors);
 
+const statsButton = document.getElementById('statsButton');
 
 const usernameI = document.getElementById("username");
 const emailI = document.getElementById("email");

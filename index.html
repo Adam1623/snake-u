@@ -76,6 +76,7 @@
 <!-- Tooltips (usable on any menu) -->
 <div id="tooltip1" class="tooltip" style="display: none;"> <h2> Pro tip! </h2> press space bar <br> to restart instantly </div>
 
+<!-- Home menu -->
 <div id="home" class="container" style="display: none; margin-bottom: 6%; flex-grow: 1; align-items: center; max-width: 700px; max-height: 1000px; margin: auto auto;">
     <div style="margin-inline: 100%; margin-bottom: 6%; padding: 0px;"> <img src="./logov1.png" height="200px" width="400px" style="display: block;"> </div>
     <button class="mainMenu normal-button" id="playNormalB" style="margin-inline: 0%; margin-top: 0%; width: 200px;" onclick="startGame('normal')">Play Normal</button>
@@ -99,7 +100,7 @@
 
         <button id="createAccountButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px; margin-bottom: 25px;" onclick="switchSignIn(true)">Create Account</button>
 
-        <button id="statsButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px;" disabled>Stats</button>
+        <button id="statsButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px;" disabled onclick="switchStats()">Stats</button>
         <button id="settingsButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px;" disabled>Settings</button>
       </div>
     </div>      
@@ -163,6 +164,14 @@
   <h1>🏆LEADERBOARD🏆</h1>
   <ol id="leaderboardList" style="flex-basis: 100%; font-family: 'Button';">...</ol>
   <button id="exitLeaderboard" type="button" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchLeaderboard()">Back</button> </div>
+</div>  
+</div>
+
+<div id="statsMenu" class="container" style="display: none; align-items: center; text-align: center; flex-grow: 1; max-width: 900px; margin: auto auto;">
+<div>
+  <h1>🎯STATS🎯</h1>
+  <ol id="statsList" style="display: flex; gap: 1.5rem; flex-direction: column; flex-basis: 100%; font-size: 28px; font-family: 'Nice';">...</ol>
+  <button id="exitStats" type="button" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchStats()">Back</button> </div>
 </div>  
 </div>
 

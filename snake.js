@@ -8,6 +8,7 @@ const timedInterface = document.getElementById("timedMode");
 const footer = document.querySelector('footer');
 const signInMenu = document.getElementById("signInMenu");
 const leaderboardMenu = document.getElementById("leaderboardMenu");
+const statsMenu = document.getElementById("statsMenu");
 
 //Smaller elements (tick count, scoreboard)
 const ticks = document.getElementById("ticks");
@@ -232,7 +233,7 @@ function moveSnake(){
                 const DEFAULT_AREA = 16 * 16;
                 const boardScalar = ((boardX * boardY) / DEFAULT_AREA) ** 0.2;
                 timePerApple = boardScalar * (BASE_TIME + (PEAK_TIME - BASE_TIME) * Math.exp(-((snakeLength - PEAK_APPLE) ** 2) / (2 * WIDTH ** 2)));
-                console.log(timePerApple);
+                // console.log(timePerApple);
                 //increases speed upon hitting each threshhold
                 if (speedThreshholds.includes(snakeLength)){
                     moveFrameGap--;
@@ -583,7 +584,8 @@ async function switchLeaderboard(){
 
     let listContent = "";
     let count = 0;
-    console.log(leaderboardEntries);
+    if (!leaderboardEntries.leaderboard) {document.getElementById("leaderboardList").innerHTML = "Leaderboard could not be loaded."; return;}
+
     for (entry of leaderboardEntries.leaderboard){
         count++;
         uName = entry.username.length > 25 ? `${entry.username.slice(0, 25)}...` : entry.username;
@@ -603,6 +605,46 @@ async function switchLeaderboard(){
 
     document.getElementById("leaderboardList").innerHTML = listContent;
 }
+
+async function switchStats(){
+    home.style.display = home.style.display == "none" ? "flex": "none";
+    document.getElementById("statsList").innerHTML = '...';
+    statsMenu.style.display = statsMenu.style.display == "none" ? "flex": "none";
+
+    let listContent = "";
+    let stats = await handleFetchStats();
+    stats = stats.stats;
+    if (!stats) {document.getElementById("statsList").innerHTML = "Couldn't retrieve stats!"; return;}
+    // high_score      
+    // high_score_mode 
+    // time_played     
+    // rounds_played   
+    // apples_collected
+    // mode_counts     
+    listContent += `<li style='border: 5px solid #bdbc94; padding: 20px'><a class='bigStat' style='--c1: #bdbc94'>High score</a><br>🏆<br><a style='font-weight: bold;'>${stats.high_score} SP</a> on <a style='font-weight: bold;'>${stats.high_score_mode}</a></li>`;
+
+    const hours = Math.floor(stats.time_played / 3600);
+    const minutes = Math.floor((stats.time_played % 3600) / 60);    
+    const seconds = Math.floor(stats.time_played % 60);
+    let timeFormatted = '';
+    if (hours > 0) timeFormatted += `${hours}h `;
+    if (minutes > 0) timeFormatted += `${minutes}m `;
+    if (seconds > 0) timeFormatted += `${seconds}s`;
+
+    listContent += `<li style='border: 5px solid #bbbbbb; padding: 20px'><a class='bigStat' style='--c1: #bbbbbb'>Time played</a><br>⌛<br><a style='font-weight: bold;'>${timeFormatted}</a></li>`;
+    listContent += `<li style='border: 5px solid #94b3bd; padding: 20px'><a class='bigStat' style='--c1: #94b3bd'>Rounds played</a><br>🐍<br><a style='font-weight: bold'>${stats.rounds_played}</a></li>`;
+    listContent += `<li style='border: 5px solid #bd9a94; padding: 20px'><a class='bigStat' style='--c1: #bd9a94'>Apples eaten</a><br>🍎<br><a style='font-weight: bold'>${stats.apples_collected}</a></li>`;
+
+    const mCount = Math.max(...Object.values(stats.mode_counts));
+    const hMode = Object.keys(stats.mode_counts).find(key => stats.mode_counts[key] === mCount);
+    listContent += `<li style='border: 5px solid #bd94bb; padding: 20px'><a class='bigStat' style='--c1: #bd94bb'>Favourite mode</a><br>💛<br><a style='font-weight: bold'>${hMode}</a></li>`;
+
+    // listContent += `<li></li>`;
+
+    document.getElementById("statsList").innerHTML = listContent;
+
+}
+
 //END OF MENU STUFF
 
 const sliderStep = 0.5;

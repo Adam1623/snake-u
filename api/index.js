@@ -1,6 +1,7 @@
-import * as db from '../db.js'; // Adjust path if your db.js is in a different folder
+import * as db from '../db.js';
 import crypto from 'crypto';
 import { profanity } from '@2toad/profanity';
+import { fetchStats } from '../api.js';
 
 const publicActions = {
     addUser: db.addUser,
@@ -17,6 +18,7 @@ const actions = {
     signOut: db.signOut,
     changePassword: db.changePassword,
     createLeaderboard: db.createLeaderboard,
+    fetchStats: db.fetchStats,
     startGame: db.startGame,
     updateScore: db.updateScore,
     reportGame: db.reportGame
@@ -109,6 +111,9 @@ export default async function handler(req, res) {
                 if (action === 'reportGame'){
                     return res.status(200).json({success: true});
                 }
+                if (action === 'fetchStats'){
+                    return res.status(200).json({success: false});
+                }
             }
 
             //security checks
@@ -146,16 +151,19 @@ export default async function handler(req, res) {
 
                 const maxScore = secondsPlayed * 15;                
                 if (Number(params.score) > maxScore){
-                    console.warn("Suspicious amount of points blocked.");
+                    console.warn("Suspicious amount of points blocked, flagging account.");
                     return res.status(403).json({error: "Suspicious points blocked"});
                 }
                 params.username = curUser.username;
             }
             if (action === 'reportGame'){
+                params.id = curUser.id;
                 params.username = curUser.username;
                 params.avg_pps = params.score / params.sTime;                
             }
-
+            if (action === 'fetchStats'){
+                params.username = curUser.username;
+            }
 
         } else if (req.method === 'GET') {
             // Extract all query parameters EXCEPT 'action'

@@ -114,6 +114,7 @@ async function createLeaderboard(params) {
 
     }
     for (const mode of Object.keys(leaderboard)) {
+        const isTimed = mode.includes('timed') && !mode.includes('untimed');
         leaderboard[mode].sort((a, b) => isTimed ? b.time - a.time : b.sp - a.sp);
     }                
 }

@@ -387,6 +387,7 @@ filter: drop-shadow(var(--dirx) var(--diry) #363c4481);
 
 .arrow-button:disabled {
     background-color: transparent;
+    border-color: transparent;
     color: transparent;
     -webkit-text-stroke-color : #4e4e4e7a; 
     filter: drop-shadow(2px 2px #cfcfcf);

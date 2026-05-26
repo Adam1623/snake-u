@@ -43,12 +43,12 @@ const innerJoystick = document.getElementById("innerJoystick");
 evilMode = false;
 
 // debug event listener for testing
-document.addEventListener('keydown', function(event){    
-        if (event.key === 'p'){
-            createTooltip(0, true, "Successfully signed in!", "tooltip successMsg", "pop fadeOut", null);
-            // tooltip1.innerHTML = "<button class='tooltipClose' onclick='closeTooltip(0)'>close</button><h2> Pro tip! </h2> press space bar <br> to restart instantly";
-            // tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
-        }});
+// document.addEventListener('keydown', function(event){    
+//         if (event.key === 'p'){
+//             createTooltip(0, true, "Successfully signed in!", "tooltip successMsg", "pop fadeOut", null);
+//             // tooltip1.innerHTML = "<button class='tooltipClose' onclick='closeTooltip(0)'>close</button><h2> Pro tip! </h2> press space bar <br> to restart instantly";
+//             // tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
+//         }});
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -442,6 +442,8 @@ function gameOver(){
     //Stops timer if needed
     if (timerInterval) clearInterval(timerInterval);
 
+    resetLeaderboards();
+
     window.handleUpdateScore(Math.floor(score), true);    
     //Shows loss ui
     retryB.style.display = "flex";
@@ -627,11 +629,14 @@ async function changeLeaderboardId(direction){
     displayLeaderboard(leaderboardNames[leaderboardID - 1]);
 }
 
-async function switchLeaderboard(){
+async function switchLeaderboard(){ 
     home.style.display = home.style.display == "none" ? "flex": "none";
     leaderboardMenu.style.display = leaderboardMenu.style.display == "none" ? "flex": "none";
     lLeft.classList.remove("pop2");
     lRight.classList.remove("pop2");
+    lLeft.disabled = true;
+    lRight.disabled = false;
+    leaderboardID = 1;
     const lName = leaderboardNames[leaderboardID - 1];
     lTitle.innerHTML = lName.toUpperCase();
     if (!leaderboardEntries[lName]) leaderboardEntries[lName] = await handleCreateLeaderboard(lName); 
@@ -641,7 +646,7 @@ async function switchLeaderboard(){
 function displayLeaderboard(board){
     let listContent = "";    
     let count = 0;
-    if (!leaderboardEntries[board].leaderboard) {lList.innerHTML = "Leaderboard could not be loaded."; return;}
+    if (!leaderboardEntries[board] || !leaderboardEntries[board].leaderboard) {lList.innerHTML = "Leaderboard could not be loaded."; return;}
 
     for (entry of leaderboardEntries[board].leaderboard){
         let statKey = Object.keys(entry).find(k => k !== 'username');
@@ -676,6 +681,17 @@ function displayLeaderboard(board){
     }
 
     lList.innerHTML = listContent;
+}
+
+function resetLeaderboards(){
+    lList.innerHTML = '...';
+    leaderboardEntries = {
+        'overall xp': null,
+        'normal mode untimed': null,
+        'normal mode timed': null,
+        'extreme mode untimed': null,
+        'extreme mode timed': null
+        };
 }
 
 async function switchStats(){

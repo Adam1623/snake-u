@@ -160,8 +160,8 @@ async function handleChangePassword(){
 
 }
 
-async function handleCreateLeaderboard(){
-    return await(createLeaderboard());
+async function handleCreateLeaderboard(board){
+    return await(createLeaderboard(board));
 }
 
 async function handleFetchStats(){

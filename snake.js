@@ -145,6 +145,8 @@ function makeBoard(xDim, yDim){
     snakeHead.prev = snakeTail;    
 }
 
+//updateQueue = [];
+
 function drawBoard(){
     // Reset Board
     htmlBoard.textContent = "";
@@ -152,10 +154,7 @@ function drawBoard(){
     //Redraw board
     board.forEach(row => {
         row.forEach(c => {
-            htmlBoard.textContent += c.status;           
-            // if (dirs.includes(c.status)){
-            //     snakeHead = c;
-            // }            
+            htmlBoard.textContent += c.status;               
         });
         htmlBoard.textContent += "\n";
     });
@@ -575,35 +574,108 @@ function switchSignIn(register){
     document.getElementById("loginHolder").style.display = register ? "none" : "block";      
 }
 
-let leaderboardEntries = null;
+let leaderboardEntries = {
+    'overall xp': null,
+    'normal mode untimed': null,
+    'normal mode timed': null,
+    'extreme mode untimed': null,
+    'extreme mode timed': null
+}
+const leaderboardNames = ['overall xp', 'normal mode untimed', 'extreme mode untimed', 'normal mode timed', 'extreme mode timed'];
+let leaderboardID = 1;
+
+const lLeft = document.getElementById('leaderboardLeft');
+const lRight = document.getElementById('leaderboardRight');
+const lList = document.getElementById("leaderboardList");
+const lTitle = document.getElementById('leaderboardTitle')
+
+async function changeLeaderboardId(direction){
+
+    const buttonClicked = direction == 1 ? lRight: lLeft;
+
+    buttonClicked.classList.remove("pop2");
+    void buttonClicked.offsetWidth;
+    buttonClicked.classList.add("pop2");
+    
+    leaderboardID += direction;
+    lTitle.innerHTML = leaderboardNames[leaderboardID - 1].toUpperCase();
+
+    if (leaderboardID <= 1){
+        lLeft.disabled = true;
+        lRight.disabled = false;
+    }
+    else if (leaderboardID >= Object.keys(leaderboardEntries).length){
+        lLeft.disabled = false;
+        lRight.disabled = true;
+    }
+    else{
+        lLeft.disabled = false;
+        lRight.disabled = false;
+    }
+
+    if (!leaderboardEntries[leaderboardNames[leaderboardID - 1]]){
+        lList.innerHTML = '...';
+        lLeft.disabled = true;
+        lRight.disabled = true;
+        let tempBoards = await handleCreateLeaderboard("bestScores");
+        for (const mode of ['normal mode untimed', 'extreme mode untimed',  'normal mode timed', 'extreme mode timed']) {
+            leaderboardEntries[mode] = {leaderboard: tempBoards['leaderboard'][mode]};
+        }
+        lLeft.disabled = false;
+        lRight.disabled = false;        
+    }
+    displayLeaderboard(leaderboardNames[leaderboardID - 1]);
+}
 
 async function switchLeaderboard(){
     home.style.display = home.style.display == "none" ? "flex": "none";
     leaderboardMenu.style.display = leaderboardMenu.style.display == "none" ? "flex": "none";
-    if (!leaderboardEntries) leaderboardEntries = await handleCreateLeaderboard();    
+    lLeft.classList.remove("pop2");
+    lRight.classList.remove("pop2");
+    const lName = leaderboardNames[leaderboardID - 1];
+    lTitle.innerHTML = lName.toUpperCase();
+    if (!leaderboardEntries[lName]) leaderboardEntries[lName] = await handleCreateLeaderboard(lName); 
+    displayLeaderboard(lName);
+}
 
-    let listContent = "";
+function displayLeaderboard(board){
+    let listContent = "";    
     let count = 0;
-    if (!leaderboardEntries.leaderboard) {document.getElementById("leaderboardList").innerHTML = "Leaderboard could not be loaded."; return;}
+    if (!leaderboardEntries[board].leaderboard) {lList.innerHTML = "Leaderboard could not be loaded."; return;}
 
-    for (entry of leaderboardEntries.leaderboard){
+    for (entry of leaderboardEntries[board].leaderboard){
+        let statKey = Object.keys(entry).find(k => k !== 'username');
+        let statValue = entry[statKey];
+
+        if (statKey == 'time'){
+            const hours = Math.floor(statValue / 3600);
+            const minutes = Math.floor((statValue % 3600) / 60);    
+            const seconds = Math.floor(statValue % 60);
+            let timeFormatted = '';
+            if (hours > 0) timeFormatted += `${hours}h `;
+            if (minutes > 0) timeFormatted += `${minutes}m `;
+            if (seconds > 0) timeFormatted += `${seconds}s`;
+            statKey = '';
+            statValue = timeFormatted;
+        }
+
         count++;
         uName = entry.username.length > 25 ? `${entry.username.slice(0, 25)}...` : entry.username;
         if (count <= 3){
             if (count == 1){
-                listContent += `<li class='shimmer-text' style='margin-bottom: 15px; font-size: 50px; --c1: #ca9c06; --c2: #f8dd64; --c3: #ca9c06; '>${count}. ${uName} — ${entry.xp} XP</li>`;
+                listContent += `<li class='shimmer-text' style='margin-bottom: 15px; font-size: 50px; --c1: #ca9c06; --c2: #f8dd64; --c3: #ca9c06; '>${count}. ${uName} — ${statValue} ${statKey}</li>`;
             }
             else if (count == 2){
-                listContent += `<li class='shimmer-text' style='margin-bottom: 10px; font-size: 40px;'>${count}. ${uName} — ${entry.xp} XP</li>`;
+                listContent += `<li class='shimmer-text' style='margin-bottom: 10px; font-size: 40px;'>${count}. ${uName} — ${statValue} ${statKey}</li>`;
             }
             else if (count === 3){
-                listContent += `<li class='shimmer-text' style='margin-bottom: 8px; font-size: 25px; --c1: #66350d; --c2: #b96016; --c3: #66350d; '>${count}. ${uName} — ${entry.xp} XP</li>`;
+                listContent += `<li class='shimmer-text' style='margin-bottom: 8px; font-size: 25px; --c1: #66350d; --c2: #b96016; --c3: #66350d; '>${count}. ${uName} — ${statValue} ${statKey}</li>`;
             }    
         }
-        else listContent += `<li>${count}. ${uName} — ${entry.xp} XP</li>`;
+        else listContent += `<li>${count}. ${uName} — ${statValue} ${statKey}</li>`;
     }
 
-    document.getElementById("leaderboardList").innerHTML = listContent;
+    lList.innerHTML = listContent;
 }
 
 async function switchStats(){

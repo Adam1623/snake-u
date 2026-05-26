@@ -159,15 +159,20 @@
 </div>
 
 <!-- Leaderboard menu -->
-<div id="leaderboardMenu" class="container" style="display: none; align-items: center; text-align: center; flex-grow: 1; max-width: 900px; max-height: 700px; margin: auto auto;">
+<div id="leaderboardMenu" class="container" style="display: none; align-items: first baseline; text-align: center; flex-grow: 1; max-width: 900px; max-height: 700px; margin: auto auto;">
 <div>
-  <h1>🏆LEADERBOARD🏆</h1>
+  <h1 style="margin: 20px;">🏆LEADERBOARD🏆</h1>
+  <div style="display: flex; align-items: center; justify-content: center; padding-bottom: 20px; border-bottom: 2px solid rgba(128, 128, 128, 0.5);">
+  <button id="leaderboardLeft" class="simple-button arrow-button" style="--dirx: -5px; --diry: 2px; --xshift: -3px;" disabled onclick="changeLeaderboardId(-1)">&lt;</button>
+  <span id="leaderboardTitle" style="display: inline-block; width: 350px; text-align: center; font-size: 28px; font-family: 'Nice';"></span>
+  <button id="leaderboardRight" class="simple-button arrow-button" onclick="changeLeaderboardId(1)">&gt;</button>
+  </div>
   <ol id="leaderboardList" style="flex-basis: 100%; font-family: 'Button';">...</ol>
   <button id="exitLeaderboard" type="button" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchLeaderboard()">Back</button> </div>
 </div>  
 </div>
 
-<div id="statsMenu" class="container" style="display: none; align-items: center; text-align: center; flex-grow: 1; max-width: 900px; margin: auto auto;">
+<div id="statsMenu" class="container" style="display: none; align-items: first baseline; text-align: center; flex-grow: 1; max-width: 900px; margin: auto auto;">
 <div>
   <h1>🎯STATS🎯</h1>
   <ol id="statsList" style="display: flex; gap: 1.5rem; flex-direction: column; flex-basis: 100%; font-size: 28px; font-family: 'Nice';">...</ol>

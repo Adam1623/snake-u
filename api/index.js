@@ -164,7 +164,6 @@ export default async function handler(req, res) {
             if (action === 'fetchStats'){
                 params.username = curUser.username;
             }
-
         } else if (req.method === 'GET') {
             // Extract all query parameters EXCEPT 'action'
             const { action: _, ...restParams } = req.query;

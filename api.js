@@ -102,14 +102,16 @@ export async function changePassword(){
 
 }
 
-export async function createLeaderboard(){
+export async function createLeaderboard(board){
     const res = await fetch('/api?action=createLeaderboard', {
         method: 'POST',
         credentials: 'include',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({})
+        body: JSON.stringify({
+            board: board            
+        })
     });
 
     return res.json();

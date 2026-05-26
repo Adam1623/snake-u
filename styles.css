@@ -116,6 +116,17 @@ input[type="range"]::-moz-range-thumb {
     100% { transform: translate(-50%, -50%) scale(1); opacity: 1;}    
 }
 
+.pop2 {
+    animation: pop2 0.25s ease;
+}
+
+@keyframes pop2 {
+    0%   { transform: scale(0.95); opacity: 1; }
+    50%  { transform: scale(1.15); opacity: 1;}
+    70%  { transform: scale(0.95); opacity: 1;}
+    100% { transform: scale(1); opacity: 1;}    
+}
+
 @keyframes ambient {
     0% {transform: scale(1.05); opacity: 1;}
     100% {transform: scale(0.95); opacity: 0.9;}
@@ -204,11 +215,21 @@ h2{
     /* margin-right: 100%; */
 }
 
-#leaderboardList{
+#leaderboardList,
+#statsList{
     list-style: none;
     list-style-position: inside;
     padding-left: 0;
+}
 
+.bigStat{
+    font-size: 42px;
+    display: inline-block; 
+    --c1: #818181;
+    border-bottom: 4px solid var(--c1); 
+    border-top: 4px solid var(--c1); 
+    line-height: 1.1;
+    margin-bottom: 5px;
 }
 
 /* Used for main menu items */
@@ -340,8 +361,35 @@ button:disabled{
 .simple-button:hover,
 .simple-button:focus{
     transition: 100ms;
-    filter: brightness(1.4) drop-shadow(3px 6px rgb(56, 56, 56));
+    --xshift: 3px;
+    --yshift: 6px;
+    --shadowC: rgb(56, 56, 56);
+    filter: brightness(1.4) drop-shadow(var(--xshift) var(--yshift) var(--shadowC));
     
+}
+
+.arrow-button {
+height: 75px; 
+width: 75px; 
+font-size: 100px; 
+line-height: 0; 
+background-color: transparent;
+border-color: transparent ;
+--outC: #454b52;
+--inC: #afb6bebb;
+--dirx: 5px;
+--diry: 2px;
+-webkit-text-stroke: 5px var(--outC); 
+color: var(--inC);
+filter: drop-shadow(var(--dirx) var(--diry) #363c4481);
+
+}
+
+.arrow-button:disabled {
+    background-color: transparent;
+    color: transparent;
+    -webkit-text-stroke-color : #4e4e4e7a; 
+    filter: drop-shadow(2px 2px #cfcfcf);
 }
 
 .neutralMsg {

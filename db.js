@@ -68,9 +68,7 @@ async function signIn(params){
     return {success: true, user: user};
 }
 
-//incomplete
-async function signOut(params){
-    //something with cookies   
+async function signOut(params){ 
     const {sessionId} = params;
     await sql`DELETE FROM sessions WHERE session_id = ${sessionId}`;
     return {success: true};
@@ -81,14 +79,62 @@ async function changePassword(){
     return {success: true};
 }
 
-async function createLeaderboard() {
-    const leaderboard = await sql`
-        SELECT username, xp
-        FROM users
-        ORDER BY xp DESC LIMIT 10        
+async function createLeaderboard(params) {
+    const {board} = params;
+    let leaderboard = [];
+    if (board == 'overall xp'){
+        leaderboard = await sql`
+            SELECT username, xp
+            FROM users
+            ORDER BY xp DESC LIMIT 10        
+        `;
+    }
+    else if (board == 'bestScores'){
+    const rows = await sql`
+        SELECT username, mode_high_scores, mode_best_times
+        FROM user_stats
     `;
+
+    leaderboard = {};
+    
+    for (const row of rows) {
+        for (const [mode, sp] of Object.entries(row.mode_high_scores || {})) {
+            const isTimed = mode.includes('timed') && !mode.includes('untimed');
+            if (!isTimed){
+            if (!leaderboard[mode]) leaderboard[mode] = [];
+            leaderboard[mode].push({ username: row.username, sp });}
+        }        
+
+        for (const [mode, time] of Object.entries(row.mode_best_times || {})) {
+            const isTimed = mode.includes('timed') && !mode.includes('untimed');
+            if (isTimed){ 
+            if (!leaderboard[mode]) leaderboard[mode] = [];
+            leaderboard[mode].push({ username: row.username, time });}
+        }
+
+    }
+    for (const mode of Object.keys(leaderboard)) {
+        leaderboard[mode].sort((a, b) => isTimed ? b.time - a.time : b.sp - a.sp);
+    }                
+}
     return { success: true, leaderboard};
 }
+
+async function fetchStats(params) {
+    const {username} = params;
+    const rows = await sql`
+        SELECT *
+        FROM user_stats   
+        WHERE username = ${username}
+    `;
+    if (!rows[0]) return {success: false};
+
+    const stats = rows[0];
+    delete stats.user_id;
+    delete stats.username;
+    return { success: true, stats};
+}
+
 //start game timer, count to see if they're a cheater
 async function startGame(params){
     const {sessionId} = params;
@@ -139,7 +185,8 @@ async function updateScore(params){
 }
 
 async function reportGame(params){
-    const {username, apples, avg_pps, sTime, timestamps, score, mode, difficulty} = params;
+    const {id, username, apples, avg_pps, sTime, timestamps, score, mode, difficulty} = params;
+    const isTimed = mode.includes('timed') && !mode.includes('untimed');
 
     await sql`
         INSERT INTO global_game_stats (username, apples, survival_time, avg_pps, apple_log, score, game_mode, difficulty)
@@ -154,6 +201,49 @@ async function reportGame(params){
             ${difficulty}
         )
     `;
+    
+    const modePath = `{"${mode}"}`;
+
+    //BONUS FEATURE: saves the stats separately, for stats menu
+    await sql`
+        INSERT INTO user_stats (user_id, username, high_score, high_score_mode, time_played, rounds_played, apples_collected, mode_counts, mode_high_scores, mode_best_times)
+        VALUES (        
+            ${id},
+            ${username},
+            ${score},
+            ${mode},
+            ${sTime},
+            1,
+            ${apples},
+            ${JSON.stringify({ [mode]: 1 })},
+            ${JSON.stringify({ [mode]: score })},
+            ${JSON.stringify(isTimed ? { [mode]: sTime } : {})}
+        )
+        ON CONFLICT (user_id) DO UPDATE SET
+            high_score       = GREATEST(user_stats.high_score, ${score}),
+            high_score_mode  = CASE WHEN ${score} > user_stats.high_score THEN ${mode} ELSE user_stats.high_score_mode END,
+            time_played      = user_stats.time_played + ${sTime},
+            rounds_played    = user_stats.rounds_played + 1,
+            apples_collected = user_stats.apples_collected + ${apples},
+            mode_counts      = jsonb_set(
+                COALESCE(user_stats.mode_counts, '{}'),
+                ${modePath},
+                (COALESCE(user_stats.mode_counts->>${ mode}, '0')::int + 1)::text::jsonb
+            ),
+            mode_high_scores  = CASE WHEN ${isTimed} THEN user_stats.mode_high_scores ELSE
+                jsonb_set(
+                    COALESCE(user_stats.mode_high_scores, '{}'),
+                    ${modePath},
+                    GREATEST(COALESCE((user_stats.mode_high_scores->>${mode})::int, 0), ${score})::text::jsonb
+                ) END,
+            mode_best_times   = CASE WHEN ${isTimed} THEN
+                jsonb_set(
+                    COALESCE(user_stats.mode_best_times, '{}'),
+                    ${modePath},
+                    GREATEST(COALESCE((user_stats.mode_best_times->>${mode})::int, 0), ${sTime})::text::jsonb
+                ) ELSE user_stats.mode_best_times END
+    `;
+
     return {success: true};
 
 }
@@ -161,4 +251,4 @@ async function reportGame(params){
 // NECESSARY FUNCTIONS:
 // add user, sign out, addToInventory, changePassword, createLeaderboard
 
-export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, startGame, getGameStart, updateScore, reportGame};
+export {addUser, createSession, getUserBySession, signIn, signOut, changePassword, createLeaderboard, fetchStats, startGame, getGameStart, updateScore, reportGame};

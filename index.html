@@ -76,7 +76,8 @@
 <!-- Tooltips (usable on any menu) -->
 <div id="tooltip1" class="tooltip" style="display: none;"> <h2> Pro tip! </h2> press space bar <br> to restart instantly </div>
 
-<div id="home" class="container" style="display: none; margin-bottom: 3%; flex-grow: 1; align-items: center; max-width: 700px; max-height: 700px; margin: auto auto;">
+<!-- Home menu -->
+<div id="home" class="container" style="display: none; margin-bottom: 6%; flex-grow: 1; align-items: center; max-width: 700px; max-height: 1000px; margin: auto auto;">
     <div style="margin-inline: 100%; margin-bottom: 6%; padding: 0px;"> <img src="./logov1.png" height="200px" width="400px" style="display: block;"> </div>
     <button class="mainMenu normal-button" id="playNormalB" style="margin-inline: 0%; margin-top: 0%; width: 200px;" onclick="startGame('normal')">Play Normal</button>
     <button class="mainMenu normal-button" id="playTimedB" style="margin-left: 5%; margin-top: 0%; width: 200px" onclick="startGame('timed')">Play Timed</button>
@@ -99,7 +100,7 @@
 
         <button id="createAccountButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px; margin-bottom: 25px;" onclick="switchSignIn(true)">Create Account</button>
 
-        <button id="statsButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px;" disabled>Stats</button>
+        <button id="statsButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px;" disabled onclick="switchStats()">Stats</button>
         <button id="settingsButton" class="normal-button" style="font-size: 25px; width: 125px; height: 90px;" disabled>Settings</button>
       </div>
     </div>      
@@ -108,8 +109,9 @@
     <div id="evilBg" class="evilBg" style="opacity: 0.0;"></div>
 </div>
 
+
 <!-- Sign in menu -->
-<div id="signInMenu" class="container" style="display: none; font-family: 'Button'; font-size: 30px; align-items: center; flex-grow: 1; max-width: 700px; max-height: 700px; margin: auto auto;">
+<div id="signInMenu" class="container" style="display: none; font-family: 'Button'; font-size: 30px; align-items: center; flex-grow: 1; max-width: 700px; max-height: 900px; margin: auto auto;">
   <pre id="output"></pre>
   <form id="accountForm" style="align-items: center; justify-content: center; text-align: center;"> 
   <span id="usernameHolder">
@@ -157,10 +159,25 @@
 </div>
 
 <!-- Leaderboard menu -->
-<div id="leaderboardMenu" class="container" style="display: none; align-items: center; text-align: center;">
-  <h1>🏆LEADERBOARD🏆</h1>
+<div id="leaderboardMenu" class="container" style="display: none; align-items: first baseline; text-align: center; flex-grow: 1; max-width: 900px; max-height: 700px; margin: auto auto;">
+<div>
+  <h1 style="margin: 20px;">🏆LEADERBOARD🏆</h1>
+  <div style="display: flex; align-items: center; justify-content: center; padding-bottom: 20px; border-bottom: 2px solid rgba(128, 128, 128, 0.5);">
+  <button id="leaderboardLeft" class="simple-button arrow-button" style="--dirx: -5px; --diry: 2px; --xshift: -3px;" disabled onclick="changeLeaderboardId(-1)">&lt;</button>
+  <span id="leaderboardTitle" style="display: inline-block; width: 350px; text-align: center; font-size: 28px; font-family: 'Nice';"></span>
+  <button id="leaderboardRight" class="simple-button arrow-button" onclick="changeLeaderboardId(1)">&gt;</button>
+  </div>
   <ol id="leaderboardList" style="flex-basis: 100%; font-family: 'Button';">...</ol>
   <button id="exitLeaderboard" type="button" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchLeaderboard()">Back</button> </div>
+</div>  
+</div>
+
+<div id="statsMenu" class="container" style="display: none; align-items: first baseline; text-align: center; flex-grow: 1; max-width: 900px; margin: auto auto;">
+<div>
+  <h1>🎯STATS🎯</h1>
+  <ol id="statsList" style="display: flex; gap: 1.5rem; flex-direction: column; flex-basis: 100%; font-size: 28px; font-family: 'Nice';">...</ol>
+  <button id="exitStats" type="button" class="normal-button" style="font-size: 50px; height: auto; width: 250px; padding: 15px" onclick="switchStats()">Back</button> </div>
+</div>  
 </div>
 
 <!-- Main game display -->
@@ -212,7 +229,10 @@
 <div style="font-size: 10px; margin-bottom: 1%"> © 2026 SnakeU. All rights reserved.<br></div> 
 Assets:<br>
 Animated fire: tracheotommy via Giphy (https://giphy.com) 
-Lava background: Anoop A Nair via pexels (https://pexels.com/)<br>
+Lava background: Anoop A Nair via pexels (https://pexels.com/)
+Green snake: 13smok via pixabay (https://pixabay.com/service/license-summary/)
+Baby: unknown via pixabay (https://pixabay.com/service/license-summary/)
+<br>
 Fonts:<br>
 Sixtyfour Convergence — Simon Cozens & Jens Kutílek (SIL Open Font License)  
 Geo — Ben Weiner (SIL Open Font License)  

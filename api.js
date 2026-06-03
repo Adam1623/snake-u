@@ -1,15 +1,6 @@
-// export async function getUsers() {
-//     const res = await fetch("/api?action=getUsers");
-//     if (!res.ok) throw new Error("Failed to fetch users");
-//     return res.json();
-// }
-
-//addUser, getUserBySession, signIn, signOut, changePassword, createLeaderboard, updateScore
-
 export async function addUser(username, email, password, middleName) {
     let errors = [];
     if (!username) errors.push("Username is required");
-    // if (!email) errors.push("Email address is required");
     if (!password) errors.push("Password is required");
     
     if (password.length < 8) {
@@ -83,7 +74,6 @@ export async function signIn(loginString, password){
     return res.json();
 }
 
-//incomplete
 export async function signOut(){
     const res = await fetch('/api?action=signOut', {
         method: 'POST',
@@ -158,7 +148,7 @@ export async function updateScore(score, worthXP){
     return res.json();
 }
 
-export async function reportGame(sTime, score, apples, timestamps, mode, difficulty){
+export async function reportGame(sTime, score, apples, timestamps, mode, difficulty, won){
     const res = await fetch('/api?action=reportGame', {
         method: 'POST',
         credentials: 'include',
@@ -171,7 +161,8 @@ export async function reportGame(sTime, score, apples, timestamps, mode, difficu
             apples: apples,
             timestamps: timestamps,
             mode: mode,
-            difficulty: difficulty
+            difficulty: difficulty,
+            won: won
         })
     });
     return res.json();

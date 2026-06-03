@@ -1,5 +1,6 @@
 window.switchSignIn = switchSignIn;
 window.createTooltip = createTooltip;
+window.resetStats = resetStats;
 
 //Main containers (home screen, game screen, timed mode exclusives)
 const home = document.getElementById("home");
@@ -14,7 +15,7 @@ const statsMenu = document.getElementById("statsMenu");
 const ticks = document.getElementById("ticks");
 const scoreBoard = document.getElementById("scoreboard");
 const multiplier = document.getElementById("multiplier");
-const htmlBoard = document.getElementById("board");
+const htmlBoard = document.getElementById("gameBoard");
 const lowerText = document.getElementById("lowmessage");
 const bd = document.body;
 const timer = document.getElementById("timer");
@@ -45,10 +46,13 @@ evilMode = false;
 // debug event listener for testing
 // document.addEventListener('keydown', function(event){    
 //         if (event.key === 'p'){
-//             createTooltip(0, true, "Successfully signed in!", "tooltip successMsg", "pop fadeOut", null);
-//             // tooltip1.innerHTML = "<button class='tooltipClose' onclick='closeTooltip(0)'>close</button><h2> Pro tip! </h2> press space bar <br> to restart instantly";
-//             // tooltip1.style.display == "flex" ? tooltip1.style.display = "none": tooltip1.style.display = "flex";            
+//             winConfetti();
 //         }});
+
+function winConfetti() {
+    confetti({ particleCount: 250, angle: 60, spread: 75, origin: { x: 0 } });
+    confetti({ particleCount: 250, angle: 120, spread: 75, origin: { x: 1 } });
+}
 
 function cell (status, location, prev, next) {
     this.status = status;
@@ -89,6 +93,7 @@ function closeTooltip(id){
     tooltips[id].style.display = 'none';
 }
 
+
 function setCostumes(){
     if (!evilMode){
         wall = '⬛'; //🟦
@@ -110,17 +115,38 @@ function setCostumes(){
         sright = '➡️';
         body = '🟡'
     }
+
+    imageMap = {
+        [wall]:  'url("assets/wall.png")',
+        [body]:  'url("assets/snakebody1.png")',
+        [sdown]: 'url("assets/snakeheaddown.png")',
+        [sup]:   'url("assets/snakeheadup.png")',
+        [sleft]: 'url("assets/snakeheadleft.png")',
+        [sright]:'url("assets/snakeheadright.png")',
+        [app]:  'url("assets/apple1.png")'  
+    };
+
     dirs = [sup, sleft, sdown, sright];
 }
 
-
+//store list of open squares (for valid apple spawns)
+openSpaces = [];
 
 function makeBoard(xDim, yDim){
+    htmlBoard.style = `--boardX: ${xDim}; --boardY: ${yDim}`;
     // 16 x 16 board
     for (let y = 0; y < yDim; y++){
         const row = [];
         for (let x = 0; x < xDim; x++){
-            row.push(new cell(wall, [x, y], null, null));            
+
+            const c = new cell(wall, [x, y], null, null);
+
+            const cellElement = document.createElement('div');
+            cellElement.className = 'cell';
+            htmlBoard.appendChild(cellElement);
+            c.cellElement = cellElement;
+
+            row.push(c);            
             // if (y % 2 == 0){
             //     row.push(new cell('#', [x, y]));            
             // }
@@ -142,23 +168,47 @@ function makeBoard(xDim, yDim){
     snakeTail = board[Math.floor(yDim / 2) - 2][Math.floor(xDim / 2)];
     snakeHead = board[Math.floor(yDim / 2) - 1][Math.floor(xDim / 2)];
     snakeTail.next = snakeHead;
-    snakeHead.prev = snakeTail;    
+    snakeHead.prev = snakeTail;  
+    
+    //initalize openspaces with all wall cells
+    openSpaces = board.flat().filter(c => c.status === wall);
 }
 
 //updateQueue = [];
 
 function drawBoard(){
-    // Reset Board
-    htmlBoard.textContent = "";
+    for (let y = 0; y < board.length; y++) {
+        for (let x = 0; x < board[y].length; x++) {
+            updateCell(board[y][x]);
+        }
+    }
+}
 
-    //Redraw board
-    board.forEach(row => {
-        row.forEach(c => {
-            htmlBoard.textContent += c.status;               
-        });
-        htmlBoard.textContent += "\n";
-    });
+function updateCell(cell) {
+    cell.cellElement.style.backgroundImage = imageMap[cell.status] ?? '';
 
+    //updates open spaces to include wall if it doesn't already, removes it otherwise
+    if (cell.status === wall){
+        if (!openSpaces.includes(cell)) {
+            openSpaces.push(cell);
+        }
+    } else {
+        openSpaces = openSpaces.filter(c => c !== cell);
+    }    
+}
+
+function randomOpenSpace() {
+    const arr = [...openSpaces];
+    return arr[Math.floor(Math.random() * arr.length)].location;
+}
+
+function randomEdgeSpace() {
+    const edgeSpaces = [...openSpaces].filter(c => 
+        evilAppleSpots.some(([ex, ey]) => c.location[0] === ex && c.location[1] === ey)
+    );
+
+    if (edgeSpaces.length === 0) return randomOpenSpace();
+    return edgeSpaces[Math.floor(Math.random() * edgeSpaces.length)].location;
 }
 
 function handleMovement(dir){
@@ -266,9 +316,17 @@ function moveSnake(){
         snakeHead = newHead;
 
         board[snakeTail.location[1]][snakeTail.location[0]].status = body;
+
+        //if not timed and body + head is equal board area, WIN!
+        if (!isTimed) {
+            if (snakeLength + 1 == boardX * boardY){
+                drawBoard();
+                gameOver(true);
+            }
+        }
     }
     else{
-        gameOver();
+        gameOver(false);
     }
         }
 
@@ -279,37 +337,20 @@ function moveSnake(){
 //maxApples = 2;
 //Stores apple locations
 
-function createApple(){
-
-    while (apples.length < maxApples){
-
-        // Edge odds, guaranteed edge apple based on the odds (0 for normal, 30-61 for extreme)
-        if (edgeOdds > 0){
-            if (Math.random() < edgeOdds / 100){
-                let pos = evilAppleSpots[Math.floor(Math.random() * evilAppleSpots.length)];
-                if (board[pos[1]][pos[0]].status == wall){
-                    board[pos[1]][pos[0]].status = app;
-                    apples.push([pos[0], pos[1]]); 
-                }
-            }
-            // repetitive, bad elses
-            else {
-                let pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
-                if (board[pos[1]][pos[0]].status == wall){
-                    board[pos[1]][pos[0]].status = app;
-                    apples.push([pos[0], pos[1]]); 
-                }
-            }
-        }
-        else {
-            let pos = [Math.floor(Math.random() * board[0].length), Math.floor(Math.random() * board.length)];        
-            if (board[pos[1]][pos[0]].status == wall){
-                board[pos[1]][pos[0]].status = app;
-                apples.push([pos[0], pos[1]]); 
-            }
-        }
+function createApple(){    
+    if (maxApples > openSpaces.length) maxApples = openSpaces.length;
+    if (maxApples <= 0) return;
+    let pos = []
+    // Edge odds, guaranteed edge apple based on the odds (0 for normal, 30-61 for extreme)
+    if (Math.random() < edgeOdds / 100){
+        pos = randomEdgeSpace();   
     }
-    
+    else {
+        pos = randomOpenSpace();
+    }
+
+    board[pos[1]][pos[0]].status = app;
+    apples.push([pos[0], pos[1]]);       
 }
 
 function changeMult(amt, mode){
@@ -431,10 +472,18 @@ function changeScore(amt, mode){
     }, fxTime);
 }
 
-function gameOver(){
+function gameOver(victory){
     //Stops controls
     gameControls.abort();
-    lowerText.innerText = "You lost!";     
+    if (!victory){
+        lowerText.innerText = "You lost!"; 
+        lowerText.style.color = "rgb(148, 20, 20)";    
+    }
+    else{
+        lowerText.innerText = "YOU WON!";    
+        lowerText.style.color = "#ca9c06";
+        winConfetti();
+    }
 
     //Stops updating game
     clearInterval(gameId);
@@ -443,9 +492,10 @@ function gameOver(){
     if (timerInterval) clearInterval(timerInterval);
 
     resetLeaderboards();
+    resetStats();
 
     window.handleUpdateScore(Math.floor(score), true);    
-    //Shows loss ui
+    //Shows restart ui
     retryB.style.display = "flex";
     homeB.style.display = "flex";
 
@@ -461,8 +511,8 @@ function gameOver(){
         innerJoystick.style.top = "25%";
         mobileControls.opacity = 0.8;
     }
-    //show quick restart tip (not on mobile though)
-    else
+    //show quick restart tip (not on mobile though, or after winning)
+    else if (!victory)
     {
         createTooltip(0, true, "<h2> Pro tip! </h2> press space bar <br> to restart instantly", "tooltip", "pop", "font-family: 'Pixels'");
     }
@@ -482,7 +532,7 @@ function gameOver(){
     let mode = "";
     mode += evilMode ? "extreme mode " : "normal mode ";
     mode += isTimed ? "timed" : "untimed";    
-    handleReportGame(Math.round(survivalTime), Math.floor(score), snakeLength - 1, appleInfo, mode, difValue.toFixed(2));
+    handleReportGame(Math.round(survivalTime), Math.floor(score), snakeLength - 1, appleInfo, mode, difValue.toFixed(2), victory);
 }
 
 //It's a function??? It's just weird looking
@@ -499,7 +549,7 @@ function update(){
     i++;
     ticks.innerText = i;
     drawBoard();
-    createApple();
+    while (apples.length < maxApples) createApple();   
     moveSnake();
 }
 
@@ -576,6 +626,7 @@ function switchSignIn(register){
     document.getElementById("loginHolder").style.display = register ? "none" : "block";      
 }
 
+//creates empty leaderboard stat lists (might be made automatically)
 let leaderboardEntries = {
     'overall xp': null,
     'normal mode untimed': null,
@@ -583,18 +634,25 @@ let leaderboardEntries = {
     'extreme mode untimed': null,
     'extreme mode timed': null
 }
+
+//order for leaderboards to be displayed
 const leaderboardNames = ['overall xp', 'normal mode untimed', 'extreme mode untimed', 'normal mode timed', 'extreme mode timed'];
+
+//leaderboard currently being displayed
 let leaderboardID = 1;
 
+//leaderboard html elements
 const lLeft = document.getElementById('leaderboardLeft');
 const lRight = document.getElementById('leaderboardRight');
 const lList = document.getElementById("leaderboardList");
 const lTitle = document.getElementById('leaderboardTitle')
 
+//the little arrows to change leaderboard
 async function changeLeaderboardId(direction){
 
     const buttonClicked = direction == 1 ? lRight: lLeft;
 
+    //pop effect when clicked
     buttonClicked.classList.remove("pop2");
     void buttonClicked.offsetWidth;
     buttonClicked.classList.add("pop2");
@@ -602,6 +660,7 @@ async function changeLeaderboardId(direction){
     leaderboardID += direction;
     lTitle.innerHTML = leaderboardNames[leaderboardID - 1].toUpperCase();
 
+    //button automatically adjusting if on first / last / middle element
     if (leaderboardID <= 1){
         lLeft.disabled = true;
         lRight.disabled = false;
@@ -615,6 +674,7 @@ async function changeLeaderboardId(direction){
         lRight.disabled = false;
     }
 
+    //checks if entries for current have been wiped, recreates if so
     if (!leaderboardEntries[leaderboardNames[leaderboardID - 1]]){
         lList.innerHTML = '...';
         lLeft.disabled = true;
@@ -626,9 +686,11 @@ async function changeLeaderboardId(direction){
         lLeft.disabled = false;
         lRight.disabled = false;        
     }
+    //displays correct leaderboard
     displayLeaderboard(leaderboardNames[leaderboardID - 1]);
 }
 
+//entering / exiting leaderboard
 async function switchLeaderboard(){ 
     home.style.display = home.style.display == "none" ? "flex": "none";
     leaderboardMenu.style.display = leaderboardMenu.style.display == "none" ? "flex": "none";
@@ -694,19 +756,26 @@ function resetLeaderboards(){
         };
 }
 
+const sList = document.getElementById("statsList");
+let stats = [];
+
 async function switchStats(){
     home.style.display = home.style.display == "none" ? "flex": "none";
-    document.getElementById("statsList").innerHTML = '...';
     statsMenu.style.display = statsMenu.style.display == "none" ? "flex": "none";
 
     let listContent = "";
-    let stats = await handleFetchStats();
-    stats = stats.stats;
-    if (!stats) {document.getElementById("statsList").innerHTML = "Couldn't retrieve stats!"; return;}
+
+    if (!stats || stats.length === 0){
+        stats = await handleFetchStats();
+        console.log(stats);
+        stats = stats.stats;
+    } 
+    if (!stats) {sList.innerHTML = "Couldn't retrieve stats!"; return;}
     // high_score      
     // high_score_mode 
     // time_played     
     // rounds_played   
+    // mode_wins
     // apples_collected
     // mode_counts     
     listContent += `<li style='border: 5px solid #bdbc94; padding: 20px'><a class='bigStat' style='--c1: #bdbc94'>High score</a><br>🏆<br><a style='font-weight: bold;'>${stats.high_score} SP</a> on <a style='font-weight: bold;'>${stats.high_score_mode}</a></li>`;
@@ -719,8 +788,12 @@ async function switchStats(){
     if (minutes > 0) timeFormatted += `${minutes}m `;
     if (seconds > 0) timeFormatted += `${seconds}s`;
 
+    const totWins = Object.values(stats.mode_wins ?? {}).reduce((sum, val) => sum + val, 0);;
+
     listContent += `<li style='border: 5px solid #bbbbbb; padding: 20px'><a class='bigStat' style='--c1: #bbbbbb'>Time played</a><br>⌛<br><a style='font-weight: bold;'>${timeFormatted}</a></li>`;
     listContent += `<li style='border: 5px solid #94b3bd; padding: 20px'><a class='bigStat' style='--c1: #94b3bd'>Rounds played</a><br>🐍<br><a style='font-weight: bold'>${stats.rounds_played}</a></li>`;
+    if (totWins > 0)
+    {listContent += `<li class='shimmer-element' style='border: 5px solid #b89f66; padding: 20px; --c1: #ca9c0662; --c2: #f8dd6485; --c3: #ca9c0662; --dur: 7.7s; font-weight: normal;'><a class='bigStat' style='--c1: #b89f66;'>Rounds won</a><br>⭐<br><a style='font-weight: bold;'>${totWins}</a></li>`;}
     listContent += `<li style='border: 5px solid #bd9a94; padding: 20px'><a class='bigStat' style='--c1: #bd9a94'>Apples eaten</a><br>🍎<br><a style='font-weight: bold'>${stats.apples_collected}</a></li>`;
 
     const mCount = Math.max(...Object.values(stats.mode_counts));
@@ -730,8 +803,13 @@ async function switchStats(){
     // listContent += `<li></li>`;
 
     document.getElementById("statsList").innerHTML = listContent;
-
 }
+
+function resetStats(){
+    sList.innerHTML = '...';
+    stats = [];
+}
+
 
 //END OF MENU STUFF
 
@@ -799,7 +877,7 @@ function timedManagement(){
 
         if (curTime <= 0){            
             timer.textContent = "0.00";
-            gameOver();            
+            gameOver(false);            
         }
 
     }, 10);    
@@ -820,6 +898,7 @@ async function startGame(mode){
     footer.style.display = "none";
     gameReport.style.display = "none";
     gameReport.innerHTML = "";
+    htmlBoard.innerHTML = "";
 
     tooltips.forEach(tip => {
         tip.style.display = "none";

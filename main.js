@@ -74,6 +74,7 @@ async function handleAddUser(){
         await addUser(username, email, password, middleName);
         signInStatus.textContent = "Successfully added user!";
         signInStatus.className = "ambNoti successMsg";
+        resetStats();
 
         //auto sign in
         try{
@@ -83,7 +84,6 @@ async function handleAddUser(){
         } catch(err){
             console.log("failed automatic sign in");
     }
-
     } catch(err){
         signInStatus.className = "ambNoti errorMsg";
 
@@ -150,6 +150,7 @@ async function handleSignIn(){
 async function handleSignOut(){
     logoutButton.disabled = true;
     statsButton.disabled = true;
+    resetStats();
     await signOut();
     loginVisual(false, "");
     logoutButton.disabled = false;    
@@ -179,8 +180,8 @@ export async function handleUpdateScore(score, worthXP){
     else {console.log("Could not verify session to update score");}
 }
 
-export async function handleReportGame(sTime, score, apples, timestamps, mode, difficulty){
-    await reportGame(sTime, score, apples, timestamps, mode, difficulty);
+export async function handleReportGame(sTime, score, apples, timestamps, mode, difficulty, won){
+    await reportGame(sTime, score, apples, timestamps, mode, difficulty, won);
 }
 
 document.getElementById('accountForm').addEventListener('submit', async function(event){

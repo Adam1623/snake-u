@@ -186,11 +186,11 @@ async function updateScore(params){
 }
 
 async function reportGame(params){
-    const {id, username, apples, avg_pps, sTime, timestamps, score, mode, difficulty} = params;
+    const {id, username, apples, avg_pps, sTime, timestamps, score, mode, difficulty, won} = params;
     const isTimed = mode.includes('timed') && !mode.includes('untimed');
 
     await sql`
-        INSERT INTO global_game_stats (username, apples, survival_time, avg_pps, apple_log, score, game_mode, difficulty)
+        INSERT INTO global_game_stats (username, apples, survival_time, avg_pps, apple_log, score, game_mode, difficulty, won)
         VALUES (
             ${username},
             ${apples},
@@ -199,7 +199,8 @@ async function reportGame(params){
             ${JSON.stringify(timestamps)},
             ${score},
             ${mode},
-            ${difficulty}
+            ${difficulty},
+            ${won}
         )
     `;
     
@@ -207,7 +208,7 @@ async function reportGame(params){
 
     //BONUS FEATURE: saves the stats separately, for stats menu
     await sql`
-        INSERT INTO user_stats (user_id, username, high_score, high_score_mode, time_played, rounds_played, apples_collected, mode_counts, mode_high_scores, mode_best_times)
+        INSERT INTO user_stats (user_id, username, high_score, high_score_mode, time_played, rounds_played, apples_collected, mode_counts, mode_high_scores, mode_best_times, mode_wins)
         VALUES (        
             ${id},
             ${username},
@@ -218,7 +219,8 @@ async function reportGame(params){
             ${apples},
             ${JSON.stringify({ [mode]: 1 })},
             ${JSON.stringify({ [mode]: score })},
-            ${JSON.stringify(isTimed ? { [mode]: sTime } : {})}
+            ${JSON.stringify(isTimed ? { [mode]: sTime } : {})},
+            ${JSON.stringify(won ? { [mode]: 1 } : {})}
         )
         ON CONFLICT (user_id) DO UPDATE SET
             high_score       = GREATEST(user_stats.high_score, ${score}),
@@ -242,7 +244,13 @@ async function reportGame(params){
                     COALESCE(user_stats.mode_best_times, '{}'),
                     ${modePath},
                     GREATEST(COALESCE((user_stats.mode_best_times->>${mode})::int, 0), ${sTime})::text::jsonb
-                ) ELSE user_stats.mode_best_times END
+                ) ELSE user_stats.mode_best_times END,
+            mode_wins         = CASE WHEN ${won} THEN
+                jsonb_set(
+                    COALESCE(user_stats.mode_wins, '{}'),
+                    ${modePath},
+                    (COALESCE(user_stats.mode_wins->>${mode}, '0')::int + 1)::text::jsonb
+                ) ELSE user_stats.mode_wins END
     `;
 
     return {success: true};

@@ -1,3 +1,19 @@
+#gameBoard {
+  display: grid;
+  --boardX: 16;
+  --boardY: 16;
+  --renderSize: 32px;
+  grid-template-columns: repeat(var(--boardX), var(--renderSize));
+  grid-template-rows: repeat(var(--boardY), var(--renderSize));
+}
+
+.cell {
+  --renderSize: 32px;
+  width: var(--renderSize);
+  height: var(--renderSize);
+  background-size: cover;
+}
+
 body {
     font-family: 'Open Sans', 'Montserrat', 'Helvetica', sans-serif;
     transition: 500ms;
@@ -75,7 +91,7 @@ input[type="range"]::-moz-range-thumb {
     display: none;
 } */
 
-.shimmer-element {
+.shimmer-element {    
     font-weight: 600;
     --c1: #ca9c06; 
     --c2: #f8dd64; 
@@ -374,7 +390,7 @@ width: 75px;
 font-size: 100px; 
 line-height: 0; 
 background-color: transparent;
-border-color: transparent ;
+border-color: transparent;
 --outC: #454b52;
 --inC: #afb6bebb;
 --dirx: 5px;
@@ -470,8 +486,7 @@ input {
     left: 100%; 
     top: 84%;
     transform: translate(-100%, -100%);
-    background-color: rgb(193, 199, 206);
-    
+    background-color: rgb(193, 199, 206);    
     /* color: whitesmoke; */
     opacity: 1;
     border: 0.2cqw solid rgb(110, 112, 138); 

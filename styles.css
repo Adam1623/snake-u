@@ -1,3 +1,112 @@
+/* slider stuff */
+
+/* bg and fill */
+
+input[type="range"]::-webkit-slider-runnable-track {
+    width: var(--thumb-size, 20px);
+    height: var(--thumb-size, 20px); 
+    transform: translateX(var(--thumb-offset, 20px));
+}
+
+.slider-bg {
+    position: absolute;
+    /* top: 0; left: 0; */
+    /* width: 225px; */
+    width: 100%;
+    /* height: 20px; */
+    height: 100%;
+    background-image: url('/assets/barbg2.png');
+    /* background-size: 225px 20px; */
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 1;
+    --real-size: 225px;
+}
+
+.slider-fill {
+    position: absolute;
+    background-image: url('/assets/barfill2.png');
+    background-size: var(--fill-size) 20px;
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-color: var(--fill-color, rgb(0, 255, 0));
+    background-blend-mode: multiply;
+    pointer-events: none;
+    width: 100%;
+    height: 100%;
+    /* width: 225px;
+    height: 20px; */
+    z-index: 3;
+    /* transform: scale(2); */
+}
+
+/* input[type="range"]::-moz-range-track  {
+    background-image: url('/assets/barfill2.png'), url('/assets/barbg2.png');
+    background-size: var(--fill-size) 50px, 225px 50px;
+    background-repeat: no-repeat;    
+    background-position: left center, center;      
+    background-color: red, none;
+    height: 20px;    
+} */
+
+.slider-wrapper {
+    position: relative;
+    /* margin-left: -25px; */
+    width: 200px;
+    height: 20px;
+    --thumb-size: 20px;
+}
+
+/* removes default styles?? */
+input[type="range"] {
+    background: transparent;
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    margin: 0;
+    z-index: 4;
+
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    position: relative;
+    -webkit-appearance: none;
+    appearance: none;
+    /* width: 20px;
+    height: 100%; */
+    width: var(--thumb-size);
+    height: var(--thumb-size);
+    background-image: url('/assets/thumb1.png');
+    background-size: contain;
+    /* background-repeat: no-repeat; */
+    /* background-position: right; */
+    cursor: pointer;
+    /* opacity: 0.3; */
+    z-index: 4;
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 17px;
+    height: 17px;
+    background-image: url('/assets/thumb1.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none; /* Firefox adds a default border */
+    cursor: pointer;
+}
+
+input[type="range"]:disabled::-webkit-slider-thumb {
+    opacity: 0;
+}
+
+/* end of slider stuff */
+
 #gameBoard {
   display: grid;
   --boardX: 16;
@@ -482,7 +591,7 @@ input {
     font-size: 1cqw;
     position: fixed;
     width: 20%;
-    height: 10%;
+    height: 12%;
     left: 100%; 
     top: 84%;
     transform: translate(-100%, -100%);

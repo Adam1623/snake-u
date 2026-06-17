@@ -21,6 +21,37 @@ async function resetErrors(){
     loginE.textContent = "";
 }
 
+const levels = [
+    //bronze 1-5
+    0, 10, 50, 100, 200,
+
+    //silver 6-10
+    500, 1000, 2000, 3000, 5000,
+
+    //gold 11-15
+    10000, 15000, 25000, 35000, 50000,
+
+    //plat 16-20
+    100000, 125000, 150000, 200000, 300000
+
+];
+
+function getLevel(xp) {
+    let level = 1;
+    for (let i = 0; i < levels.length; i++) {
+        if (xp >= levels[i]) {
+            level = i + 1;
+        } else {
+            break;
+        }
+    }
+
+    const prev = levels[level - 1];
+    const next = levels[level] ?? Infinity; 
+
+    return {level: level, prev: prev, next: next};
+}
+
 async function loginVisual(signIn, username, snakePoints, xp){
     if (signIn){
         loginStatus.style.setProperty("--bgc1", "rgb(121, 218, 83)");
@@ -34,8 +65,25 @@ async function loginVisual(signIn, username, snakePoints, xp){
         snakePointsDisplay.innerHTML = `${snakePoints}<img src="./snakepoint.png" class="snakePointIcon">`;
         snakePointsDisplay.style.display = "block";        
 
-        const xpSlider = '<input type="range" class="shimmer-element" style="accent-color: #0c31ac; --c1: #0c31ac; --c2: #2970db; --c3: #0c31ac; --dur: 5s; pointer-events: none;" tabindex="-1">';
-        xpDisplay.innerHTML = `${xp} xp <br>`;
+        const lvlInfo = getLevel(xp);
+        const lvl = lvlInfo.level;
+        console.log("xp:", xp, "level:", lvl);
+
+    // <div class="slider-wrapper" style="width: 500px; height: 20px;">
+    //   <div class="slider-bg"></div>
+    //   <div class="slider-fill"></div>
+    //   <input type="range" id="difficulty" style="pointer-events:fill;" min="1" max="5" step="0.001" value="3">    
+    // </div>
+
+        const pct = ((xp - lvlInfo.prev) / (lvlInfo.next - lvlInfo.prev)) * 100;
+        const xpSlider = `
+        <div class="slider-wrapper" style="position: relative; width: 18cqw; height: 1cqw; margin: 0 auto;">
+            <div class="slider-bg"></div>
+            <div class="slider-fill shimmer-element" style="width: ${pct}%; accent-color: #0c31ac; --c1: #0c31ac; --c2: #2970db; --c3: #0c31ac; --dur: 15s;"></div>
+            <input type="range" min="${lvlInfo.prev}" max="${lvlInfo.next}" step="0.001" value="${xp}" style="pointer-events: none;" disabled tabindex="-1">
+        </div>`;
+        
+        xpDisplay.innerHTML = `<a style="font-size: 0.7cqw; color:rgb(54, 54, 54)"> ${xp} xp </a> <br> ${xpSlider} Level ${lvl}`;
         xpDisplay.style.display = "block";
     }
     else{

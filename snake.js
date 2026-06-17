@@ -553,11 +553,44 @@ function update(){
     moveSnake();
 }
 
+const sliders = document.querySelectorAll('input[type="range"]');
+
+
 function updateColour(){
+
+    sliders.forEach(slider => {
+        const fill = slider.parentElement.querySelector('.slider-fill');        
+        const wrapper = slider.parentElement;
+        const thumbSize = wrapper.offsetHeight;
+        const thumbWidth = thumbSize;
+        const trackWidth = slider.offsetWidth;
+        const pct = (slider.value - slider.min) / (slider.max - slider.min);
+        const fillWidth = Math.round(pct * trackWidth);
+        // const fillWidth = Math.round(pct * (trackWidth - thumbWidth) + 200 * thumbWidth);
+        const thumbOffset = pct * thumbWidth;
+        
+        fill.style.setProperty('--fill-size', `${fillWidth}px`);
+
+        fill.style.clipPath = `inset(0 ${100 - pct * 100}% 0 0)`;
+
+        slider.style.setProperty('--thumb-offset', `${thumbOffset}px`);
+    })
+
     if (!evilMode){
         const r = Math.round((dSlider.value - 1) * 255 / 4);
         const g = 255 - Math.round((dSlider.value - 1) * 255 / 4);
-        dSlider.style.accentColor = `rgb(${r}, ${g}, 0)`;
+
+        sliders.forEach(slider => {
+            if (slider.id === 'difficulty'){
+                const fill = slider.parentElement.querySelector('.slider-fill');
+                fill.style.setProperty('--fill-color', `rgb(${r}, ${g}, 0)`);
+            }});
+        // dSliderFill.style.setProperty('--fill-color', `rgb(${r}, ${g}, 0)`);
+        //dSlider.style.setProperty('--fill-color', `rgb(${r}, ${g}, 0)`);
+
+        // dSlider.style.accentColor = `rgb(${r}, ${g}, 0)`;
+        // dSlider.style.backgroundColor = `rgb(${r}, ${g}, 0)`;
+        //dSliderFill.style.backgroundColor = `rgb(${r}, ${g}, 0)`;
 
         if (+dSlider.value == dSlider.min){
             babyPic.style.display = "flex";
@@ -575,13 +608,22 @@ function updateColour(){
         snakePic.style.display = "none";
         const c = 255;
         const gb = 255 - Math.round((dSlider.value - 1) * 255 / 4);        
-        dSlider.style.accentColor = `rgb(${c}, ${gb}, ${gb})`;
+        // dSlider.style.accentColor = `rgb(${c}, ${gb}, ${gb})`;
+
+        sliders.forEach(slider => {
+            if (slider.id === 'difficulty'){
+                const fill = slider.parentElement.querySelector('.slider-fill');
+                fill.style.setProperty('--fill-color', `rgb(${c}, ${gb}, ${gb})`);
+            }});
+
     }
     //lil bonus to update bg fire image 
     evilBg.style.opacity = evilMode === true ? dSlider.value / 4 - 0.25: 0.0;
 }
 
 dSlider.addEventListener("input", updateColour);
+// dSlider.addEventListener("click", updateColour);
+
 
 document.getElementById("extremeB").addEventListener("click", () => {
     document.getElementById("extremeB").classList.toggle("extremeButtonON");

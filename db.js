@@ -186,11 +186,12 @@ async function updateScore(params){
 }
 
 async function reportGame(params){
-    const {id, username, apples, avg_pps, sTime, timestamps, score, mode, difficulty, won} = params;
+    const {id, username, apples, avg_pps, sTime, timestamps, score, mode, difficulty, won, isMobile} = params;
     const isTimed = mode.includes('timed') && !mode.includes('untimed');
 
+    //saves the stats in the global stats table, for overall analytics
     await sql`
-        INSERT INTO global_game_stats (username, apples, survival_time, avg_pps, apple_log, score, game_mode, difficulty, won)
+        INSERT INTO global_game_stats (username, apples, survival_time, avg_pps, apple_log, score, game_mode, difficulty, won, is_mobile)
         VALUES (
             ${username},
             ${apples},
@@ -200,7 +201,8 @@ async function reportGame(params){
             ${score},
             ${mode},
             ${difficulty},
-            ${won}
+            ${won},
+            ${isMobile}
         )
     `;
     

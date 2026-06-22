@@ -252,6 +252,16 @@ input[type="range"]::-moz-range-thumb {
     100% { transform: scale(1); opacity: 1;}    
 }
 
+/* .pop3 {
+    animation: pop3 0.25s ease;
+} */
+
+@keyframes pop3 {
+    0%   { transform: scale(1); opacity: 1; }
+    30%  { transform: scale(1.2); opacity: 1;}    
+    100% { transform: scale(1); opacity: 1;}    
+}
+
 @keyframes ambient {
     0% {transform: scale(1.05); opacity: 1;}
     100% {transform: scale(0.95); opacity: 0.9;}
@@ -579,6 +589,10 @@ input {
     align-content: center;
 }
 
+.popHover:hover {
+    animation: pop3 0.25s ease;
+}
+
 .xpDisplay {
     display: none;
     box-sizing: border-box;
@@ -591,13 +605,12 @@ input {
     font-size: 1cqw;
     position: fixed;
     width: 20%;
-    height: 12%;
+    height: 24%;
     left: 100%; 
     top: 84%;
     transform: translate(-100%, -100%);
-    background-color: rgb(193, 199, 206);    
-    /* color: whitesmoke; */
-    opacity: 1;
+    background-color: rgba(193, 199, 206, 0.8);    
+    color: rgb(0, 0, 0);
     border: 0.2cqw solid rgb(110, 112, 138); 
 }
 
@@ -617,10 +630,8 @@ input {
     left: 100%; 
     top: 90%;
     transform: translate(-100%, -100%);
-    background-color: rgb(216, 216, 216);
-    
-    /* color: whitesmoke; */
-    opacity: 1;
+    background-color: rgba(216, 216, 216, 0.8);
+    color: rgb(0, 0, 0);
     border: 0.2cqw solid rgb(138, 137, 110);  
 }
 
@@ -650,10 +661,10 @@ input {
     height: 10%;
     left: 100%; 
     top: 100%;
+    color: rgb(0, 0, 0);
     transform: translate(-100%, -100%);
-    opacity: 0.8;
-    --bgc1: rgb(211, 211, 211);
-    --bdc1: rgb(148, 148, 148);
+    --bgc1: rgba(211, 211, 211, 0.8);
+    --bdc1: rgba(148, 148, 148, 0.8);
     background-color: var(--bgc1);
     border: 0.4cqw solid var(--bdc1);    
 }

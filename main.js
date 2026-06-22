@@ -54,8 +54,8 @@ function getLevel(xp) {
 
 async function loginVisual(signIn, username, snakePoints, xp){
     if (signIn){
-        loginStatus.style.setProperty("--bgc1", "rgb(121, 218, 83)");
-        loginStatus.style.setProperty("--bdc1", "rgb(104, 151, 87)");
+        loginStatus.style.setProperty("--bgc1", "rgba(121, 218, 83, 0.8)");
+        loginStatus.style.setProperty("--bdc1", "rgba(104, 151, 87, 0.8)");
         loginStatus.innerHTML = `<a style="position: relative; text-decoration: underline; font-size: 0.7cqw;">Signed in as</a><br>${username}`;
         logoutButton.style.display = "block";
         logoutInverseButton.style.display = "none";
@@ -65,15 +65,13 @@ async function loginVisual(signIn, username, snakePoints, xp){
         snakePointsDisplay.innerHTML = `${snakePoints}<img src="./snakepoint.png" class="snakePointIcon">`;
         snakePointsDisplay.style.display = "block";        
 
+        //xp, level and badge display
         const lvlInfo = getLevel(xp);
         const lvl = lvlInfo.level;
         console.log("xp:", xp, "level:", lvl);
 
-    // <div class="slider-wrapper" style="width: 500px; height: 20px;">
-    //   <div class="slider-bg"></div>
-    //   <div class="slider-fill"></div>
-    //   <input type="range" id="difficulty" style="pointer-events:fill;" min="1" max="5" step="0.001" value="3">    
-    // </div>
+        // const badge = `<img src="./badges/lvl${lvl}.png" style="width: 2cqw; height: 2cqw; margin-left: 0.5cqw;">`;
+        const badge = `<a style='display: inline-block;' class='popHover'><img src="/assets/badges/placeholder.png" style="width: 5cqw; height: 5cqw; margin: 0cqw;"></a> <br>`;
 
         const pct = ((xp - lvlInfo.prev) / (lvlInfo.next - lvlInfo.prev)) * 100;
         const xpSlider = `
@@ -83,12 +81,12 @@ async function loginVisual(signIn, username, snakePoints, xp){
             <input type="range" min="${lvlInfo.prev}" max="${lvlInfo.next}" step="0.001" value="${xp}" style="pointer-events: none;" disabled tabindex="-1">
         </div>`;
         
-        xpDisplay.innerHTML = `<a style="font-size: 0.7cqw; color:rgb(54, 54, 54)"> ${xp} xp </a> <br> ${xpSlider} Level ${lvl}`;
+        xpDisplay.innerHTML = ` ${badge} Level ${lvl} <br> ${xpSlider} <a style="font-size: 0.7cqw; color:rgb(54, 54, 54)"> ${xp} xp </a> `;
         xpDisplay.style.display = "block";
     }
     else{
-        loginStatus.style.setProperty("--bgc1", "rgb(211, 211, 211)");
-        loginStatus.style.setProperty("--bdc1", "rgb(161, 161, 161)");
+        loginStatus.style.setProperty("--bgc1", "rgba(211, 211, 211, 0.8)");
+        loginStatus.style.setProperty("--bdc1", "rgba(161, 161, 161, 0.8)");
         loginStatus.innerHTML = `Signed out`;
         logoutButton.style.display = "none";
         logoutInverseButton.style.display = "block";
@@ -228,8 +226,8 @@ export async function handleUpdateScore(score, worthXP){
     else {console.log("Could not verify session to update score");}
 }
 
-export async function handleReportGame(sTime, score, apples, timestamps, mode, difficulty, won){
-    await reportGame(sTime, score, apples, timestamps, mode, difficulty, won);
+export async function handleReportGame(sTime, score, apples, timestamps, mode, difficulty, won, isMobile){
+    await reportGame(sTime, score, apples, timestamps, mode, difficulty, won, isMobile);
 }
 
 document.getElementById('accountForm').addEventListener('submit', async function(event){

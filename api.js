@@ -148,7 +148,7 @@ export async function updateScore(score, worthXP){
     return res.json();
 }
 
-export async function reportGame(sTime, score, apples, timestamps, mode, difficulty, won){
+export async function reportGame(sTime, score, apples, timestamps, mode, difficulty, won, isMobile){
     const res = await fetch('/api?action=reportGame', {
         method: 'POST',
         credentials: 'include',
@@ -162,7 +162,8 @@ export async function reportGame(sTime, score, apples, timestamps, mode, difficu
             timestamps: timestamps,
             mode: mode,
             difficulty: difficulty,
-            won: won
+            won: won,
+            isMobile: isMobile
         })
     });
     return res.json();

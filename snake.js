@@ -532,7 +532,7 @@ function gameOver(victory){
     let mode = "";
     mode += evilMode ? "extreme mode " : "normal mode ";
     mode += isTimed ? "timed" : "untimed";    
-    handleReportGame(Math.round(survivalTime), Math.floor(score), snakeLength - 1, appleInfo, mode, difValue.toFixed(2), victory);
+    handleReportGame(Math.round(survivalTime), Math.floor(score), snakeLength - 1, appleInfo, mode, difValue.toFixed(2), victory, isMobile);
 }
 
 //It's a function??? It's just weird looking

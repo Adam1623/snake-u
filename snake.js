@@ -567,10 +567,8 @@ function updateColour(){
         const pct = (slider.value - slider.min) / (slider.max - slider.min);
         const fillWidth = Math.round(pct * trackWidth);
         // const fillWidth = Math.round(pct * (trackWidth - thumbWidth) + 200 * thumbWidth);
-        const thumbOffset = pct * thumbWidth;
+        const thumbOffset = pct * thumbWidth - 16;
         
-        fill.style.setProperty('--fill-size', `${fillWidth}px`);
-
         fill.style.clipPath = `inset(0 ${100 - pct * 100}% 0 0)`;
 
         slider.style.setProperty('--thumb-offset', `${thumbOffset}px`);
@@ -585,12 +583,6 @@ function updateColour(){
                 const fill = slider.parentElement.querySelector('.slider-fill');
                 fill.style.setProperty('--fill-color', `rgb(${r}, ${g}, 0)`);
             }});
-        // dSliderFill.style.setProperty('--fill-color', `rgb(${r}, ${g}, 0)`);
-        //dSlider.style.setProperty('--fill-color', `rgb(${r}, ${g}, 0)`);
-
-        // dSlider.style.accentColor = `rgb(${r}, ${g}, 0)`;
-        // dSlider.style.backgroundColor = `rgb(${r}, ${g}, 0)`;
-        //dSliderFill.style.backgroundColor = `rgb(${r}, ${g}, 0)`;
 
         if (+dSlider.value == dSlider.min){
             babyPic.style.display = "flex";
@@ -629,7 +621,7 @@ document.getElementById("extremeB").addEventListener("click", () => {
     document.getElementById("extremeB").classList.toggle("extremeButtonON");
 });
 
-updateColour();
+requestAnimationFrame(updateColour);
 
 function switchExtreme(){    
     bd.classList.toggle("extremeMenu");

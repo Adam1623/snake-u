@@ -62,20 +62,18 @@ async function loginVisual(signIn, username, snakePoints, xp){
         statsButton.disabled = false;
 
         //update snake point display here, function should take another var
-        snakePointsDisplay.innerHTML = `${snakePoints}<img src="./snakepoint.png" class="snakePointIcon">`;
+        snakePointsDisplay.innerHTML = `${snakePoints}<img src="./assets/snakepoint.png" class="snakePointIcon">`;
         snakePointsDisplay.style.display = "block";        
 
         //xp, level and badge display
         const lvlInfo = getLevel(xp);
         const lvl = lvlInfo.level;
-        console.log("xp:", xp, "level:", lvl);
-
-        // const badge = `<img src="./badges/lvl${lvl}.png" style="width: 2cqw; height: 2cqw; margin-left: 0.5cqw;">`;
-        const badge = `<a style='display: inline-block;' class='popHover'><img src="/assets/badges/placeholder.png" style="width: 5cqw; height: 5cqw; margin: 0cqw;"></a> <br>`;
+        
+        const badge = `<a style='display: inline-block;' class='popHover'><img src="./assets/badges/lvl${lvl}.png" style="width: 5cqw; height: 5cqw; margin-bottom: 1cqw;"></a> <br>`;
 
         const pct = ((xp - lvlInfo.prev) / (lvlInfo.next - lvlInfo.prev)) * 100;
         const xpSlider = `
-        <div class="slider-wrapper" style="position: relative; width: 18cqw; height: 1cqw; margin: 0 auto;">
+        <div class="slider-wrapper" style="position: relative; width: 18cqw; height: 1.44cqw; margin: 0 auto;">
             <div class="slider-bg"></div>
             <div class="slider-fill shimmer-element" style="width: ${pct}%; accent-color: #0c31ac; --c1: #0c31ac; --c2: #2970db; --c3: #0c31ac; --dur: 15s;"></div>
             <input type="range" min="${lvlInfo.prev}" max="${lvlInfo.next}" step="0.001" value="${xp}" style="pointer-events: none;" disabled tabindex="-1">

@@ -3,9 +3,9 @@
 /* bg and fill */
 
 input[type="range"]::-webkit-slider-runnable-track {
-    width: var(--thumb-size, 20px);
-    height: var(--thumb-size, 20px); 
-    transform: translateX(var(--thumb-offset, 20px));
+    width: var(--thumb-size, 40px);
+    height: var(--thumb-size, 40px); 
+    transform: translateX(var(--thumb-offset, 40px));
 }
 
 .slider-bg {
@@ -15,7 +15,7 @@ input[type="range"]::-webkit-slider-runnable-track {
     width: 100%;
     /* height: 20px; */
     height: 100%;
-    background-image: url('/assets/barbg2.png');
+    background-image: url('./assets/sliderbg1.png');
     /* background-size: 225px 20px; */
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -26,19 +26,30 @@ input[type="range"]::-webkit-slider-runnable-track {
 
 .slider-fill {
     position: absolute;
-    background-image: url('/assets/barfill2.png');
-    background-size: var(--fill-size) 20px;
+    background-image: url('./assets/sliderfill1.png');
+    background-size: 100% 40px;
     background-repeat: no-repeat;
     background-position: left center;
-    background-color: var(--fill-color, rgb(0, 255, 0));
-    background-blend-mode: multiply;
     pointer-events: none;
     width: 100%;
     height: 100%;
-    /* width: 225px;
-    height: 20px; */
     z-index: 3;
-    /* transform: scale(2); */
+}
+
+.slider-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--fill-color, rgba(0, 0, 0, 0));
+    mix-blend-mode: multiply;
+    -webkit-mask-image: url('./assets/sliderfill1.png');
+    -webkit-mask-size: var(--fill-size) 40px;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: left center;
+    mask-image: url('./assets/sliderfill1.png');
+    mask-size: var(--fill-size) 40px;
+    mask-repeat: no-repeat;
+    mask-position: left center;
 }
 
 /* input[type="range"]::-moz-range-track  {
@@ -53,9 +64,9 @@ input[type="range"]::-webkit-slider-runnable-track {
 .slider-wrapper {
     position: relative;
     /* margin-left: -25px; */
-    width: 200px;
-    height: 20px;
-    --thumb-size: 20px;
+    width: 500px;
+    height: 40px;
+    --thumb-size: 40px;
 }
 
 /* removes default styles?? */
@@ -81,7 +92,7 @@ input[type="range"]::-webkit-slider-thumb {
     height: 100%; */
     width: var(--thumb-size);
     height: var(--thumb-size);
-    background-image: url('/assets/thumb1.png');
+    background-image: url('./assets/thumb1.png');
     background-size: contain;
     /* background-repeat: no-repeat; */
     /* background-position: right; */
@@ -91,9 +102,9 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 input[type="range"]::-moz-range-thumb {
-    width: 17px;
-    height: 17px;
-    background-image: url('/assets/thumb1.png');
+    width: 40px;
+    height: 40px;
+    background-image: url('./assets/thumb1.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
@@ -382,7 +393,7 @@ h2{
     z-index: -1;
     width: 100%;
     height: 100%;
-    background-image: url("lava.gif");
+    background-image: url("./assets/lava.gif");
     background-size: cover;     
     background-position: center;
     background-repeat: repeat;
@@ -432,7 +443,7 @@ h2{
     font-size: 25px; 
     padding: 10px 20px; 
     white-space: nowrap; 
-    background-image: url('firestill.png'); 
+    background-image: url('./assets/firestill.png'); 
     background-position: 50% 55%; 
     color: rgb(255, 255, 255); 
     font-weight: bold; 
@@ -443,7 +454,6 @@ h2{
     transition: 100ms;
     outline: 4px solid rgb(214, 26, 26);
     filter: grayscale(0);
-    /* background-image: url('fire.gif');  */
 }
 .extremeButton:hover{
     filter: brightness(1.3);
@@ -451,7 +461,7 @@ h2{
 .extremeButtonON{
     transition: 0ms;
     /* outline: 4px solid rgb(214, 26, 26); */
-    background-image: url('fire.gif'); 
+    background-image: url('./assets/fire.gif'); 
     filter: grayscale(0);
 }
 
